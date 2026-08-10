@@ -1,16 +1,24 @@
 import clsx from 'clsx';
 import {
+  fromIsoDate,
   isInMonth,
   isWithinRange,
+  todayIso,
   type DateRange,
   type IsoDate,
+  type MonthDirection,
 } from './dateRangeModel';
-import type { ResolvedDatePickerConfig } from './datePickerTypes';
+import type {
+  QunoDatePickerDayCellContext,
+  ResolvedDatePickerConfig,
+} from './datePickerTypes';
 import type { JSX } from 'preact';
 
 type Props = {
   dates: IsoDate[];
   visibleMonth: IsoDate;
+  monthMotion: MonthDirection | null;
+  movingSelection: boolean;
   selection: DateRange | null;
   renderedSelection: DateRange | null;
   config: ResolvedDatePickerConfig;
@@ -22,6 +30,8 @@ type Props = {
 export const CalendarGrid = ({
   dates,
   visibleMonth,
+  monthMotion,
+  movingSelection,
   selection,
   renderedSelection,
   config,
@@ -29,11 +39,16 @@ export const CalendarGrid = ({
   onEnter,
   onFinish,
 }: Props): JSX.Element => {
-  const { labels, formatters, locale, classNames } = config;
+  const { labels, formatters, locale, classNames, getDayCellProps } = config;
+  const today = todayIso();
   return (
     <div
       className={clsx('quno-date-picker__grid', classNames?.grid)}
       data-slot="grid"
+      data-dragging={movingSelection ? 'move' : undefined}
+      data-month-motion={
+        monthMotion === -1 ? 'previous' : monthMotion === 1 ? 'next' : undefined
+      }
       role="grid"
       aria-label={`${labels.calendar}: ${formatters.month(
         visibleMonth,
@@ -48,6 +63,20 @@ export const CalendarGrid = ({
           : false;
         const isStart = renderedSelection?.start === date;
         const isEnd = renderedSelection?.end === date;
+        const weekday = fromIsoDate(
+          date,
+        ).getUTCDay() as QunoDatePickerDayCellContext['weekday'];
+        const customProps = getDayCellProps?.({
+          date,
+          weekday,
+          isToday: date === today,
+          isWeekend: weekday === 0 || weekday === 6,
+          isOutside: !inVisibleMonth,
+          isSelected: displayed,
+          isCommitted: committed,
+          isRangeStart: isStart,
+          isRangeEnd: isEnd,
+        });
         return (
           <button
             key={date}
@@ -63,7 +92,10 @@ export const CalendarGrid = ({
                 'quno-date-picker__day--end': isEnd,
               },
               classNames?.day,
+              customProps?.className,
             )}
+            style={customProps?.style}
+            title={customProps?.title}
             data-slot="day"
             data-date={date}
             data-range-start={isStart ? 'true' : undefined}

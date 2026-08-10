@@ -5,6 +5,7 @@ import type {
   IsoDate,
   WeekStart,
 } from './dateRangeModel';
+import type { JSX } from 'preact';
 
 export type IdleInteraction = {
   type: 'idle';
@@ -17,6 +18,13 @@ export type DatePickerInteraction =
       origin: IsoDate;
       current: DateRange;
       moved: boolean;
+    }
+  | {
+      type: 'paint-pending';
+      origin: IsoDate;
+      original: DateRange;
+      current: DateRange;
+      moved: false;
     }
   | {
       type: 'drag-endpoint';
@@ -57,6 +65,28 @@ export type QunoDatePickerFormatters = {
   weekday: (dayIndex: number, locale: string) => string;
 };
 
+export type QunoDatePickerDayCellContext = {
+  date: IsoDate;
+  weekday: WeekStart;
+  isToday: boolean;
+  isWeekend: boolean;
+  isOutside: boolean;
+  isSelected: boolean;
+  isCommitted: boolean;
+  isRangeStart: boolean;
+  isRangeEnd: boolean;
+};
+
+export type QunoDatePickerDayCellProps = {
+  className?: string;
+  style?: JSX.CSSProperties;
+  title?: string;
+};
+
+export type QunoDatePickerDayCellCustomizer = (
+  context: QunoDatePickerDayCellContext,
+) => QunoDatePickerDayCellProps | undefined;
+
 export type QunoDatePickerSlot =
   | 'root'
   | 'selectionHeader'
@@ -96,6 +126,7 @@ export type QunoDatePickerProps = {
   weekStartsOn?: WeekStart;
   className?: string;
   classNames?: QunoDatePickerClassNames;
+  getDayCellProps?: QunoDatePickerDayCellCustomizer;
   autoNavigateDelay?: number;
   autoNavigateRepeatDelay?: number;
   onChange?: (value: DateRange | null) => void;
@@ -107,6 +138,7 @@ export type ResolvedDatePickerConfig = {
   labels: QunoDatePickerLabels;
   formatters: QunoDatePickerFormatters;
   classNames?: QunoDatePickerClassNames;
+  getDayCellProps?: QunoDatePickerDayCellCustomizer;
 };
 
 export type DateAction = ModelDateAction;

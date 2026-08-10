@@ -13,6 +13,30 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .quno-date-picker__grid[data-month-motion='previous']
+    .quno-date-picker__day
+    > span {
+    animation: quno-date-picker-number-from-top
+      var(--quno-picker-month-scroll-duration, 180ms) ease-out both;
+  }
+
+  .quno-date-picker__grid[data-month-motion='next']
+    .quno-date-picker__day
+    > span {
+    animation: quno-date-picker-number-from-bottom
+      var(--quno-picker-month-scroll-duration, 180ms) ease-out both;
+  }
+
+  .quno-date-picker__month-header h2[data-month-motion='previous'] > span {
+    animation: quno-date-picker-number-from-top
+      var(--quno-picker-month-scroll-duration, 180ms) ease-out both;
+  }
+
+  .quno-date-picker__month-header h2[data-month-motion='next'] > span {
+    animation: quno-date-picker-number-from-bottom
+      var(--quno-picker-month-scroll-duration, 180ms) ease-out both;
+  }
+
   .quno-date-picker__calendar-shell,
   .quno-date-picker__pill,
   .quno-date-picker__day > span {
@@ -21,5 +45,21 @@
       background-color 140ms ease,
       color 140ms ease,
       box-shadow 140ms ease;
+  }
+}
+
+@keyframes quno-date-picker-number-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(
+      calc(-1 * var(--quno-picker-month-scroll-distance, 14px))
+    );
+  }
+}
+
+@keyframes quno-date-picker-number-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(var(--quno-picker-month-scroll-distance, 14px));
   }
 }

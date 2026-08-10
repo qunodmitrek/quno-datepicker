@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import {
   addMonths,
   calendarGrid,
+  compareDates,
   isInMonth,
   startOfMonth,
   todayIso,
@@ -35,6 +36,7 @@ export type DatePickerController = {
   selection: DateRange | null;
   renderedSelection: DateRange | null;
   visibleMonth: IsoDate;
+  monthMotion: MonthDirection | null;
   interaction: DatePickerInteraction;
   gridDates: IsoDate[];
   weekdays: number[];
@@ -64,6 +66,7 @@ export const useDatePickerController = ({
   const [visibleMonth, setVisibleMonth] = useState(
     startOfMonth(initialMonth ?? selection?.start ?? todayIso()),
   );
+  const [monthMotion, setMonthMotion] = useState<MonthDirection | null>(null);
   const [interaction, setInteraction] = useState<DatePickerInteraction>(idle());
   const [clickCycle, setClickCycle] = useState<DateClickCycle | null>(null);
   const edgeTimer = useRef<number | null>(null);
@@ -84,12 +87,17 @@ export const useDatePickerController = ({
     onChange?.(nextValue);
   };
 
-  const changeMonth = (month: IsoDate): void => {
+  const changeMonth = (
+    month: IsoDate,
+    motion: MonthDirection | null = null,
+  ): void => {
+    setMonthMotion(motion);
     setVisibleMonth(month);
     onVisibleMonthChange?.(month);
   };
 
   const navigate = (direction: MonthDirection): void => {
+    setMonthMotion(direction);
     setVisibleMonth((current) => {
       const next = addMonths(current, direction);
       onVisibleMonthChange?.(next);
@@ -98,11 +106,7 @@ export const useDatePickerController = ({
     setClickCycle(null);
   };
   const dragSelection =
-    interaction.type === 'create' ||
-    interaction.type === 'drag-endpoint' ||
-    interaction.type === 'drag-range'
-      ? interaction.current
-      : null;
+    interaction.type === 'idle' ? null : interaction.current;
   const renderedSelection = dragSelection ?? selection;
 
   const beginDrag = (date: IsoDate): void => {
@@ -136,18 +140,13 @@ export const useDatePickerController = ({
       commit(result.value);
     }
     if (!isInMonth(date, visibleMonth)) {
-      changeMonth(startOfMonth(date));
+      const direction = compareDates(date, visibleMonth) < 0 ? -1 : 1;
+      changeMonth(startOfMonth(date), direction);
     }
   };
 
   const startEdgeNavigation = (direction: MonthDirection): void => {
-    if (
-      interaction.type !== 'create' &&
-      interaction.type !== 'drag-endpoint' &&
-      interaction.type !== 'drag-range'
-    ) {
-      return;
-    }
+    if (interaction.type === 'idle') return;
     stopEdgeNavigation();
     const step = (): void => {
       navigate(direction);
@@ -167,13 +166,15 @@ export const useDatePickerController = ({
     stopEdgeNavigation();
     setInteraction(idle());
     setClickCycle(null);
-    changeMonth(startOfMonth(date));
+    const direction = compareDates(date, visibleMonth) < 0 ? -1 : 1;
+    changeMonth(startOfMonth(date), direction);
   };
 
   return {
     selection,
     renderedSelection,
     visibleMonth,
+    monthMotion,
     interaction,
     gridDates: calendarGrid(visibleMonth, weekStartsOn),
     weekdays: Array.from({ length: 7 }, (_, index) => (weekStartsOn + index) % 7),

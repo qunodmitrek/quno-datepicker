@@ -23,9 +23,21 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 - Added a build-enforced check that limits every hand-written code file to 200 non-comment lines.
 - Added pure date-range model tests and DOM interaction tests covering selection, endpoint crossing, explicit date actions, range movement, month boundaries, off-screen pills, hover preview, and Clear.
 - Added regression coverage proving passive adjacent-month hover and active drag movement remain non-committing until pointer release.
+- Added directional vertical number motion for adjacent-month changes, including drag-edge navigation and outside-month release, with configurable duration/distance and reduced-motion support.
+- Extended directional number motion to off-screen Start and End endpoint-pill jumps in both directions.
+- Added a reduced-motion-aware endpoint-pill reveal: full-size Start and End controls slide from behind the calendar while it moves down or up respectively. Reveal duration and distance are component-scoped tokens.
+- Added matching previous/next vertical motion to the month name whenever the calendar changes month.
+- Added an explicit endpoint-pill exit phase so obsolete Start/End controls slide back beneath the calendar before unmounting.
+- Added fresh-range painting when a drag begins outside the current selection, in either direction, while retaining the existing no-movement click interpretation.
+- Added the typed `getDayCellProps` API for external per-date classes, inline styles, and titles, with today, weekend, visible-month, committed-selection, drag-selection, and endpoint context.
 
 ### Changed
 
+- Weekday-strip drag projection now replaces every weekday label overlapped by the transient selected range, so an End endpoint moving into the hidden previous week keeps the selected portion visible in the correct direction.
+- Moved the demo's repeated-click guidance into its left column, removed the selected-range JSON display, suppressed the duplicate calendar hint, and added external Today/weekend cell styling as a consumer example.
+- Empty `labels.hint` values now omit the optional hint element instead of leaving an empty paragraph in the component layout.
+- Whole-range, one-day, and start/end endpoint drags now use a grabbing cursor and remove the ordinary hovered-day outline for the duration of the pointer action.
+- Standardized the calendar body at six weeks. A trailing week is added only when the natural weekday-aligned month grid ends exactly on month-end, eliminating seven-week views while preserving next-month context for exact row endings.
 - Converted the production build from a demo application bundle to a reusable library bundle while retaining the Vite demo for local development.
 - Moved Preact to a peer dependency and externalized it from the production bundle.
 - Replaced global `:root` theme declarations with component-scoped CSS variable fallbacks so importing the stylesheet does not alter the host project.
@@ -42,13 +54,21 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Fixed
 
+- Previous/next month chevrons now use symmetric SVG geometry centered inside the existing circular buttons, avoiding the optical offset from font glyph side-bearings and baselines.
+- Returning a drag from the weekday strip to any normal calendar area now removes all projected dates even when the transient range still overlaps that hidden week.
+- Start and End pills now retain their intrinsic height while their exit track closes, so disappearance reads as a full-size button sliding beneath the calendar instead of a vertically shrinking control.
+- Calendar translation is now ineligible whenever any Start/End pill is already stably visible, ensuring subsequent endpoint controls reveal through their own slide only.
+- Adding an off-screen Start beside an existing End pill, or End beside Start, now animates only the new control; the existing pill and calendar remain stationary.
+- Clicking Start or End across a range spanning distant months no longer retriggers the opposite, already-visible pill's calendar reveal after the clicked pill exits, eliminating the double vertical jitter.
+- Endpoint-pill reveals no longer collapse or clip the control, so its rendered width and height remain constant throughout the slide.
+- Endpoint pills no longer disappear immediately when their endpoint enters the visible month; they become disabled and hidden from accessibility while completing their under-calendar exit.
 - Weekday labels and progressively revealed numbers now fill one explicit fixed-height grid track, preventing either cell type or consumer day styling from changing the row height during replacement.
 - Repeated date clicks now skip Start, End, or one-day cycle actions that normalize to the selection already displayed, avoiding no-op clicks and redundant `onChange` calls.
 - Progressive previous-week numbers now clear immediately when the pointer leaves the weekday strip for another calendar area, while the active drag continues normally.
 - The weekday header row now keeps the same day-cell height while progressive overflow dates replace weekday labels during a drag.
 - Hover now renders additions, removals, and the prospective endpoint as a translucent overlay while leaving the committed range, endpoint markers, summary, and value unchanged until click.
 - Releasing a click or drag on an adjacent-month day now advances the interaction and switches the visible calendar to that day's month; subsequent clicks on that date continue its role cycle in the new month.
-- Calendar views no longer force an extra previous-month week; they show only the leading dates required for weekday alignment while retaining at least seven next-month dates.
+- Calendar views no longer force an extra previous-month week; they show only the leading dates required for weekday alignment and keep a stable six-week body.
 - Month-edge hover zones no longer auto-navigate from passive pointer movement after a date click; delayed navigation remains limited to active drags.
 - Moved drags now recompute their final snapped range from the actual release date instead of relying on the last pointer-enter event.
 
@@ -60,7 +80,7 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Verification
 
-- `npm test`: 34 tests passed.
+- `npm test`: 50 tests passed.
 - `npm run lint`: passed.
 - `npm run check:file-size`: passed.
 - `npm run typecheck`: passed.

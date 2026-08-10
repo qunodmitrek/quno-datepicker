@@ -93,4 +93,50 @@ describe('QunoDatePicker selection', () => {
       end: '2026-08-21',
     });
   });
+
+  it.each([
+    ['whole range', { start: '2026-08-10', end: '2026-08-15' }, '2026-08-12'],
+    ['single date', { start: '2026-08-10', end: '2026-08-10' }, '2026-08-10'],
+    ['start endpoint', { start: '2026-08-10', end: '2026-08-15' }, '2026-08-10'],
+    ['end endpoint', { start: '2026-08-10', end: '2026-08-15' }, '2026-08-15'],
+  ] as const)('marks a %s drag as moving without hover emphasis', (_, value, origin) => {
+    render(
+      <QunoDatePicker defaultValue={value} initialMonth="2026-08-01" />,
+    );
+
+    fireEvent.pointerDown(day(origin));
+    expect(slot('calendar')).toHaveAttribute('data-dragging', 'move');
+    expect(slot('grid')).toHaveAttribute('data-dragging', 'move');
+
+    fireEvent.pointerUp(day(origin));
+    expect(slot('calendar')).not.toHaveAttribute('data-dragging');
+    expect(slot('grid')).not.toHaveAttribute('data-dragging');
+  });
+
+  it.each([
+    ['after', '2026-08-25', '2026-08-28', '2026-08-25', '2026-08-28'],
+    ['before', '2026-08-08', '2026-08-05', '2026-08-05', '2026-08-08'],
+  ])(
+    'paints a fresh range when dragging %s the current segment',
+    (_, origin, target, start, end) => {
+      const onChange = vi.fn();
+      render(
+        <QunoDatePicker
+          defaultValue={{ start: '2026-08-10', end: '2026-08-20' }}
+          initialMonth="2026-08-01"
+          onChange={onChange}
+        />,
+      );
+
+      fireEvent.pointerDown(day(origin));
+      fireEvent.pointerEnter(day(target));
+      expect(day(start)).toHaveAttribute('data-range-start', 'true');
+      expect(day(end)).toHaveAttribute('data-range-end', 'true');
+      expect(day('2026-08-20')).not.toHaveAttribute('data-selected');
+      expect(onChange).not.toHaveBeenCalled();
+
+      fireEvent.pointerUp(day(target));
+      expect(onChange).toHaveBeenLastCalledWith({ start, end });
+    },
+  );
 });

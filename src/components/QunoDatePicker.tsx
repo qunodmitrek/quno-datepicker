@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { Calendar } from './Calendar';
+import { monthRelation } from './dateRangeModel';
 import { DEFAULT_FORMATTERS, DEFAULT_LABELS } from './datePickerFormatters';
 import { OffscreenPills } from './OffscreenPills';
 import { SelectionHeader } from './SelectionHeader';
@@ -20,6 +21,7 @@ export const QunoDatePicker = ({
   weekStartsOn = 1,
   className,
   classNames,
+  getDayCellProps,
   autoNavigateDelay = 400,
   autoNavigateRepeatDelay = 650,
   onChange,
@@ -30,6 +32,7 @@ export const QunoDatePicker = ({
     labels: { ...DEFAULT_LABELS, ...labels },
     formatters: { ...DEFAULT_FORMATTERS, ...formatters },
     classNames,
+    getDayCellProps,
   };
   const controller = useDatePickerController({
     value,
@@ -41,11 +44,19 @@ export const QunoDatePicker = ({
     onChange,
     onVisibleMonthChange,
   });
+  const endpointPositions = controller.selection
+    ? [
+        monthRelation(controller.selection.start, controller.visibleMonth),
+        monthRelation(controller.selection.end, controller.visibleMonth),
+      ]
+    : [];
 
   return (
     <section
       className={clsx('quno-date-picker', className, classNames?.root)}
       data-slot="root"
+      data-pill-before={endpointPositions.includes('before') || undefined}
+      data-pill-after={endpointPositions.includes('after') || undefined}
       aria-label={config.labels.calendar}
       onPointerUp={controller.stopEdgeNavigation}
     >
@@ -69,12 +80,14 @@ export const QunoDatePicker = ({
         config={config}
         onJump={controller.jumpToEndpoint}
       />
-      <p
-        className={clsx('quno-date-picker__hint', classNames?.hint)}
-        data-slot="hint"
-      >
-        {config.labels.hint}
-      </p>
+      {config.labels.hint && (
+        <p
+          className={clsx('quno-date-picker__hint', classNames?.hint)}
+          data-slot="hint"
+        >
+          {config.labels.hint}
+        </p>
+      )}
     </section>
   );
 };
@@ -83,6 +96,9 @@ export type {
   DateAction,
   DatePickerInteraction,
   QunoDatePickerClassNames,
+  QunoDatePickerDayCellContext,
+  QunoDatePickerDayCellCustomizer,
+  QunoDatePickerDayCellProps,
   QunoDatePickerFormatters,
   QunoDatePickerLabels,
   QunoDatePickerProps,

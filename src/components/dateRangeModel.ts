@@ -172,8 +172,12 @@ export const calendarGrid = (
   const last = fromIsoDate(endOfMonth(month));
   const weekEndsOn = (weekStartsOn + 6) % 7;
   const daysAfterMonth = (weekEndsOn - last.getUTCDay() + 7) % 7;
-  const gridEnd = addDays(toIsoDate(last), daysAfterMonth + 7);
-  const dayCount = differenceInDays(gridEnd, gridStart) + 1;
+  const monthEnd = toIsoDate(last);
+  const alignedEnd = addDays(monthEnd, daysAfterMonth);
+  const alignedWeeks =
+    (differenceInDays(alignedEnd, gridStart) + 1) / 7;
+  const trailingWeek = alignedEnd === monthEnd ? 1 : 0;
+  const dayCount = Math.max(6, alignedWeeks + trailingWeek) * 7;
 
   return Array.from({ length: dayCount }, (_, index) =>
     addDays(gridStart, index),

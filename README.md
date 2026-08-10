@@ -20,12 +20,17 @@ Update these records in the same change as the code they describe.
 - Drag either endpoint to resize. Crossing automatically swaps endpoint identity.
 - Selected endpoints have no default underline or handle decoration; the stable `handle` slot remains available for consumer-defined styling.
 - Drag inside the selected period to move it by snapped calendar days without changing duration.
+- Whole-range, one-day, and start/end endpoint drags use a grabbing cursor and suppress the ordinary hovered-day outline while the pointer action is active.
+- Begin a drag outside the selected period to paint a fresh range from that cell. Until movement occurs, the same pointer action remains an ordinary contextual click on the existing range.
 - Holding a drag at either month edge navigates after a 400 ms delay and repeats while held.
-- Every view starts with only the weekday-aligned leading dates needed for the current month; it does not force an extra previous-month week. During a drag, moving backward across the weekday-name strip progressively reveals the hidden dates from the hovered target through the end of that previous week. Weekday labels and revealed dates occupy the same explicit seven-column row track, so changing between names and numbers cannot change grid height. Leaving the strip for any other cell immediately restores every weekday label without ending the drag. At least one trailing next-month week remains visible.
+- When the visible month changes, its name and day numbers enter vertically in the travel direction while the calendar frame and selection geometry stay fixed. Motion is disabled when the user prefers reduced motion.
+- Previous/next controls use symmetric SVG chevrons centered within their unchanged circular hit areas.
+- Every view keeps a fixed six-week grid with only the weekday-aligned leading dates needed for the current month. When the natural aligned month grid ends exactly on month-end, a trailing week is appended within that six-week minimum. While a drag is over the weekday-name strip, the dates where the transient selected range overlaps the hidden previous week replace their weekday labels; this grows toward or away from the pointer according to the selected range rather than assuming one direction. Weekday labels and revealed dates occupy the same explicit seven-column row track, so changing between names and numbers cannot change grid height. Leaving the strip for any other cell immediately restores every weekday label without ending the drag.
 - Releasing on a leading or trailing day from an adjacent month switches the calendar to that month.
-- Off-screen endpoints appear as pills before or after the calendar; clicking one jumps to its month.
+- Off-screen endpoints appear as Start/End pills before or after the calendar. Pills retain their intrinsic width and height while sliding out from behind the calendar: the calendar moves down to uncover Start or up to uncover End only when no endpoint control is already visible. Once any pill is shown, the calendar stays fixed and only a newly required control slides from beneath it into the adjacent space. When an endpoint becomes visible, its pill remains full-size while the surrounding layout space closes and the intact button slides back underneath the calendar before removal. Clicking a pill jumps to its month with the same directional vertical name-and-number scroll.
 - Clear returns to `null` and intentionally preserves the visible month.
 - `value`/`onChange` supports controlled use; `defaultValue` supports uncontrolled use.
+- `getDayCellProps` lets consumers add a class, inline style, or title from typed date and selection context without replacing the datepicker's interaction handlers.
 
 ## Install
 
@@ -77,6 +82,11 @@ import { QunoDatePicker } from '@quno/datepicker';
   labels={{ clear: 'Zurücksetzen' }}
   className="booking-dates"
   classNames={{ day: 'booking-dates__day' }}
+  getDayCellProps={({ isToday, isWeekend }) => ({
+    className: isWeekend ? 'booking-dates__weekend' : undefined,
+    style: isToday ? { color: '#d97706' } : undefined,
+    title: isToday ? 'Today' : undefined,
+  })}
   onChange={(range) => console.log(range)}
 />
 ```
@@ -85,7 +95,7 @@ Calendar dates stay as `YYYY-MM-DD` strings and all calendar arithmetic uses UTC
 
 The public entry exports:
 
-- `QunoDatePicker` and its props, label, formatter, class-name, slot, date-action, and interaction types.
+- `QunoDatePicker` and its props, label, formatter, class-name, day-cell customization, slot, date-action, and interaction types.
 - `DateRange`, `IsoDate`, `Endpoint`, `MonthDirection`, and `WeekStart` types.
 - Pure date and selection helpers such as `calendarGrid`, `selectDate`, `dateActionContext`, `applyDateAction`, `editEndpoint`, and `moveRange` for custom adapters or headless integrations.
 
@@ -108,9 +118,9 @@ The default stylesheet does not write theme values to `:root`. Every default is 
 }
 ```
 
-Additional tokens cover disabled and outside-month text, pill colors, shadows, and day sizing. Inspect `QunoDatePicker.css` for the complete token list.
+Additional tokens cover disabled and outside-month text, pill colors, shadows, day sizing, month-scroll duration/distance, and endpoint-pill reveal duration/distance (`--quno-picker-pill-reveal-duration` and `--quno-picker-pill-reveal-distance`). Inspect `QunoDatePicker.css` for the complete token list.
 
-Every meaningful element also has a stable `data-slot` value, including `root`, `selection-header`, `clear-button`, `pills`, `pill`, `calendar`, `month-header`, `month-heading`, `weekdays`, `weekday`, `overflow-day`, `grid`, `day`, `handle`, and `hint`. The weekday strip exposes `data-drag-active` and `data-drag-overflow`; date cells expose state through `data-selected`, `data-committed`, `data-range-start`, `data-range-end`, and `data-outside`.
+Every meaningful element also has a stable `data-slot` value, including `root`, `selection-header`, `clear-button`, `pills`, `pill`, `calendar`, `month-header`, `month-heading`, `weekdays`, `weekday`, `overflow-day`, `grid`, `day`, `handle`, and `hint`. The root exposes `data-pill-before` and `data-pill-after` while matching off-screen endpoints are present; pill containers expose `data-presence="entering|visible|exiting"`, and individual controls expose the same lifecycle through `data-item-presence`; the month heading and grid expose `data-month-motion="previous|next"`; the calendar and grid expose `data-dragging="move"` while a whole range, one-day selection, or endpoint is directly manipulated; the weekday strip exposes `data-drag-active` and `data-drag-overflow`; date cells expose state through `data-selected`, `data-committed`, `data-range-start`, `data-range-end`, and `data-outside`.
 
 For utility-class systems or CSS modules, pass project classes without replacing the built-in behavior classes:
 
@@ -124,6 +134,10 @@ For utility-class systems or CSS modules, pass project classes without replacing
   }}
 />
 ```
+
+`getDayCellProps` runs for every visible date, including adjacent-month cells. Its context includes `date`, `weekday`, `isToday`, `isWeekend`, `isOutside`, `isSelected`, `isCommitted`, `isRangeStart`, and `isRangeEnd`. `isSelected` follows an active drag preview while `isCommitted` continues to describe the public value. The callback intentionally cannot replace pointer handlers, accessibility labels, or stable state attributes.
+
+Passing an empty `labels.hint` omits the optional hint element, allowing a host layout to place interaction guidance elsewhere.
 
 ## Localization and formatting
 

@@ -96,7 +96,7 @@ describe('date range model', () => {
     expect(differenceInDays(moved.end, moved.start)).toBe(6);
   });
 
-  it('uses aligned leading dates without an extra previous week', () => {
+  it('keeps six weeks and adds trailing context after a month-end row', () => {
     const grid = calendarGrid('2027-01-01');
 
     expect(grid).toHaveLength(42);
@@ -104,11 +104,11 @@ describe('date range model', () => {
     expect(grid.at(-1)).toBe('2027-02-07');
   });
 
-  it('supports consumer-defined week starts', () => {
+  it('keeps six weeks with consumer-defined week starts', () => {
     const sundayFirst = calendarGrid('2027-01-01', 0);
 
-    expect(sundayFirst).toHaveLength(49);
+    expect(sundayFirst).toHaveLength(42);
     expect(sundayFirst[0]).toBe('2026-12-27');
-    expect(sundayFirst.at(-1)).toBe('2027-02-13');
+    expect(sundayFirst.at(-1)).toBe('2027-02-06');
   });
 });

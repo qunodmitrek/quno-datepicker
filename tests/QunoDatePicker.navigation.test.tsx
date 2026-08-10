@@ -51,6 +51,7 @@ describe('QunoDatePicker navigation', () => {
       vi.advanceTimersByTime(1);
     });
     expect(slot('month-heading')).toHaveTextContent('September 2026');
+    expect(slot('grid')).toHaveAttribute('data-month-motion', 'next');
 
     fireEvent.pointerEnter(day('2026-09-05'));
     fireEvent.pointerUp(day('2026-09-05'));
@@ -88,16 +89,24 @@ describe('QunoDatePicker navigation', () => {
       />,
     );
 
+    expect(slot('root')).toHaveAttribute('data-pill-before', 'true');
+    expect(slot('root')).toHaveAttribute('data-pill-after', 'true');
     expect(pill('start', 'before')).toBeVisible();
     expect(pill('end', 'after')).toBeVisible();
     fireEvent.click(pill('end', 'after'));
     expect(slot('month-heading')).toHaveTextContent('September 2026');
+    expect(slot('grid')).toHaveAttribute('data-month-motion', 'next');
     expect(
       document.querySelector(
         '[data-slot="pill"][data-endpoint="end"][data-position="after"]',
       ),
     ).not.toBeInTheDocument();
+    expect(slot('root')).not.toHaveAttribute('data-pill-after');
+    expect(slot('root')).toHaveAttribute('data-pill-before', 'true');
     expect(pill('start', 'before')).toBeVisible();
+    fireEvent.click(pill('start', 'before'));
+    expect(slot('month-heading')).toHaveTextContent('July 2026');
+    expect(slot('grid')).toHaveAttribute('data-month-motion', 'previous');
   });
 
   it('switches month when a click releases on an outside-month day', () => {
@@ -163,5 +172,27 @@ describe('QunoDatePicker navigation', () => {
       end: '2026-09-03',
     });
     expect(slot('month-heading')).toHaveTextContent('September 2026');
+    expect(slot('grid')).toHaveAttribute('data-month-motion', 'next');
+  });
+
+  it('marks a previous-month drag release with upward-origin motion', () => {
+    const onChange = vi.fn();
+    render(
+      <QunoDatePicker
+        defaultValue={{ start: '2026-08-10', end: '2026-08-20' }}
+        initialMonth="2026-08-01"
+        onChange={onChange}
+      />,
+    );
+
+    fireEvent.pointerDown(day('2026-08-10'));
+    fireEvent.pointerEnter(day('2026-07-31'));
+    fireEvent.pointerUp(day('2026-07-31'));
+    expect(onChange).toHaveBeenLastCalledWith({
+      start: '2026-07-31',
+      end: '2026-08-20',
+    });
+    expect(slot('month-heading')).toHaveTextContent('July 2026');
+    expect(slot('grid')).toHaveAttribute('data-month-motion', 'previous');
   });
 });

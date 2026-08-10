@@ -14,6 +14,7 @@ export type DatePickerController = {
     selection: DateRange | null;
     renderedSelection: DateRange | null;
     visibleMonth: IsoDate;
+    monthMotion: MonthDirection | null;
     interaction: DatePickerInteraction;
     gridDates: IsoDate[];
     weekdays: number[];

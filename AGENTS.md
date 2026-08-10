@@ -24,7 +24,7 @@ Treat these Markdown files as part of the implementation. Keep them accurate in 
 ## Product Contracts
 
 - Render one calendar month only; do not introduce side-by-side calendars.
-- Keep weekday-aligned leading dates without forcing an extra previous-month row. Retain at least seven trailing next-month dates. During an active drag, progressively reveal only the suffix of the hidden previous week from the hovered target through the date immediately before the grid. Revealed targets must reuse normal day-cell styling and state hooks. Weekday labels and revealed dates must fill one explicit fixed-height grid track, and leaving it for another cell must immediately restore all weekday labels without ending the drag.
+- Keep a six-week, 42-cell grid with weekday-aligned leading dates and no forced previous-month row. Derive the natural aligned month rows and append a trailing week only when their last cell is month-end, while retaining six weeks as the minimum and maximum rendered view. While an active drag pointer is inside the weekday strip, replace labels for every hidden previous-week date overlapped by the transient selected range and reveal the current pointer target immediately. Revealed targets must reuse normal day-cell styling and state hooks. Weekday labels and revealed dates must fill one explicit fixed-height grid track, and leaving it for another cell must immediately restore all weekday labels without ending the drag.
 - Represent selection as `null` or an inclusive `{ start, end }` range. A single day is `start === end`.
 - Keep calendar dates timezone-free as `YYYY-MM-DD` values. Date arithmetic must not shift dates through local time zones or DST.
 - Keep the visible month independent from the selected range. Navigation and Clear must not alter each other unexpectedly.
@@ -32,10 +32,14 @@ Treat these Markdown files as part of the implementation. Keep them accurate in 
 - Endpoint crossing swaps endpoint identity so the dragged handle remains attached to the pointer.
 - Do not render a default underline or visible handle decoration on selected endpoints. Preserve the `handle` slot so consumers may opt into their own presentation.
 - Whole-range dragging preserves duration and snaps to calendar days.
+- Pointer-down outside an existing range is pending until intent is known: movement paints a fresh range from that outside origin, while release without movement retains contextual nearest-endpoint click behavior.
+- Adjacent-month changes, including Start/End endpoint-pill jumps, must animate both the month name and day numbers vertically in the navigation direction without moving the grid frame or range geometry, and must respect `prefers-reduced-motion`.
+- Newly visible Start/End endpoint pills must remain full-size and slide from behind the calendar; never reveal them by resizing or clipping their box. The calendar moves down to uncover the first pill before it and up to uncover the first pill after it only when no endpoint pill is already stable. Once any pill is visible, the calendar must not translate to reveal another. Track lifecycle per endpoint: retain the existing DOM order and position and animate only the new item. Model entry separately from stable visibility so another pill's exit cannot retrigger reveal motion. When no longer needed, retain the full-size pill in an explicit exiting state until it has slid back under the calendar. Keep this scoped, configurable, and disabled under `prefers-reduced-motion`.
 - Releasing on a leading or trailing day from an adjacent month switches the visible calendar to that day's month after committing the interaction.
 - Keep committed selection separate from the transient active-drag range.
 - Preserve controlled and uncontrolled component usage.
 - Keep user-facing copy, date formatting, week starts, and visual styling configurable by consumers.
+- Keep day-cell customization presentational: external callbacks may add classes, inline styles, and titles from typed date/selection context, but must not replace core event handlers or state attributes.
 
 ## Architecture And Code Style
 

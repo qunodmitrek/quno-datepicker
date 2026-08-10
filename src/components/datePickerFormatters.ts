@@ -47,7 +47,7 @@ export const DEFAULT_LABELS: QunoDatePickerLabels = {
   startDate: 'Start date',
   endDate: 'End date',
   thisDate: 'This date',
-  hint: 'Click the same date again to cycle its role, or drag to adjust the period.',
+  hint: 'Click again to cycle a date role, or drag outside the period to paint a new one.',
 };
 
 export const DEFAULT_FORMATTERS: QunoDatePickerFormatters = {

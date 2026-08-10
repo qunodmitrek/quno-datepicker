@@ -4,7 +4,6 @@ import {
   dateActionContext,
   isWithinRange,
   moveRange,
-  nearestEndpoint,
   normalizeRange,
   type DateRange,
   type Endpoint,
@@ -64,7 +63,13 @@ export const beginInteraction = (
     };
   }
 
-  return endpointDrag(selection, nearestEndpoint(selection, date), date);
+  return {
+    type: 'paint-pending',
+    origin: date,
+    original: selection,
+    current: selection,
+    moved: false,
+  };
 };
 
 export const updateInteraction = (
@@ -80,6 +85,16 @@ export const updateInteraction = (
       ...interaction,
       current: normalizeRange(interaction.origin, date),
       moved: interaction.moved || date !== interaction.origin,
+    };
+  }
+
+  if (interaction.type === 'paint-pending') {
+    if (date === interaction.origin) return interaction;
+    return {
+      type: 'create',
+      origin: interaction.origin,
+      current: normalizeRange(interaction.origin, date),
+      moved: true,
     };
   }
 
@@ -133,6 +148,16 @@ export const finishInteraction = (
     return { interaction };
   }
 
+  if (
+    interaction.type === 'paint-pending' &&
+    date !== interaction.origin
+  ) {
+    return {
+      interaction: idle(),
+      value: normalizeRange(interaction.origin, date),
+    };
+  }
+
   if (interaction.moved) {
     const finalInteraction = updateInteraction(interaction, date);
     if (finalInteraction.type === 'idle') {
@@ -145,7 +170,10 @@ export const finishInteraction = (
     return { interaction: idle(), value: { start: date, end: date } };
   }
 
-  const original = interaction.current;
+  const original =
+    interaction.type === 'paint-pending'
+      ? interaction.original
+      : interaction.current;
   const context = dateActionContext(original, date);
   const opposite = context.defaultAction === 'start' ? 'end' : 'start';
   const actions: DateClickCycle['actions'] = [

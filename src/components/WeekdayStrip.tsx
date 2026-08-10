@@ -3,7 +3,9 @@ import { useEffect, useState } from 'preact/hooks';
 import {
   addDays,
   isWithinRange,
+  todayIso,
   type IsoDate,
+  type WeekStart,
 } from './dateRangeModel';
 import type { DatePickerController } from './useDatePickerController';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
@@ -16,7 +18,7 @@ type Props = {
 
 type StripMode =
   | { type: 'weekdays' }
-  | { type: 'previous-dates'; fromIndex: number };
+  | { type: 'previous-dates'; pointerIndex: number };
 
 const targetIndex = (target: EventTarget | null, weekdays: number[]): number => {
   const element = (target as HTMLElement | null)?.closest<HTMLElement>(
@@ -29,10 +31,8 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
   const [mode, setMode] = useState<StripMode>({ type: 'weekdays' });
   const { classNames, formatters, locale } = config;
   const { interaction, renderedSelection, weekdays } = controller;
-  const dragActive =
-    interaction.type === 'create' ||
-    interaction.type === 'drag-endpoint' ||
-    interaction.type === 'drag-range';
+  const dragActive = interaction.type !== 'idle';
+  const today = todayIso();
   const previousDates = Array.from({ length: 7 }, (_, index) =>
     addDays(controller.gridDates[0], index - 7),
   );
@@ -41,9 +41,9 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
     if (!dragActive) setMode({ type: 'weekdays' });
   }, [dragActive]);
 
-  const revealFrom = (index: number): void => {
+  const revealAt = (index: number): void => {
     if (!dragActive || index < 0) return;
-    setMode({ type: 'previous-dates', fromIndex: index });
+    setMode({ type: 'previous-dates', pointerIndex: index });
     controller.enterDay(previousDates[index]);
   };
 
@@ -59,7 +59,7 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
       data-drag-overflow={mode.type === 'previous-dates' ? 'previous' : undefined}
       data-drag-active={dragActive ? 'true' : undefined}
       aria-hidden="true"
-      onPointerEnter={(event) => revealFrom(targetIndex(event.target, weekdays))}
+      onPointerEnter={(event) => revealAt(targetIndex(event.target, weekdays))}
       onPointerLeave={() => setMode({ type: 'weekdays' })}
       onPointerUp={(event) => {
         if (!dragActive) return;
@@ -70,8 +70,13 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
       }}
     >
       {weekdays.map((dayIndex, index) => {
+        const date = previousDates[index];
+        const selected = renderedSelection
+          ? isWithinRange(date, renderedSelection)
+          : false;
         const revealed =
-          mode.type === 'previous-dates' && index >= mode.fromIndex;
+          mode.type === 'previous-dates' &&
+          (selected || index === mode.pointerIndex);
         if (!revealed) {
           return (
             <span
@@ -79,18 +84,28 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
               className={classNames?.weekday}
               data-slot="weekday"
               data-day-index={dayIndex}
-              onPointerEnter={() => revealFrom(index)}
+              onPointerEnter={() => revealAt(index)}
             >
               {formatters.weekday(dayIndex, locale)}
             </span>
           );
         }
-        const date = previousDates[index];
-        const selected = renderedSelection
-          ? isWithinRange(date, renderedSelection)
-          : false;
         const isStart = renderedSelection?.start === date;
         const isEnd = renderedSelection?.end === date;
+        const committed = controller.selection
+          ? isWithinRange(date, controller.selection)
+          : false;
+        const customProps = config.getDayCellProps?.({
+          date,
+          weekday: dayIndex as WeekStart,
+          isToday: date === today,
+          isWeekend: dayIndex === 0 || dayIndex === 6,
+          isOutside: true,
+          isSelected: selected,
+          isCommitted: committed,
+          isRangeStart: isStart,
+          isRangeEnd: isEnd,
+        });
         return (
           <span
             key={dayIndex}
@@ -103,7 +118,10 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
               isEnd && 'quno-date-picker__day--end',
               classNames?.day,
               classNames?.overflowDay,
+              customProps?.className,
             )}
+            style={customProps?.style}
+            title={customProps?.title}
             data-slot="overflow-day"
             data-day-index={dayIndex}
             data-date={date}
@@ -111,7 +129,7 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
             data-range-start={isStart ? 'true' : undefined}
             data-range-end={isEnd ? 'true' : undefined}
             data-outside="true"
-            onPointerEnter={() => revealFrom(index)}
+            onPointerEnter={() => revealAt(index)}
             onPointerUp={(event) => {
               event.preventDefault();
               event.stopPropagation();

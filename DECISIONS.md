@@ -225,3 +225,147 @@ This file records decisions that should remain stable across implementation sess
 - Context: The small white bars beneath selected endpoint numbers read as underlines and add unnecessary decoration to the selected range.
 - Decision: Do not apply built-in visual styling to endpoint handle elements. Preserve the `handle` data slot and `classNames.handle` hook so a consuming design system can opt into a handle affordance without changing interaction behavior.
 - Consequences: Start and end cells remain draggable across their full day-cell targets, but the default theme shows only the endpoint fill. Existing consumer handle classes continue to receive markup and can define their own size, position, and appearance.
+
+## QDP-029 — Scroll day numbers vertically across months
+
+- Date: 2026-08-10
+- Status: Accepted
+- Context: Replacing all dates instantly at a month boundary makes a continuous cross-month drag feel discontinuous even though the pointer interaction remains active.
+- Decision: On adjacent-month navigation, remount the date grid with a direction marker and animate only each day-number glyph into place vertically. Next-month numbers enter from below; previous-month numbers enter from above. Keep the calendar shell, grid tracks, range fill, and month heading geometry stationary. Disable the animation under `prefers-reduced-motion` and expose scoped duration and distance tokens.
+- Consequences: Drag-edge navigation and outside-month release share the same directional feedback without destabilizing pointer targets. The grid exposes `data-month-motion="previous|next"` as a styling contract, while consumers can tune `--quno-picker-month-scroll-duration` and `--quno-picker-month-scroll-distance` or replace the motion in their own stylesheet.
+
+## QDP-030 — Animate Start and End endpoint jumps
+
+- Date: 2026-08-10
+- Status: Accepted; refines QDP-029
+- Context: Off-screen Start and End pills perform the same visible-month change as drag-boundary navigation, but an instantaneous pill jump creates a different and less continuous transition.
+- Decision: Determine whether the endpoint month is before or after the current view and apply the same previous/next number-motion marker when its pill is clicked. Preserve the existing direct jump to the endpoint month and the QDP-029 reduced-motion behavior.
+- Consequences: Endpoints after the view bring numbers from below; endpoints before it bring numbers from above. Pill jumps, month controls, drag-edge navigation, and outside-month releases now share one directional motion vocabulary without altering selection.
+
+## QDP-031 — Reveal endpoint pills from beneath the calendar
+
+- Date: 2026-08-10
+- Status: Accepted
+- Context: Inserting an off-screen Start or End control directly into the layout makes the calendar jump and does not explain where the newly available action belongs spatially.
+- Decision: Mount each pill inside an exact-height collapsing track so its appearance is a layout transition. A pill before the calendar enters upward from beneath it while the expanding track moves the calendar down. A pill after the calendar enters downward from beneath it while the calendar settles upward. Keep selection unchanged, retain the existing click-to-jump behavior, expose scoped duration and distance tokens, and omit all reveal animation under `prefers-reduced-motion`.
+- Consequences: Endpoint controls feel attached to the calendar edge instead of appearing as unrelated content. The root exposes `data-pill-before` and `data-pill-after` for state-aware consumer styling, while the existing `pills` and `pill` slots remain unchanged. Simultaneous off-screen endpoints use the same independent tracks without changing calendar geometry after the transition settles.
+
+## QDP-032 — Slide full-size endpoint pills behind the calendar
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes the collapsing-track mechanism in QDP-031
+- Context: Collapsing a pill container from zero height makes the control itself appear to resize or be progressively clipped. The intended spatial model is a fully formed control hidden underneath the opaque calendar surface and uncovered by coordinated movement.
+- Decision: Give every newly mounted pill its final layout dimensions immediately. Animate only transforms: Start travels upward from behind the calendar while the calendar moves down from its prior visual position; End travels downward from behind it while the calendar moves up. Do not animate height, grid tracks, clipping, scale, or opacity. Retain component-scoped duration/distance tokens and the reduced-motion fallback.
+- Consequences: Pill text, borders, and hit-area dimensions remain stable for the entire reveal. The calendar remains the higher stacking surface so translated pills are genuinely occluded while behind it. If both sides are present simultaneously, both controls slide from their respective edges without assigning contradictory simultaneous vertical movement to the single calendar block.
+
+## QDP-033 — Move month names with their date grid
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-029 and QDP-030
+- Context: Vertically introducing new day numbers while replacing the month name instantly gives one calendar change two different motion languages.
+- Decision: Remount the formatted month-name span for each visible month and mark its stable heading with the same previous/next direction as the date grid. Animate the new name from above for previous months and from below for next months, using the existing month-scroll duration and distance tokens and reduced-motion rule.
+- Consequences: Month controls, drag navigation, adjacent-day release, and endpoint-pill jumps move the month name and numbers consistently. The heading keeps its layout box and public `month-heading` slot while exposing `data-month-motion` for consumer styling.
+
+## QDP-034 — Retain endpoint pills through their exit motion
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-032
+- Context: An endpoint pill is no longer logically needed as soon as its date enters the visible month, but immediate unmounting prevents it from returning beneath the calendar and creates an abrupt disappearance.
+- Decision: Model pill presence as the discriminated states `hidden`, `visible`, and `exiting`. When a visible pill becomes unnecessary, retain its final-size button, disable it, remove it from the accessibility tree, and translate it beneath the calendar while its layout track closes. Unmount after `animationend`; if the optional stylesheet or motion animation is unavailable, complete the exit immediately.
+- Consequences: Start and End controls use reciprocal enter and exit paths without resizing. Closing the before-calendar track moves the calendar over the departing control and removes its space without a final layout jump; a departing after-calendar control moves itself under the stationary calendar. Tests cover both exit directions and completion-driven unmounting.
+
+## QDP-035 — Distinguish pill entry from stable visibility
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-034
+- Context: With both endpoints outside a middle month, clicking Start removes the upper pill while End remains below. A reveal selector based only on End being present becomes active again when Start finishes exiting, moving the calendar a second time even though End was never newly revealed. Very long ranges make this double jitter especially easy to notice.
+- Decision: Expand pill presence to `hidden`, `entering`, `visible`, and `exiting`. Run reveal tracks and calendar displacement only during `entering`, settle to `visible` on animation completion, and leave an unchanged opposite pill in `visible` throughout its sibling's exit. Preserve immediate settling when motion or the optional stylesheet is unavailable.
+- Consequences: Entry motion is edge-triggered instead of presence-triggered. Removing one of two off-screen endpoint controls cannot reactivate the stable control's reveal animation, while genuinely new Start and End pills still use the established under-calendar motion.
+
+## QDP-036 — Keep the calendar body at six weeks
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes the variable-height and guaranteed trailing-week consequences of QDP-013 and refines the compact leading context in QDP-017
+- Context: Adding a complete trailing week after every natural month grid produces seven rows whenever the aligned month already occupies six weeks. That changes the calendar height between months and provides more adjacent-month dates than the interaction needs.
+- Decision: Render a six-week, 42-cell view for every Gregorian month and configured week start. Calculate the natural complete weekday rows first and append one trailing week only when that natural grid's final cell is the month's final day; apply six weeks as both the minimum and final rendered height. Preserve the aligned leading dates and progressive hidden previous-week drag strip.
+- Consequences: Calendar height is stable across navigation, including month-name and number motion. Months whose natural grid ends on month-end still expose following-month dates, while former seven-week cases no longer add a redundant row. Model tests cover exact month-end alignment and a week-start case that previously produced 49 cells.
+
+## QDP-037 — Animate endpoint-pill lifecycle per item
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-035
+- Context: A pill container can already show Start when End becomes off-screen on the same side, or vice versa. Treating the changed item list as a new container entry reanimates the existing control, moves the calendar again, and makes both buttons appear to be redrawn.
+- Decision: Track `entering`, `visible`, and `exiting` independently for each endpoint item. Keep the container `visible` whenever it contains an established item, append a newly off-screen sibling after the established DOM item, and apply the under-calendar transform only to that new button. Use container entry and layout motion only when the side previously had no pills.
+- Consequences: The already-visible pill retains its DOM node, order, and position while its sibling arrives. Start-first and End-first cases use the same behavior, item exit remains independent, and consumer CSS can target `data-item-presence` without losing the existing container and slot contracts.
+
+## QDP-038 — Do not translate the calendar after a pill is visible
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-037
+- Context: Calendar displacement explains where the first off-screen endpoint control comes from. Once Start or End is already exposed, moving the calendar again to reveal another control repeats information and can look like a layout jump even when the established pill itself remains stable.
+- Decision: Allow calendar-shell reveal translation only when no endpoint item is in the stable `visible` phase. If any Start or End pill already exists, keep the calendar fixed and animate only the newly entering button from beneath the calendar. Preserve the per-item lifecycle and container-space behavior from QDP-037.
+- Consequences: First-pill entry may move the calendar, while every subsequent endpoint addition is button-only motion. The guard applies across both pill positions, preventing a stable control on one edge from permitting an unrelated calendar translation on the other edge.
+
+## QDP-039 — Paint a new range from outside the selection
+
+- Date: 2026-08-11
+- Status: Accepted; refines the outside-range drag path in QDP-005 while preserving the click cycle in QDP-026
+- Context: Pressing outside an existing selection currently attaches immediately to its nearest endpoint. Dragging from that cell therefore stretches the old range across the gap instead of letting the user paint the separate period indicated by the gesture.
+- Decision: Begin outside-range pointer actions in a discriminated `paint-pending` state that retains the committed selection. On the first movement to another date, convert it to `create` with the pressed date as origin and render a fresh normalized range between origin and pointer. If release occurs without movement, resolve the same contextual endpoint click and repeated-click cycle as before.
+- Consequences: Dragging before or after a selection replaces it with a newly painted segment and commits only on release. Pointer-down alone does not alter the rendered or committed value, click behavior remains backward compatible, and edge/weekday-strip navigation treats `paint-pending` as an active drag that becomes a create interaction when it reaches a date.
+
+## QDP-040 — Distinguish movement drags from hover
+
+- Date: 2026-08-11
+- Status: Accepted
+- Context: The ordinary pointer cursor and hovered-day outline remain visible while moving an entire range or manipulating a one-day selection. Those hover affordances imply another click target even though the pointer is already carrying the selection.
+- Decision: Mark whole-range and one-day pointer actions as `data-dragging="move"` on the calendar and grid. The optional default theme uses a grabbing cursor and suppresses only the ordinary hovered-day outline while that state is active.
+- Consequences: Direct movement has a clear drag affordance without hiding the moving selection itself. Endpoint resizing, fresh-range painting, focus-visible outlines, and consumer-defined styles remain independent, while unstyled consumers can use the stable state attribute to provide their own feedback.
+
+## QDP-041 — Use the drag affordance for endpoint resizing
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-040
+- Context: Start and End cells are direct drag targets too, but retaining the pointer cursor and ordinary hover outline makes endpoint resizing feel inconsistent with moving the complete range.
+- Decision: Apply the existing `data-dragging="move"` state, grabbing cursor, and hovered-day outline suppression to every `drag-endpoint` interaction, including endpoint crossing. Keep fresh-range painting outside this state.
+- Consequences: Start, End, one-day, and whole-range direct manipulation share one cursor language. Endpoint normalization and crossing behavior are unchanged, focus-visible feedback remains available, and consumers need only one state attribute to style all selected-date drags.
+
+## QDP-042 — Preserve pill intrinsic size while layout space closes
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-034
+- Context: An exiting pill and its layout track animate simultaneously. A flex child using cross-axis stretch can follow the contracting track height, making the button appear to shrink even though its transform is moving toward the calendar.
+- Decision: Align pill items to the start of their flex track and prevent them from growing or shrinking. The track may continue closing to move surrounding layout, but each button retains its intrinsic width and height while translating beneath the opaque calendar.
+- Consequences: Exit motion no longer deforms the control. Calendar and following-content layout still settle continuously, multi-pill containers keep stable gaps and ordering, and custom pill content remains intrinsic rather than being forced to a theme-specific fixed height.
+
+## QDP-043 — Customize day presentation through typed context
+
+- Date: 2026-08-11
+- Status: Accepted
+- Context: Consumers need project-specific date treatments such as Today or weekend colors, but exposing the complete day-button prop surface would allow callbacks to replace selection handlers, accessibility labels, and stable state attributes.
+- Decision: Add `getDayCellProps(context)` as a presentation-only public callback. Context reports the ISO date, weekday, Today/weekend status, visible-month membership, committed membership, transient rendered membership, and rendered endpoint flags. The callback may return only `className`, `style`, and `title`.
+- Consequences: Projects can style business-specific dates without forking markup or the default theme. Core interaction and accessibility contracts remain owned by the library, callback output applies to adjacent-month cells too, and consumers can deliberately distinguish committed selection from an active drag preview.
+
+## QDP-044 — Let host layouts own optional guidance placement
+
+- Date: 2026-08-11
+- Status: Accepted
+- Context: The demo repeated its click-cycle instruction below the calendar and in the explanatory column while also using the left-side callout for raw selected-date JSON.
+- Decision: Omit the component hint element when `labels.hint` is empty. In the demo, remove the JSON range display and place the repeated-click instruction in the left column, while preserving the non-empty default hint for existing library consumers.
+- Consequences: The demo has one clear source of click-cycle guidance and no developer-oriented value output in its presentation. Applications can relocate guidance without an empty paragraph affecting layout, while consumers that do not override `labels.hint` retain current behavior.
+
+## QDP-045 — Project the selected overlap into the weekday strip
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-020 and QDP-024
+- Context: Revealing hidden previous-week dates only from the hovered column toward week-end assumes that a range always grows backward from a later anchor. When an End endpoint moves back toward an earlier Start, selected dates before the pointer remain hidden behind weekday names.
+- Decision: While the pointer is inside the weekday strip during an active drag, replace every weekday label whose hidden previous-week date belongs to the transient rendered range. Also reveal the hovered date immediately while its parent interaction update settles. On pointer leave, restore all weekday labels regardless of whether the transient range still intersects the hidden week.
+- Consequences: Start, End, create, and whole-range drags project their actual selected intersection instead of a hardcoded direction. Selected fill and endpoint styling remain continuous in the header row, external day-cell customization applies to projected dates, and no projected number persists when the active pointer is elsewhere in the calendar.
+
+## QDP-046 — Center navigation chevrons with icon geometry
+
+- Date: 2026-08-11
+- Status: Accepted
+- Context: Unicode chevron glyphs are centered by their text box, but font-specific side-bearings and baseline metrics make the visible marks appear offset inside otherwise centered circular controls.
+- Decision: Render previous and next chevrons as mirrored paths in the same 16-by-16 SVG view box, centered by the button's existing grid layout. Keep the SVG decorative because each button already has a localized accessible label.
+- Consequences: Both directions have symmetric optical alignment independent of the consumer's font. Button dimensions, hit areas, public slots, labels, navigation behavior, and color inheritance remain unchanged.

@@ -1,14 +1,22 @@
 .quno-date-picker__pills {
-  display: flex;
-  gap: 8px;
-  padding: 8px 4px 0;
+  position: relative;
+  z-index: 0;
+  display: grid;
+  grid-template-rows: 1fr;
 }
 
-.quno-date-picker__pills--after {
-  padding: 8px 4px 0;
+.quno-date-picker__pills-track {
+  display: flex;
+  overflow: visible;
+  min-height: 0;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0 4px;
 }
 
 .quno-date-picker__pill {
+  flex: none;
+  align-self: flex-start;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -19,6 +27,8 @@
   color: var(--quno-picker-pill-text, #194c95);
   cursor: pointer;
   font-size: 12px;
+  margin-top: 8px;
+  white-space: nowrap;
 }
 
 .quno-date-picker__pill span:first-child {
@@ -29,4 +39,99 @@
 .quno-date-picker__pill:focus-visible {
   border-color: var(--quno-picker-primary, #0167ff);
   outline: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .quno-date-picker__pills[data-presence='entering'] {
+    animation: quno-date-picker-pill-space-reveal
+      var(--quno-picker-pill-reveal-duration, 220ms) ease-out both;
+  }
+
+  .quno-date-picker__pills[data-presence='exiting'] {
+    animation: quno-date-picker-pill-space-hide
+      var(--quno-picker-pill-reveal-duration, 220ms) ease-in both;
+    pointer-events: none;
+  }
+
+  .quno-date-picker__pills--before
+    .quno-date-picker__pill[data-item-presence='entering'] {
+    animation: quno-date-picker-pill-from-calendar-bottom
+      var(--quno-picker-pill-reveal-duration, 220ms) ease-out both;
+  }
+
+  .quno-date-picker__pills--after
+    .quno-date-picker__pill[data-item-presence='entering'] {
+    animation: quno-date-picker-pill-from-calendar-top
+      var(--quno-picker-pill-reveal-duration, 220ms) ease-out both;
+  }
+
+  .quno-date-picker__pills--before
+    .quno-date-picker__pill[data-item-presence='exiting'] {
+    animation: quno-date-picker-pill-to-calendar-bottom
+      var(--quno-picker-pill-reveal-duration, 220ms) ease-in both;
+  }
+
+  .quno-date-picker__pills--after
+    .quno-date-picker__pill[data-item-presence='exiting'] {
+    animation: quno-date-picker-pill-to-calendar-top
+      var(--quno-picker-pill-reveal-duration, 220ms) ease-in both;
+  }
+
+  .quno-date-picker:has(
+      .quno-date-picker__pills--after[data-presence='entering']
+    ):not(:has(.quno-date-picker__pill[data-item-presence='visible'])):not(
+      :has(.quno-date-picker__pills--before[data-presence='entering'])
+    ):not(
+      :has(.quno-date-picker__pills--before[data-presence='exiting'])
+    )
+    .quno-date-picker__calendar-shell {
+    animation: quno-date-picker-calendar-reveal-after
+      var(--quno-picker-pill-reveal-duration, 220ms) ease-out both;
+  }
+}
+
+@keyframes quno-date-picker-pill-space-reveal {
+  from {
+    grid-template-rows: 0fr;
+  }
+}
+
+@keyframes quno-date-picker-pill-space-hide {
+  to {
+    grid-template-rows: 0fr;
+  }
+}
+
+@keyframes quno-date-picker-pill-from-calendar-bottom {
+  from {
+    transform: translateY(var(--quno-picker-pill-reveal-distance, 45px));
+  }
+}
+
+@keyframes quno-date-picker-pill-from-calendar-top {
+  from {
+    transform: translateY(
+      calc(-1 * var(--quno-picker-pill-reveal-distance, 45px))
+    );
+  }
+}
+
+@keyframes quno-date-picker-pill-to-calendar-bottom {
+  to {
+    transform: translateY(var(--quno-picker-pill-reveal-distance, 45px));
+  }
+}
+
+@keyframes quno-date-picker-pill-to-calendar-top {
+  to {
+    transform: translateY(
+      calc(-1 * var(--quno-picker-pill-reveal-distance, 45px))
+    );
+  }
+}
+
+@keyframes quno-date-picker-calendar-reveal-after {
+  from {
+    transform: translateY(var(--quno-picker-pill-reveal-distance, 45px));
+  }
 }

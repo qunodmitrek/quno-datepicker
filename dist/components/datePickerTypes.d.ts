@@ -1,4 +1,5 @@
 import type { DateAction as ModelDateAction, DateRange, Endpoint, IsoDate, WeekStart } from './dateRangeModel';
+import type { JSX } from 'preact';
 export type IdleInteraction = {
     type: 'idle';
 };
@@ -7,6 +8,12 @@ export type DatePickerInteraction = IdleInteraction | {
     origin: IsoDate;
     current: DateRange;
     moved: boolean;
+} | {
+    type: 'paint-pending';
+    origin: IsoDate;
+    original: DateRange;
+    current: DateRange;
+    moved: false;
 } | {
     type: 'drag-endpoint';
     origin: IsoDate;
@@ -42,6 +49,23 @@ export type QunoDatePickerFormatters = {
     dayLabel: (date: IsoDate, locale: string) => string;
     weekday: (dayIndex: number, locale: string) => string;
 };
+export type QunoDatePickerDayCellContext = {
+    date: IsoDate;
+    weekday: WeekStart;
+    isToday: boolean;
+    isWeekend: boolean;
+    isOutside: boolean;
+    isSelected: boolean;
+    isCommitted: boolean;
+    isRangeStart: boolean;
+    isRangeEnd: boolean;
+};
+export type QunoDatePickerDayCellProps = {
+    className?: string;
+    style?: JSX.CSSProperties;
+    title?: string;
+};
+export type QunoDatePickerDayCellCustomizer = (context: QunoDatePickerDayCellContext) => QunoDatePickerDayCellProps | undefined;
 export type QunoDatePickerSlot = 'root' | 'selectionHeader' | 'selectionEyebrow' | 'selectionSummary' | 'clearButton' | 'pills' | 'pill' | 'calendar' | 'edge' | 'monthHeader' | 'previousButton' | 'monthHeading' | 'nextButton' | 'actionMenu' | 'actionTitle' | 'actionButton' | 'weekdays' | 'weekday' | 'overflowDay' | 'grid' | 'day' | 'handle' | 'hint';
 export type QunoDatePickerClassNames = Partial<Record<QunoDatePickerSlot, string>>;
 export type QunoDatePickerProps = {
@@ -54,6 +78,7 @@ export type QunoDatePickerProps = {
     weekStartsOn?: WeekStart;
     className?: string;
     classNames?: QunoDatePickerClassNames;
+    getDayCellProps?: QunoDatePickerDayCellCustomizer;
     autoNavigateDelay?: number;
     autoNavigateRepeatDelay?: number;
     onChange?: (value: DateRange | null) => void;
@@ -64,6 +89,7 @@ export type ResolvedDatePickerConfig = {
     labels: QunoDatePickerLabels;
     formatters: QunoDatePickerFormatters;
     classNames?: QunoDatePickerClassNames;
+    getDayCellProps?: QunoDatePickerDayCellCustomizer;
 };
 export type DateAction = ModelDateAction;
 //# sourceMappingURL=datePickerTypes.d.ts.map

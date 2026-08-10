@@ -36,6 +36,12 @@
   outline-offset: 1px;
 }
 
+.quno-date-picker__grid[data-dragging='move']
+  .quno-date-picker__day:hover
+  > span {
+  outline: none;
+}
+
 .quno-date-picker__day--outside {
   color: var(--quno-picker-outside, #a5acb7);
 }

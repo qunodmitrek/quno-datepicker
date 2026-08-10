@@ -13,10 +13,14 @@ type Props = {
 
 export const Calendar = ({ controller, config }: Props): JSX.Element => {
   const { classNames } = config;
+  const movingSelection =
+    controller.interaction.type === 'drag-range' ||
+    controller.interaction.type === 'drag-endpoint';
   return (
     <div
       className={clsx('quno-date-picker__calendar-shell', classNames?.calendar)}
       data-slot="calendar"
+      data-dragging={movingSelection ? 'move' : undefined}
     >
       {(['previous', 'next'] as const).map((direction) => (
         <div
@@ -38,6 +42,7 @@ export const Calendar = ({ controller, config }: Props): JSX.Element => {
 
       <CalendarHeader
         visibleMonth={controller.visibleMonth}
+        monthMotion={controller.monthMotion}
         config={config}
         onNavigate={controller.navigate}
       />
@@ -45,8 +50,11 @@ export const Calendar = ({ controller, config }: Props): JSX.Element => {
       <WeekdayStrip controller={controller} config={config} />
 
       <CalendarGrid
+        key={controller.visibleMonth}
         dates={controller.gridDates}
         visibleMonth={controller.visibleMonth}
+        monthMotion={controller.monthMotion}
+        movingSelection={movingSelection}
         selection={controller.selection}
         renderedSelection={controller.renderedSelection}
         config={config}

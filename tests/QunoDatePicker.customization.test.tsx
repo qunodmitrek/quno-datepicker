@@ -1,9 +1,11 @@
 import { render, screen } from '@testing-library/preact';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { QunoDatePicker } from '../src';
 import { day, slot } from './datePickerTestUtils';
 
 describe('QunoDatePicker customization', () => {
+  afterEach(() => vi.useRealTimers());
+
   it('exposes labels, formatters, week starts, and style hooks', () => {
     render(
       <QunoDatePicker
@@ -29,10 +31,34 @@ describe('QunoDatePicker customization', () => {
     expect(slot('month-heading')).toHaveTextContent('Month:2026-08');
     expect(day('2026-08-10')).toHaveClass('consumer-day');
     expect(screen.getByRole('button', { name: 'Back one month' })).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: 'Back one month' }).querySelector('svg'),
+    ).toHaveAttribute('aria-hidden', 'true');
     expect(screen.getByRole('button', { name: 'Reset dates' })).toBeDisabled();
     expect(slot('selection-summary')).toHaveTextContent('Pick dates');
     expect(document.querySelector('[data-slot="weekday"]')).toHaveTextContent(
       'Day:0',
     );
+  });
+
+  it('customizes day cells from external date and selection context', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-10T12:00:00Z'));
+    render(
+      <QunoDatePicker
+        initialMonth="2026-08-01"
+        defaultValue={{ start: '2026-08-10', end: '2026-08-12' }}
+        getDayCellProps={(context) => ({
+          className: context.isWeekend ? 'consumer-weekend' : undefined,
+          style: context.isToday ? { color: 'rgb(255, 0, 0)' } : undefined,
+          title: `${context.weekday}:${context.isCommitted}`,
+        })}
+      />,
+    );
+
+    expect(day('2026-08-08')).toHaveClass('consumer-weekend');
+    expect(day('2026-08-08')).toHaveAttribute('title', '6:false');
+    expect(day('2026-08-10')).toHaveStyle({ color: 'rgb(255, 0, 0)' });
+    expect(day('2026-08-10')).toHaveAttribute('title', '1:true');
   });
 });
