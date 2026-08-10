@@ -1,0 +1,106 @@
+.quno-date-picker__calendar-shell {
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+  padding: 16px;
+  border: 1px solid var(--quno-picker-border, #dfe3eb);
+  border-radius: var(--quno-picker-calendar-radius, 16px);
+  background: var(--quno-picker-surface, #fff);
+  box-shadow: var(
+    --quno-picker-calendar-shadow,
+    0 18px 50px rgb(20 32 43 / 10%)
+  );
+}
+
+.quno-date-picker__month-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.quno-date-picker__month-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.quno-date-picker__month-header button {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--quno-picker-border, #dfe3eb);
+  border-radius: 50%;
+  background: var(--quno-picker-surface, #fff);
+  color: var(--quno-picker-text, #15212a);
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.quno-date-picker__month-header button:hover,
+.quno-date-picker__month-header button:focus-visible {
+  border-color: var(--quno-picker-primary, #0167ff);
+  color: var(--quno-picker-primary, #0167ff);
+  outline: none;
+}
+
+.quno-date-picker__weekdays,
+.quno-date-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.quno-date-picker__weekdays {
+  grid-template-rows: var(--quno-picker-day-size, 42px);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--quno-picker-border, #dfe3eb);
+  color: var(--quno-picker-muted, #697386);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.quno-date-picker__weekdays > [data-day-index] {
+  min-height: 0;
+  height: 100%;
+}
+
+.quno-date-picker__weekdays > [data-slot='weekday'] {
+  display: grid;
+  place-items: center;
+}
+
+.quno-date-picker__weekdays[data-drag-active='true'] {
+  cursor: n-resize;
+}
+
+.quno-date-picker__overflow-day {
+  cursor: n-resize;
+}
+
+.quno-date-picker__grid {
+  gap: 3px 0;
+  padding-top: 8px;
+}
+
+.quno-date-picker__edge {
+  position: absolute;
+  z-index: 5;
+  top: 58px;
+  bottom: 12px;
+  width: 18px;
+  opacity: 0;
+}
+
+.quno-date-picker__edge--previous {
+  left: 0;
+}
+
+.quno-date-picker__edge--next {
+  right: 0;
+}

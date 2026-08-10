@@ -1,0 +1,127 @@
+import clsx from 'clsx';
+import { useEffect, useState } from 'preact/hooks';
+import {
+  addDays,
+  isWithinRange,
+  type IsoDate,
+} from './dateRangeModel';
+import type { DatePickerController } from './useDatePickerController';
+import type { ResolvedDatePickerConfig } from './datePickerTypes';
+import type { JSX } from 'preact';
+
+type Props = {
+  controller: DatePickerController;
+  config: ResolvedDatePickerConfig;
+};
+
+type StripMode =
+  | { type: 'weekdays' }
+  | { type: 'previous-dates'; fromIndex: number };
+
+const targetIndex = (target: EventTarget | null, weekdays: number[]): number => {
+  const element = (target as HTMLElement | null)?.closest<HTMLElement>(
+    '[data-day-index]',
+  );
+  return weekdays.indexOf(Number(element?.dataset.dayIndex));
+};
+
+export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
+  const [mode, setMode] = useState<StripMode>({ type: 'weekdays' });
+  const { classNames, formatters, locale } = config;
+  const { interaction, renderedSelection, weekdays } = controller;
+  const dragActive =
+    interaction.type === 'create' ||
+    interaction.type === 'drag-endpoint' ||
+    interaction.type === 'drag-range';
+  const previousDates = Array.from({ length: 7 }, (_, index) =>
+    addDays(controller.gridDates[0], index - 7),
+  );
+
+  useEffect(() => {
+    if (!dragActive) setMode({ type: 'weekdays' });
+  }, [dragActive]);
+
+  const revealFrom = (index: number): void => {
+    if (!dragActive || index < 0) return;
+    setMode({ type: 'previous-dates', fromIndex: index });
+    controller.enterDay(previousDates[index]);
+  };
+
+  const finishAt = (date: IsoDate): void => {
+    setMode({ type: 'weekdays' });
+    controller.finishDrag(date);
+  };
+
+  return (
+    <div
+      className={clsx('quno-date-picker__weekdays', classNames?.weekdays)}
+      data-slot="weekdays"
+      data-drag-overflow={mode.type === 'previous-dates' ? 'previous' : undefined}
+      data-drag-active={dragActive ? 'true' : undefined}
+      aria-hidden="true"
+      onPointerEnter={(event) => revealFrom(targetIndex(event.target, weekdays))}
+      onPointerLeave={() => setMode({ type: 'weekdays' })}
+      onPointerUp={(event) => {
+        if (!dragActive) return;
+        const index = targetIndex(event.target, weekdays);
+        if (index < 0) return;
+        event.preventDefault();
+        finishAt(previousDates[index]);
+      }}
+    >
+      {weekdays.map((dayIndex, index) => {
+        const revealed =
+          mode.type === 'previous-dates' && index >= mode.fromIndex;
+        if (!revealed) {
+          return (
+            <span
+              key={dayIndex}
+              className={classNames?.weekday}
+              data-slot="weekday"
+              data-day-index={dayIndex}
+              onPointerEnter={() => revealFrom(index)}
+            >
+              {formatters.weekday(dayIndex, locale)}
+            </span>
+          );
+        }
+        const date = previousDates[index];
+        const selected = renderedSelection
+          ? isWithinRange(date, renderedSelection)
+          : false;
+        const isStart = renderedSelection?.start === date;
+        const isEnd = renderedSelection?.end === date;
+        return (
+          <span
+            key={dayIndex}
+            className={clsx(
+              'quno-date-picker__day',
+              'quno-date-picker__day--outside',
+              'quno-date-picker__overflow-day',
+              selected && 'quno-date-picker__day--selected',
+              isStart && 'quno-date-picker__day--start',
+              isEnd && 'quno-date-picker__day--end',
+              classNames?.day,
+              classNames?.overflowDay,
+            )}
+            data-slot="overflow-day"
+            data-day-index={dayIndex}
+            data-date={date}
+            data-selected={selected ? 'true' : undefined}
+            data-range-start={isStart ? 'true' : undefined}
+            data-range-end={isEnd ? 'true' : undefined}
+            data-outside="true"
+            onPointerEnter={() => revealFrom(index)}
+            onPointerUp={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              finishAt(date);
+            }}
+          >
+            <span>{Number(date.slice(-2))}</span>
+          </span>
+        );
+      })}
+    </div>
+  );
+};

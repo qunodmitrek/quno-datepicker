@@ -1,0 +1,32 @@
+.quno-date-picker__pills {
+  display: flex;
+  gap: 8px;
+  padding: 8px 4px 0;
+}
+
+.quno-date-picker__pills--after {
+  padding: 8px 4px 0;
+}
+
+.quno-date-picker__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid var(--quno-picker-pill-border, #b9d0f6);
+  border-radius: 999px;
+  background: var(--quno-picker-pill-surface, #f5f9ff);
+  color: var(--quno-picker-pill-text, #194c95);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.quno-date-picker__pill span:first-child {
+  font-weight: 750;
+}
+
+.quno-date-picker__pill:hover,
+.quno-date-picker__pill:focus-visible {
+  border-color: var(--quno-picker-primary, #0167ff);
+  outline: none;
+}
