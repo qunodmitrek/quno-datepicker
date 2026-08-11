@@ -127,5 +127,8 @@ describe('prototype start page', () => {
     ]) {
       expect(screen.getByText(action)).toBeInTheDocument();
     }
+    expect(
+      screen.getByRole('link', { name: /Explore the datepicker field guide/ }),
+    ).toHaveAttribute('href', '/story');
   });
 });

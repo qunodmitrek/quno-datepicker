@@ -54,7 +54,7 @@ export const DemoHome = (): JSX.Element => {
           </li>
         </ul>
         <a className="demo__story-link" href="/story">
-          Explore the datepicker field guide →
+          Explore the datepicker field guide <span aria-hidden="true">→</span>
         </a>
       </div>
 

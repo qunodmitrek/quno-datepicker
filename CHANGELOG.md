@@ -46,6 +46,9 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Changed
 
+- Matched the prototype's field-guide link to the field guide's reciprocal
+  interactive-demo pill action, including the same hover and keyboard focus
+  treatment.
 - Moved the interactive-prototype link out of the field-guide table of contents
   and into a separate hero action, so the contents describes only the current
   page's reading flow.

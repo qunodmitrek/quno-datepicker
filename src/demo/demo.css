@@ -94,15 +94,24 @@ input {
 }
 
 .demo__story-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 22px;
+  padding: 9px 13px;
+  border: 1px solid #cbd8ea;
+  border-radius: 999px;
+  background: #fff;
   color: #0167ff;
-  font-weight: 750;
+  font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
 
-.demo__story-link:hover {
-  text-decoration: underline;
+.demo__story-link:hover,
+.demo__story-link:focus-visible {
+  border-color: #0167ff;
+  outline: none;
 }
 
 .demo__day--weekend:not([data-selected='true']) > span {
