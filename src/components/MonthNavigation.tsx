@@ -10,8 +10,8 @@ type Props = {
   onSelect: (month: IsoDate) => void;
 };
 
-const CHUNK_SIZE = 5;
-const INITIAL_RADIUS = 4;
+const CHUNK_SIZE = 25;
+const INITIAL_RADIUS = 100;
 const OVERSCAN_YEARS = 2;
 const DEFAULT_YEAR_HEIGHT = 226;
 const DEFAULT_VIEWPORT_HEIGHT = 326;

@@ -21,12 +21,19 @@
   white-space: nowrap;
 }
 
-.quno-date-picker__month-heading-button:hover,
 .quno-date-picker__month-heading-button:focus-visible,
 .quno-date-picker__month-heading-button[aria-expanded='true'] {
   background: var(--quno-picker-primary-soft, #e8f1ff);
   color: var(--quno-picker-primary, #0167ff);
   outline: none;
+}
+
+@media (hover: hover) {
+  .quno-date-picker__month-heading-button:hover {
+    background: var(--quno-picker-primary-soft, #e8f1ff);
+    color: var(--quno-picker-primary, #0167ff);
+    outline: none;
+  }
 }
 
 .quno-date-picker__month-navigation {

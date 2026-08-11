@@ -38,14 +38,15 @@ Update these records in the same change as the code they describe.
 - Previous/next controls use symmetric SVG chevrons centered within their unchanged circular hit areas.
 - Clicking the month-and-year heading replaces the date body in-place with a
   scrollable year navigator. Each year shows twelve month buttons in four rows;
-  scrolling progressively adds years in either direction after momentum
-  settles, while a virtual window mounts only the visible years and a small
-  overscan buffer. This prevents one iPhone flick from cascading through
-  decades. The fixed header and month chevrons remain available. Choosing a
-  month, using either chevron, or jumping through an off-screen Start/End
-  shortcut restores the destination's six-week date grid; clicking the heading
-  again closes without navigating. None of these navigation actions changes
-  selection.
+  the initial timeline spans 100 years in either direction, and scrolling adds
+  more years after momentum settles. A virtual window still mounts only the
+  visible years and a small overscan buffer. The wide runway makes loading
+  edges uncommon, while settled extension prevents one iPhone flick from
+  cascading through decades. The fixed header and month chevrons remain
+  available. Choosing a month, using either chevron, or jumping through an
+  off-screen Start/End shortcut restores the destination's six-week date grid;
+  clicking the heading again closes without navigating. None of these
+  navigation actions changes selection.
 - Every view keeps a fixed six-week grid with only the weekday-aligned leading dates needed for the current month. The month heading reserves one non-wrapping line; labels wider than the available center column truncate instead of increasing the calendar height. When the natural aligned month grid ends exactly on month-end, a trailing week is appended within that six-week minimum. While a drag is over the weekday-name strip, the dates where the transient selected range overlaps the hidden previous week replace their weekday labels; this grows toward or away from the pointer according to the selected range rather than assuming one direction. Weekday labels and revealed dates occupy the same explicit seven-column row track, so changing between names and numbers cannot change grid height. Leaving the strip for any other cell immediately restores every weekday label without ending the drag.
 - Releasing on a leading or trailing day from an adjacent month switches the calendar to that month.
 - Off-screen endpoints appear as Start/End pills before or after the calendar. Pills retain their intrinsic width and height while sliding out from behind the calendar. When a month-chevron click moves a previously visible selection off-screen, the calendar stays anchored and only the newly required controls slide from beneath it. Outside that navigation transition, the calendar may move down to uncover Start or up to uncover End only when no endpoint control is already visible. Once any pill is shown, the calendar stays fixed and only a newly required control slides into the adjacent space. When an endpoint becomes visible, its pill remains full-size while the surrounding layout space closes and the intact button slides back underneath the calendar before removal. Clicking a pill jumps to its month with the same directional vertical name-and-number scroll.
@@ -199,8 +200,8 @@ Passing an empty `labels.hint` omits the optional hint element, allowing a host 
 - `dist/quno-datepicker.css` — optional default theme.
 - `dist/index.d.ts` and component/model declaration files — public TypeScript contracts.
 
-The current production output is approximately 35.96 kB JavaScript (9.24 kB
-gzip) plus 14.30 kB optional CSS (2.83 kB gzip). Preact is external. Run
+The current production output is approximately 35.96 kB JavaScript (9.25 kB
+gzip) plus 14.43 kB optional CSS (2.85 kB gzip). Preact is external. Run
 `npm run report:size` after a build for current measured values.
 
 The interactive demo remains available through `npm run dev`; it is not part of the published JavaScript entry.

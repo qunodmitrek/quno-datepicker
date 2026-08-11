@@ -601,3 +601,19 @@ This file records decisions that should remain stable across implementation sess
 - Context: iPhone momentum scrolling can continue dispatching edge events after an upward flick. Prepending and compensating the scroll position during that momentum lets the same flick repeatedly reach the new leading edge, unexpectedly jumping back by many decades.
 - Decision: Update the virtual window throughout scrolling, but defer leading- or trailing-edge year extension until scroll events have settled for 120 ms. Restart that delay for every new scroll event and cancel it when the navigator unmounts.
 - Consequences: One momentum gesture can extend the timeline by at most one five-year chunk after it rests. Long-distance navigation remains bidirectional and virtualized, while loading additional chunks requires continued scrolling rather than inheriting stale native momentum.
+
+## QDP-076 — Give the virtual year timeline a century of runway
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-074 and QDP-075
+- Context: A timeline starting only four years before and after the visible month makes its loading boundary part of ordinary fast scrolling, even when settled edge loading prevents momentum from cascading across repeated prepends.
+- Decision: Start the virtual timeline 100 years before and after the visible year, and extend it in 25-year chunks after a settled scroll eventually reaches either edge. Keep the existing visible-window and overscan limits unchanged.
+- Consequences: Ordinary navigation, including movement across many decades, stays inside an already represented scroll range. The default mounted control count and rendering cost remain bounded, and reaching an extension boundary becomes exceptional rather than routine. QDP-075's one-chunk-per-settled-scroll rule remains in force, with the chunk size increased from five to 25 years.
+
+## QDP-077 — Do not treat touch activation as persistent hover
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-072
+- Context: Mobile Safari can retain `:hover` after a tap. When the month/year heading closes quick navigation, that synthetic hover makes the control look active even though `aria-expanded` has returned to false.
+- Decision: Apply the heading's hover treatment only when the input environment reports hover capability. Keep the same visual treatment for the true expanded state and `:focus-visible` so navigation state and keyboard focus remain explicit.
+- Consequences: Tapping the toggle on iPhone returns it to its resting appearance when quick navigation closes. Mouse hover and keyboard accessibility feedback remain unchanged.

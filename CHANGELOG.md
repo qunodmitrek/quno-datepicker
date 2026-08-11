@@ -57,6 +57,10 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Changed
 
+- Expanded the month-and-year navigator's initial virtual timeline from four to
+  100 years in either direction and its edge-loading chunks from five to 25
+  years, making artificial year boundaries uncommon without mounting more
+  month controls.
 - Added an 8px configurable gap between the month/year toggle and both month
   navigation buttons while preserving their 36px hit areas.
 - Virtualized the month-and-year navigator so scrolling can extend in either
@@ -107,6 +111,9 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Fixed
 
+- The month/year quick-navigation toggle no longer retains its hover highlight
+  after an iPhone tap closes the navigator. Hover styling now applies only on
+  hover-capable devices, while the open state and keyboard focus remain visible.
 - Prevented iPhone momentum scrolling in the month-and-year navigator from
   repeatedly prepending year chunks during one flick and jumping decades into
   the past. Edge loading now waits for scrolling to settle while virtualization

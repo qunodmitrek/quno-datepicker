@@ -17,7 +17,10 @@ describe('QunoDatePicker month and year navigation', () => {
 
     openMonthNavigation();
     expect(slot('calendar')).toHaveAttribute('data-view', 'month-navigation');
-    expect(slot('month-navigation')).toBeVisible();
+    expect(slot('month-heading-button'))
+      .toHaveAttribute('aria-expanded', 'true');
+    expect(slot('month-navigation')).toHaveAttribute('data-first-year', '1926');
+    expect(slot('month-navigation')).toHaveAttribute('data-last-year', '2126');
     expect(document.querySelector('[data-slot="grid"]')).toBeNull();
     expect(screen.getAllByRole('button', { name: 'August 2026' })[0])
       .toHaveAttribute('aria-current', 'date');
@@ -28,6 +31,8 @@ describe('QunoDatePicker month and year navigation', () => {
       screen.getByRole('button', { name: /Close month and year navigation/ }),
     );
     expect(slot('calendar')).toHaveAttribute('data-view', 'dates');
+    expect(slot('month-heading-button'))
+      .toHaveAttribute('aria-expanded', 'false');
     expect(slot('grid')).toBeVisible();
 
     openMonthNavigation();
@@ -54,9 +59,9 @@ describe('QunoDatePicker month and year navigation', () => {
     const navigation = slot<HTMLDivElement>('month-navigation');
     Object.defineProperties(navigation, {
       clientHeight: { configurable: true, value: 326 },
-      scrollHeight: { configurable: true, value: 2034 },
+      scrollHeight: { configurable: true, value: 45426 },
     });
-    navigation.scrollTop = 1500;
+    navigation.scrollTop = 23504;
     fireEvent.scroll(navigation);
     fireEvent.click(screen.getByRole('button', { name: 'February 2030' }));
 
@@ -125,7 +130,7 @@ describe('QunoDatePicker month and year navigation', () => {
     act(() => {
       vi.advanceTimersByTime(120);
     });
-    expect(navigation).toHaveAttribute('data-last-year', '2035');
+    expect(navigation).toHaveAttribute('data-last-year', '2151');
     expect(document.querySelectorAll('[data-slot="year-group"]').length)
       .toBeLessThanOrEqual(6);
     expect(document.querySelectorAll('[data-slot="month-option"]').length)
@@ -136,7 +141,7 @@ describe('QunoDatePicker month and year navigation', () => {
     act(() => {
       vi.advanceTimersByTime(120);
     });
-    expect(navigation).toHaveAttribute('data-first-year', '2017');
+    expect(navigation).toHaveAttribute('data-first-year', '1901');
     expect(document.querySelectorAll('[data-slot="year-group"]').length)
       .toBeLessThanOrEqual(6);
     expect(document.querySelectorAll('[data-slot="month-option"]').length)
@@ -160,12 +165,12 @@ describe('QunoDatePicker month and year navigation', () => {
         vi.advanceTimersByTime(40);
       });
     }
-    expect(navigation).toHaveAttribute('data-first-year', '2018');
+    expect(navigation).toHaveAttribute('data-first-year', '1922');
 
     act(() => {
       vi.advanceTimersByTime(120);
     });
-    expect(navigation).toHaveAttribute('data-first-year', '2013');
+    expect(navigation).toHaveAttribute('data-first-year', '1897');
   });
 
   it('localizes and styles the new navigation contracts', () => {

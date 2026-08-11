@@ -112,12 +112,12 @@ export const FootprintStory = (): JSX.Element => (
     </div>
     <div className="story__metrics">
       <div>
-        <strong>9.24 kB</strong><span>JavaScript gzip</span>
+        <strong>9.25 kB</strong><span>JavaScript gzip</span>
         <small>35.96 kB raw</small>
       </div>
       <div>
-        <strong>2.83 kB</strong><span>CSS gzip</span>
-        <small>14.30 kB raw</small>
+        <strong>2.85 kB</strong><span>CSS gzip</span>
+        <small>14.43 kB raw</small>
       </div>
       <div>
         <strong>0 kB</strong><span>Bundled Preact</span>

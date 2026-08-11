@@ -87,9 +87,10 @@ the newly required controls slide from beneath it.
 Clicking the month-and-year heading opens a quick-jump view inside the same
 calendar frame. Each year presents twelve months in a three-column, four-row
 grid. The internal list adds more years when it reaches either scroll edge, but
-it waits for scrolling to settle before extending the timeline so one iPhone
-flick cannot cascade through decades. Virtualization keeps only the visible
-years and a small overscan buffer mounted.
+starts with a 100-year runway in either direction. It waits for scrolling to
+settle before extending the timeline so one iPhone flick cannot cascade through
+decades. Virtualization keeps only the visible years and a small overscan buffer
+mounted.
 
 The current month remains in the fixed header with its previous and next
 buttons. Choosing a month, using either header button, or jumping through an
@@ -300,8 +301,8 @@ comparison of two distant months may still prefer a two-panel picker.
 
 The current V1 production build contains approximately:
 
-- 35.96 kB JavaScript raw, 9.24 kB gzip.
-- 14.30 kB optional CSS raw, 2.83 kB gzip.
+- 35.96 kB JavaScript raw, 9.25 kB gzip.
+- 14.43 kB optional CSS raw, 2.85 kB gzip.
 - 12.02 kB gzip total when the default theme is used.
 - No bundled Preact runtime; Preact remains a peer dependency.
 
