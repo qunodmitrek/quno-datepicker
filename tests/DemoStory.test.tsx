@@ -70,8 +70,8 @@ describe('datepicker field guide', () => {
     expect(
       within(contents).getByRole('link', { name: /Different week starts/ }),
     ).toHaveAttribute('href', '#week-starts');
-    expect(screen.getByText('9.19 kB')).toBeInTheDocument();
-    expect(screen.getByText('2.82 kB')).toBeInTheDocument();
+    expect(screen.getByText('9.24 kB')).toBeInTheDocument();
+    expect(screen.getByText('2.83 kB')).toBeInTheDocument();
     expect(screen.getByText(/docs\/implementation-guide\.md/))
       .toBeInTheDocument();
   });

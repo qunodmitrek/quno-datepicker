@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/preact';
-import { describe, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/preact';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { QunoDatePicker } from '../src';
 import { clickDay, slot } from './datePickerTestUtils';
 
@@ -8,6 +8,8 @@ const openMonthNavigation = (): void => {
     screen.getByRole('button', { name: /Open month and year navigation/ }),
   );
 };
+
+afterEach(() => vi.useRealTimers());
 
 describe('QunoDatePicker month and year navigation', () => {
   it('toggles the quick jump within the calendar frame', () => {
@@ -109,6 +111,7 @@ describe('QunoDatePicker month and year navigation', () => {
   });
 
   it('extends the year list as its scroller reaches either edge', () => {
+    vi.useFakeTimers();
     render(<QunoDatePicker initialMonth="2026-08-01" />);
     openMonthNavigation();
     const navigation = slot<HTMLDivElement>('month-navigation');
@@ -119,6 +122,9 @@ describe('QunoDatePicker month and year navigation', () => {
 
     navigation.scrollTop = 850;
     fireEvent.scroll(navigation);
+    act(() => {
+      vi.advanceTimersByTime(120);
+    });
     expect(navigation).toHaveAttribute('data-last-year', '2035');
     expect(document.querySelectorAll('[data-slot="year-group"]').length)
       .toBeLessThanOrEqual(6);
@@ -127,11 +133,39 @@ describe('QunoDatePicker month and year navigation', () => {
 
     navigation.scrollTop = 0;
     fireEvent.scroll(navigation);
+    act(() => {
+      vi.advanceTimersByTime(120);
+    });
     expect(navigation).toHaveAttribute('data-first-year', '2017');
     expect(document.querySelectorAll('[data-slot="year-group"]').length)
       .toBeLessThanOrEqual(6);
     expect(document.querySelectorAll('[data-slot="month-option"]').length)
       .toBeLessThanOrEqual(72);
+  });
+
+  it('loads only one earlier chunk after an iPhone momentum-scroll burst', () => {
+    vi.useFakeTimers();
+    render(<QunoDatePicker initialMonth="2022-08-01" />);
+    openMonthNavigation();
+    const navigation = slot<HTMLDivElement>('month-navigation');
+    Object.defineProperties(navigation, {
+      clientHeight: { configurable: true, value: 326 },
+      scrollHeight: { configurable: true, value: 2034 },
+    });
+
+    for (let event = 0; event < 20; event += 1) {
+      navigation.scrollTop = 0;
+      fireEvent.scroll(navigation);
+      act(() => {
+        vi.advanceTimersByTime(40);
+      });
+    }
+    expect(navigation).toHaveAttribute('data-first-year', '2018');
+
+    act(() => {
+      vi.advanceTimersByTime(120);
+    });
+    expect(navigation).toHaveAttribute('data-first-year', '2013');
   });
 
   it('localizes and styles the new navigation contracts', () => {

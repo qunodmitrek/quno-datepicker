@@ -107,6 +107,10 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Fixed
 
+- Prevented iPhone momentum scrolling in the month-and-year navigator from
+  repeatedly prepending year chunks during one flick and jumping decades into
+  the past. Edge loading now waits for scrolling to settle while virtualization
+  continues to follow the active scroll position.
 - Acid endpoint controls now retain a visible gap beyond the solid header and
   calendar shadows and stay together on one non-wrapping row at the theme's
   300px constraint. The pill font-size token now wins over inherited button

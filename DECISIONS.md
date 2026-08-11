@@ -593,3 +593,11 @@ This file records decisions that should remain stable across implementation sess
 - Context: Progressively extending the year timeline makes distant dates reachable, but retaining every loaded year would make the number of mounted month controls grow for the lifetime of the quick-jump view.
 - Decision: Represent the full scroll range with measured year-height spacers and mount only the visible years plus a two-year overscan buffer on each side. Preserve chunked extension at both edges and compensate the scroll position when earlier years are prepended.
 - Consequences: The default viewport mounts no more than six year groups, or 72 month buttons, while keeping bidirectional long-distance scrolling continuous. Consumers may customize the scoped year-block height; runtime measurement keeps the virtual window aligned with that rendered size.
+
+## QDP-075 — Extend the year timeline only after scrolling settles
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-074
+- Context: iPhone momentum scrolling can continue dispatching edge events after an upward flick. Prepending and compensating the scroll position during that momentum lets the same flick repeatedly reach the new leading edge, unexpectedly jumping back by many decades.
+- Decision: Update the virtual window throughout scrolling, but defer leading- or trailing-edge year extension until scroll events have settled for 120 ms. Restart that delay for every new scroll event and cancel it when the navigator unmounts.
+- Consequences: One momentum gesture can extend the timeline by at most one five-year chunk after it rests. Long-distance navigation remains bidirectional and virtualized, while loading additional chunks requires continued scrolling rather than inheriting stale native momentum.

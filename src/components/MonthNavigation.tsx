@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
 import type { IsoDate } from './dateRangeModel';
 import type { JSX } from 'preact';
@@ -15,6 +15,7 @@ const INITIAL_RADIUS = 4;
 const OVERSCAN_YEARS = 2;
 const DEFAULT_YEAR_HEIGHT = 226;
 const DEFAULT_VIEWPORT_HEIGHT = 326;
+const SCROLL_SETTLE_DELAY = 120;
 const monthIso = (year: number, month: number): IsoDate =>
   `${String(year).padStart(4, '0')}-${String(month).padStart(
     2,
@@ -37,6 +38,7 @@ export const MonthNavigation = ({
   const scroller = useRef<HTMLDivElement>(null);
   const prependSnapshot = useRef<{ height: number; top: number } | null>(null);
   const loadingEdge = useRef(false);
+  const edgeTimer = useRef<ReturnType<typeof setTimeout>>();
   const { labels, formatters, locale, classNames } = config;
   const yearCount = lastYear - firstYear + 1;
   const firstVisibleIndex = Math.max(
@@ -83,11 +85,16 @@ export const MonthNavigation = ({
     loadingEdge.current = false;
   }, [firstYear, lastYear]);
 
-  const extendYears = (): void => {
+  useEffect(
+    () => () => {
+      if (edgeTimer.current) clearTimeout(edgeTimer.current);
+    },
+    [],
+  );
+
+  const extendYearsAtRest = (): void => {
     const container = scroller.current;
     if (!container || loadingEdge.current) return;
-    setViewportTop(container.scrollTop);
-    setViewportHeight(container.clientHeight || DEFAULT_VIEWPORT_HEIGHT);
     if (container.scrollTop < 64) {
       loadingEdge.current = true;
       prependSnapshot.current = {
@@ -105,6 +112,15 @@ export const MonthNavigation = ({
     }
   };
 
+  const handleScroll = (): void => {
+    const container = scroller.current;
+    if (!container) return;
+    setViewportTop(container.scrollTop);
+    setViewportHeight(container.clientHeight || DEFAULT_VIEWPORT_HEIGHT);
+    if (edgeTimer.current) clearTimeout(edgeTimer.current);
+    edgeTimer.current = setTimeout(extendYearsAtRest, SCROLL_SETTLE_DELAY);
+  };
+
   return (
     <div
       ref={scroller}
@@ -118,7 +134,7 @@ export const MonthNavigation = ({
       data-rendered-years={renderedYears.length}
       role="group"
       aria-label={labels.monthNavigation}
-      onScroll={extendYears}
+      onScroll={handleScroll}
     >
       <div
         className="quno-date-picker__year-spacer"

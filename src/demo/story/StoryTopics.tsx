@@ -47,8 +47,8 @@ export const StoryTopics = (): JSX.Element => (
     </StoryFeature>
     <StoryFeature id="quick-jump" number="03" kicker="Quick navigation"
       title="Jump years without leaving the calendar."
-      copy="The month-and-year title opens an in-place navigator. Every year presents its twelve months in four rows, and virtual scrolling extends the timeline in either direction without growing the mounted page. A month, chevron, or Start/End jump restores the same six-week date view without changing the selected period."
-      instruction="Click August 2026, then choose a month or use a chevron to return to dates. Click the title again to close without jumping." reverse>
+      copy="The month-and-year title opens an in-place navigator. Every year presents its twelve months in four rows, and virtual scrolling extends the timeline after each scroll settles without letting iPhone momentum cascade through decades. A month, chevron, or Start/End jump restores the same six-week date view without changing the selected period."
+      instruction="Click August 2026, flick or scroll through years, then choose a month. Open it again and click the title to close without jumping." reverse>
       <QuickJumpExample />
     </StoryFeature>
     <StoryFeature id="hidden-row" number="04" kicker="Hidden week"
