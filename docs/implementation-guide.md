@@ -255,9 +255,9 @@ comparison of two distant months may still prefer a two-panel picker.
 
 The current V1 production build contains approximately:
 
-- 29.57 kB JavaScript raw, 7.81 kB gzip.
+- 29.57 kB JavaScript raw, 7.83 kB gzip.
 - 12.09 kB optional CSS raw, 2.47 kB gzip.
-- 10.28 kB gzip total when the default theme is used.
+- 10.30 kB gzip total when the default theme is used.
 - No bundled Preact runtime; Preact remains a peer dependency.
 
 Run `npm run build` and then `npm run report:size` to measure the current

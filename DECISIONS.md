@@ -545,3 +545,11 @@ This file records decisions that should remain stable across implementation sess
 - Context: Stacking Acid's Start and End controls made related endpoint actions scan as separate blocks and amplified layout movement. Its solid calendar shadow also left too little optical separation from an after-calendar control.
 - Decision: Keep both Acid endpoint controls on one non-wrapping row at the 300px theme constraint. Apply the public pill font-size token correctly, expose the track gap as `--quno-picker-pills-gap`, compact only Acid's internal spacing, and retain 12px of clear space beyond either vertical shadow.
 - Consequences: Start and End remain visually grouped and preserve their interaction order above or below the calendar. The longest dates used by the live example fit without shrinking, wrapping, or clipping either full-size button; other themes retain the default row and gap behavior unless explicitly customized.
+
+## QDP-069 — Keep cross-page actions outside the field-guide contents
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes the prototype-link placement in QDP-065
+- Context: The interactive prototype is a separate destination, while every other table-of-contents entry moves within the field guide. Mixing that cross-page action into the contents unexpectedly interrupts the guide's reading flow.
+- Decision: Keep the table of contents limited to anchors on the current page and place the interactive-demo link as a distinct action in the hero topline.
+- Consequences: Readers can still reach the prototype immediately, but the contents now has one predictable navigation model and no longer sends users away from the guide mid-scan.

@@ -46,6 +46,9 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Changed
 
+- Moved the interactive-prototype link out of the field-guide table of contents
+  and into a separate hero action, so the contents describes only the current
+  page's reading flow.
 - Moved the field guide's loose top links into a complete table of contents in
   the opening section, with descriptive destinations for every live chapter,
   architecture, footprint, and API reference. Replaced brand-dependent labels

@@ -15,7 +15,13 @@ describe('datepicker field guide', () => {
     const contents = screen.getByRole('navigation', {
       name: 'Explore the field guide',
     });
-    expect(within(contents).getAllByRole('link')).toHaveLength(16);
+    expect(within(contents).getAllByRole('link')).toHaveLength(15);
+    expect(
+      within(contents).queryByRole('link', { name: /Interactive demo/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /Open interactive demo/ }),
+    ).toHaveAttribute('href', '/');
     expect(
       within(contents).getByRole('link', { name: /Custom day styling/ }),
     ).toHaveAttribute('href', '#day-handler');
@@ -57,7 +63,7 @@ describe('datepicker field guide', () => {
     expect(
       screen.getByRole('grid', { name: 'Sélecteur de période: août 2026' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('7.81 kB')).toBeInTheDocument();
+    expect(screen.getByText('7.83 kB')).toBeInTheDocument();
     expect(screen.getByText('2.47 kB')).toBeInTheDocument();
     expect(screen.getByText(/docs\/implementation-guide\.md/))
       .toBeInTheDocument();

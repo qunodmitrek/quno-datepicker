@@ -12,7 +12,6 @@ import './story-topics.css';
 import './story-themes.css';
 
 const contents = [
-  ['/', 'Live demo', 'Interactive prototype'],
   ['#difference', 'Overview', 'Range editing explained'],
   ['#paint', '01', 'Paint and resize'],
   ['#stable-view', '02', 'Stable six-week view'],
@@ -33,7 +32,12 @@ const contents = [
 export const DatePickerStory = (): JSX.Element => (
   <main className="story">
     <header className="story__hero">
-      <span className="story__kicker">Quno Datepicker · Field guide</span>
+      <div className="story__hero-topline">
+        <span className="story__kicker">Quno Datepicker · Field guide</span>
+        <a className="story__demo-link" href="/">
+          Open interactive demo <span aria-hidden="true">→</span>
+        </a>
+      </div>
       <h1>One range model. Every calendar interaction.</h1>
       <p>
         Try each interaction, understand why it exists, and copy the relevant
