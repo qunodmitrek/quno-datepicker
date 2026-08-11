@@ -13,7 +13,12 @@ const extensions = new Set([
   '.ts',
   '.tsx',
 ]);
-const excludedDirectories = new Set(['coverage', 'dist', 'node_modules']);
+const excludedDirectories = new Set([
+  'coverage',
+  'demo-dist',
+  'dist',
+  'node_modules',
+]);
 const limit = 200;
 
 const filesIn = (directory) =>

@@ -1,3 +1,5 @@
 node_modules
+demo-dist
+.vercel
 .eslintrc.cjs
 .DS_Store

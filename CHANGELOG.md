@@ -6,6 +6,9 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Added
 
+- Added a Vercel-ready static demo build with SPA fallback routing for `/story`
+  and a dedicated `npm run build:demo` command that leaves the library package
+  build unchanged.
 - Added a live internationalization chapter with French formatting and labels,
   Monday-first week layout, a copyable public-API recipe, and table-of-contents
   coverage.

@@ -553,3 +553,11 @@ This file records decisions that should remain stable across implementation sess
 - Context: The interactive prototype is a separate destination, while every other table-of-contents entry moves within the field guide. Mixing that cross-page action into the contents unexpectedly interrupts the guide's reading flow.
 - Decision: Keep the table of contents limited to anchors on the current page and place the interactive-demo link as a distinct action in the hero topline.
 - Consequences: Readers can still reach the prototype immediately, but the contents now has one predictable navigation model and no longer sends users away from the guide mid-scan.
+
+## QDP-070 — Separate hosted demo and library builds
+
+- Date: 2026-08-11
+- Status: Accepted
+- Context: The production package build uses Vite library mode and intentionally emits no HTML, while Vercel needs a static application entrypoint for the interactive demo and direct `/story` visits.
+- Decision: Keep `npm run build` dedicated to publishable library artifacts and add `npm run build:demo` for a bundled static application in `demo-dist`. Configure Vercel to publish that directory and rewrite application routes to `index.html`.
+- Consequences: Deployments include Preact and the demo experience without changing the package bundle, peer-dependency contract, or measured library footprint. New client-side demo routes remain reachable on direct navigation through the same fallback.

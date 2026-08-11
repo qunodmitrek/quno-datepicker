@@ -82,6 +82,20 @@ npm run build
 npm run report:size
 ```
 
+## Deploy the demo to Vercel
+
+Import this repository into Vercel with the repository root as the project
+directory. The checked-in `vercel.json` runs `npm run build:demo`, publishes
+`demo-dist`, and preserves direct access to both `/` and `/story`.
+
+To verify the deployable artifact locally:
+
+```sh
+npm run build:demo
+```
+
+The regular `npm run build` remains the library package build described below.
+
 ## Public API
 
 ```tsx
