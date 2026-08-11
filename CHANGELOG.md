@@ -41,6 +41,7 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Changed
 
+- Reframed `/story` as a blended product-and-implementation field guide: basic usage now sits beside the primary interaction, custom day attributes beside the day-handler exhibit, and token theming beside the live theme switcher; the generic implementation appendix became a concise complete-reference pointer.
 - Replaced the prototype start page's dense interaction paragraphs with a scannable five-action legend highlighting Click, Click again, endpoint drag, period drag, and outside painting.
 - Rewrote the story's day-handler exhibit around concrete Today, weekend, non-working-day, holiday, and availability styling examples while clarifying that the library retains interaction and accessibility behavior.
 - Reframed the story's interaction architecture card around the visible paint, resize, and move gestures, including their conflict-free pointer ownership and clean release behavior.

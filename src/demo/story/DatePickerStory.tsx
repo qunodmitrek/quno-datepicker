@@ -1,5 +1,4 @@
 import type { JSX } from 'preact';
-import { packageSnippet } from './storySnippets';
 import {
   ArchitectureStory,
   DifferenceStory,
@@ -8,13 +7,8 @@ import {
 import { StoryTopics } from './StoryTopics';
 import './story.css';
 import './story-details.css';
+import './story-howto.css';
 import './story-topics.css';
-
-const Code = ({ children }: { children: string }): JSX.Element => (
-  <pre className="story__code">
-    <code>{children}</code>
-  </pre>
-);
 
 export const DatePickerStory = (): JSX.Element => (
   <main className="story">
@@ -22,13 +16,15 @@ export const DatePickerStory = (): JSX.Element => (
       <nav className="story__nav" aria-label="Story navigation">
         <a href="/">← Prototype</a>
         <a href="#difference">Why Quno</a>
-        <a href="#integration">Implementation</a>
+        <a href="#paint">Basic usage</a>
+        <a href="#day-handler">Custom days</a>
+        <a href="#theming">Theming</a>
       </nav>
       <span className="story__kicker">Quno Datepicker · Field guide</span>
       <h1>One range model. Every calendar interaction.</h1>
       <p>
-        A practical story for product teams integrating a compact date and
-        period input without importing product-specific layout or copy.
+        Try each interaction, understand why it exists, and copy the relevant
+        integration recipe beside it.
       </p>
     </header>
 
@@ -40,16 +36,12 @@ export const DatePickerStory = (): JSX.Element => (
 
     <FootprintStory />
 
-    <section className="story__integration" id="integration">
-      <span>Implementation</span>
-      <h2>Ship the behavior and theme separately</h2>
+    <section className="story__integration" id="reference">
+      <span>Complete reference</span>
+      <h2>Keep the full API contract nearby</h2>
       <p>
-        Import the component from the public entrypoint. Add the optional
-        stylesheet once, or omit it and style the stable slots yourself.
-      </p>
-      <Code>{packageSnippet}</Code>
-      <p>
-        The complete copyable contract lives in{' '}
+        Controlled and uncontrolled state, localization, forms, every public
+        slot, and the deferred V1 scope are documented in{' '}
         <strong>docs/implementation-guide.md</strong>.
       </p>
     </section>

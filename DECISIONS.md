@@ -457,3 +457,11 @@ This file records decisions that should remain stable across implementation sess
 - Context: Two prose paragraphs on the start page make the datepicker's primary gestures difficult to scan and give the repeated-click correction disproportionate visual weight.
 - Decision: Present the start-page guidance as five highlighted action labels—Click, Click again, Drag an endpoint, Drag the period, and Paint outside—each paired with one short result. Keep the labels semantic text rather than controls because they explain the adjacent live calendar instead of changing it.
 - Consequences: A first-time visitor can identify the gesture repertoire before reading details, direct manipulation remains the visual emphasis, and the implementation story stays available for deeper rationale and examples.
+
+## QDP-058 — Place integration recipes beside their behavior
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-051 and QDP-053
+- Context: Calling `/story` an implementation story while placing one generic import snippet after every product exhibit separates the “how” from the behavior it configures. Basic usage, custom day attributes, and theming are easier to understand next to their live outcomes.
+- Decision: Treat `/story` as a product-and-implementation field guide. Place copyable basic usage beside primary interaction, `getDayCellProps` beside custom-day presentation, and scoped CSS tokens beside theming. Replace the generic implementation appendix with a concise pointer to the complete reference document.
+- Consequences: Readers can move directly from rationale to a relevant recipe without losing the editorial flow. The implementation guide remains the exhaustive contract, the story retains live examples, and future recipes should live with the exhibit they affect rather than accumulate in a detached appendix.

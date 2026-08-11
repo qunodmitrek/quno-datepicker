@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/preact';
 import { DemoHome } from '../src/demo/DemoHome';
 import { DatePickerStory } from '../src/demo/story/DatePickerStory';
 
-describe('implementation story', () => {
+describe('datepicker field guide', () => {
   it('renders the public integration chapters and live examples', () => {
     render(<DatePickerStory />);
 
@@ -12,6 +12,18 @@ describe('implementation story', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('grid')).toHaveLength(10);
+    expect(
+      screen.getByRole('link', { name: 'Custom days' }),
+    ).toHaveAttribute('href', '#day-handler');
+    for (const howTo of [
+      'Basic usage how-to',
+      'Custom day attributes how-to',
+      'Theme with tokens how-to',
+    ]) {
+      expect(
+        screen.getByRole('complementary', { name: howTo }),
+      ).toBeInTheDocument();
+    }
     expect(
       screen.getByRole('heading', {
         name: 'Range editing, not two date inputs sharing a box',
@@ -26,7 +38,8 @@ describe('implementation story', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('7.02 kB')).toBeInTheDocument();
     expect(screen.getByText('2.32 kB')).toBeInTheDocument();
-    expect(screen.getByText('docs/implementation-guide.md')).toBeInTheDocument();
+    expect(screen.getByText(/docs\/implementation-guide\.md/))
+      .toBeInTheDocument();
   });
 
   it('keeps the theming story interactive', () => {

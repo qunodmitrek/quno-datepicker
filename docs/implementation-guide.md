@@ -230,7 +230,7 @@ published JavaScript bundle.
 Run `npm run dev` and open `/story`. Each important product contract has its
 own live datepicker rather than relying on screenshots:
 
-1. Paint a new period and drag its endpoints.
+1. Paint a new period and drag its endpoints, paired with basic controlled usage.
 2. Navigate months inside a fixed six-week frame.
 3. Drag into weekday names to reveal the hidden previous-week dates.
 4. Move a complete selected segment while preserving duration.
@@ -238,6 +238,7 @@ own live datepicker rather than relying on screenshots:
 6. Correct a guess inline through repeated clicks and next-result outlining.
 7. Jump between off-screen Start and End shortcuts.
 8. Compare directional micro-animation with a reduced-motion presentation.
-9. Style Today, weekends, and non-working dates through `getDayCellProps`.
+9. Style Today, weekends, and non-working dates through `getDayCellProps`, with
+   the typed callback recipe beside the live result.
 10. Switch component-scoped color, radius, surface, and motion tokens without
-    changing behavior.
+    changing behavior, with the scoped CSS recipe beside the switcher.

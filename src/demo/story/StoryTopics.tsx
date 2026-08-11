@@ -13,13 +13,22 @@ import {
 } from './NavigationExamples';
 import { DayHandlerExample, ThemeExample } from './CustomizationExamples';
 import { StoryFeature } from './StoryFeature';
+import { StoryHowTo } from './StoryHowTo';
+import {
+  basicUsageSnippet,
+  customDaysSnippet,
+  themingSnippet,
+} from './storySnippets';
 
 export const StoryTopics = (): JSX.Element => (
   <>
     <StoryFeature id="paint" number="01" kicker="Primary interaction"
       title="Paint first. Drag everything."
       copy="Press an empty date and drag to paint a period. Start, End, and the selected band are direct manipulation targets; the public value changes only when the pointer is released."
-      instruction="Drag from 4 to 9. Then grab either blue endpoint to resize it.">
+      instruction="Drag from 4 to 9. Then grab either blue endpoint to resize it."
+      howTo={<StoryHowTo title="Basic usage" language="TSX"
+        copy="Import behavior and optional styles, then give the picker one range value and one change handler."
+        code={basicUsageSnippet} />}>
       <PaintExample />
     </StoryFeature>
     <StoryFeature id="stable-view" number="02" kicker="Stable view"
@@ -67,13 +76,19 @@ export const StoryTopics = (): JSX.Element => (
     <StoryFeature id="day-handler" number="09" kicker="Day handler"
       title="Mark the dates that matter to your product."
       copy="Give Quno one function that runs for every date. It can add a class, color, or tooltip for Today, weekends, non-working days, holidays, or availability. Quno still owns clicks, dragging, focus, and screen-reader labels, so styling a date cannot break selection."
-      instruction="Today has an orange ring, weekends are brown, and every Wednesday is crossed out. The calendar remains fully interactive.">
+      instruction="Today has an orange ring, weekends are brown, and every Wednesday is crossed out. The calendar remains fully interactive."
+      howTo={<StoryHowTo title="Custom day attributes" language="TSX"
+        copy="Return presentation-only props from typed date context; Quno keeps every interaction handler."
+        code={customDaysSnippet} />}>
       <DayHandlerExample />
     </StoryFeature>
     <StoryFeature id="theming" number="10" kicker="Design tokens"
       title="Fixed contracts, flexible skin."
       copy="Component-scoped tokens control sizes, colors, radii, surfaces, shadows, and motion. Stable slot classes support deeper layouts, and the complete default stylesheet remains optional."
-      instruction="Switch themes; the interaction and calendar geometry remain the same." reverse>
+      instruction="Switch themes; the interaction and calendar geometry remain the same."
+      howTo={<StoryHowTo title="Theme with tokens" language="CSS + TSX"
+        copy="Set scoped custom properties on the component class; no global theme selector is required."
+        code={themingSnippet} />} reverse>
       <ThemeExample />
     </StoryFeature>
   </>

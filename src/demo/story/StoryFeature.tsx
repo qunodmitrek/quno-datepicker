@@ -7,6 +7,7 @@ type StoryFeatureProps = {
   title: string;
   copy: string;
   instruction: string;
+  howTo?: ComponentChildren;
   reverse?: boolean;
   children: ComponentChildren;
 };
@@ -18,6 +19,7 @@ export const StoryFeature = ({
   title,
   copy,
   instruction,
+  howTo,
   reverse,
   children,
 }: StoryFeatureProps): JSX.Element => (
@@ -30,6 +32,7 @@ export const StoryFeature = ({
       <span>{number} · {kicker}</span>
       <h2>{title}</h2>
       <p>{copy}</p>
+      {howTo}
     </div>
     <div className="story__topic-example">
       <p className="story__try"><strong>Try it</strong>{instruction}</p>

@@ -14,10 +14,10 @@ Update these records in the same change as the code they describe.
 
 - [Implementation guide](./docs/implementation-guide.md) — copyable setup,
   state, localization, styling, and form-integration recipes.
-- Interactive implementation story — run `npm run dev` and open `/story` for
-  ten live chapters covering painting, dragging, the stable six-week view,
-  hidden-week navigation, click correction, endpoint shortcuts, motion, day
-  handlers, and theming.
+- Interactive field guide — run `npm run dev` and open `/story` for ten live
+  chapters covering painting, dragging, the stable six-week view, hidden-week
+  navigation, click correction, endpoint shortcuts, motion, day handlers, and
+  theming, with implementation recipes placed beside their live outcomes.
 
 ## V1 behavior
 
