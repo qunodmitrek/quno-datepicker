@@ -3,6 +3,7 @@ import type { JSX } from 'preact';
 import {
   QunoDatePicker,
   type QunoDatePickerDayCellCustomizer,
+  type WeekStart,
 } from '../../index';
 
 const themes = ['quno', 'warm', 'violet', 'acid', 'candy'] as const;
@@ -66,10 +67,50 @@ export const LocalizationExample = (): JSX.Element => (
       end: 'Fin',
       previousMonth: 'Mois précédent',
       nextMonth: 'Mois suivant',
+      openMonthNavigation: 'Ouvrir la navigation par mois et année',
+      closeMonthNavigation: 'Fermer la navigation par mois et année',
+      monthNavigation: 'Choisir un mois et une année',
       hint: '',
     }}
   />
 );
+
+const weekStarts = [
+  { label: 'Sunday', value: 0 },
+  { label: 'Monday', value: 1 },
+  { label: 'Saturday', value: 6 },
+] as const satisfies ReadonlyArray<{ label: string; value: WeekStart }>;
+
+export const WeekStartExample = (): JSX.Element => {
+  const [weekStartsOn, setWeekStartsOn] = useState<WeekStart>(1);
+  return (
+    <div className="story__controlled-example">
+      <div
+        className="story__controls"
+        role="group"
+        aria-label="First day of week"
+      >
+        {weekStarts.map(({ label, value }) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={weekStartsOn === value}
+            onClick={() => setWeekStartsOn(value)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <QunoDatePicker
+        className="story__picker"
+        defaultValue={{ start: '2026-08-10', end: '2026-08-18' }}
+        initialMonth="2026-08-01"
+        weekStartsOn={weekStartsOn}
+        labels={{ hint: '' }}
+      />
+    </div>
+  );
+};
 
 export const ThemeExample = (): JSX.Element => {
   const [theme, setTheme] = useState('quno');

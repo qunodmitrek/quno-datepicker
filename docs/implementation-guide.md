@@ -15,7 +15,11 @@ npm install @quno/datepicker preact
 Import behavior and the optional default theme separately:
 
 ```tsx
-import { QunoDatePicker, type DateRange } from '@quno/datepicker';
+import {
+  QunoDatePicker,
+  type DateRange,
+  type WeekStart,
+} from '@quno/datepicker';
 import '@quno/datepicker/styles.css';
 ```
 
@@ -78,6 +82,20 @@ that view and jump to their months. If a month-chevron click moves a selection
 that was visible into an off-screen position, the calendar stays anchored while
 the newly required controls slide from beneath it.
 
+### Jump across months and years
+
+Clicking the month-and-year heading opens a quick-jump view inside the same
+calendar frame. Each year presents twelve months in a three-column, four-row
+grid. The internal list adds more years when it reaches either scroll edge, but
+virtualization keeps only the visible years and a small overscan buffer mounted.
+
+The current month remains in the fixed header with its previous and next
+buttons. Choosing a month, using either header button, or jumping through an
+off-screen Start/End shortcut navigates there and restores the six-week day
+grid. Clicking the heading again or pressing Escape closes without navigating.
+Navigation calls `onVisibleMonthChange` but does not change the selected range
+or call `onChange`.
+
 ## 5. Let the interaction model do the editing
 
 A first click edits the contextual endpoint. Repeated clicks on the same date
@@ -135,6 +153,25 @@ the calendar height. A custom month label that is wider than the available
 space is truncated with an ellipsis instead of wrapping onto a second line.
 
 Keep formatter functions stable when they are created inside a component.
+The quick jump uses `labels.openMonthNavigation`, `closeMonthNavigation`, and
+`monthNavigation`, plus `formatters.monthOption` and `formatters.year`.
+
+### Choose the first day of the week
+
+`weekStartsOn` is independent from `locale`, so products can follow regional,
+organizational, or user preferences explicitly. Use `0` for Sunday through `6`
+for Saturday. Changing it realigns weekday labels and date cells without
+changing the selected range or visible month.
+
+```tsx
+const [weekStartsOn, setWeekStartsOn] = useState<WeekStart>(1);
+
+<QunoDatePicker
+  value={dates}
+  weekStartsOn={weekStartsOn}
+  onChange={setDates}
+/>
+```
 
 ## 7. Customize dates without replacing behavior
 
@@ -201,6 +238,10 @@ retaining each control at full size. Themes with solid vertical shadows can use
 `--quno-picker-pill-offset-before` and `--quno-picker-pill-offset-after` to
 place stable controls beyond those painted shadow areas.
 
+If month-option content needs a different block height, set
+`--quno-picker-year-navigation-year-height`; the quick-jump virtualizer measures
+the rendered block and keeps its scroll spacers aligned.
+
 ## 9. Integrate with forms
 
 The component returns one value object rather than hidden form controls. Adapt
@@ -225,6 +266,8 @@ implement disabled-date rules, presets, or natural-language parsing.
 - Apply product tokens and day-cell presentation hooks.
 - Verify click cycling, endpoint crossing, whole-range dragging, Clear, and
   off-screen endpoint navigation in the product layout.
+- Verify the heading toggle, long-distance month jump, in-place year scroll,
+  and date-view restoration from chevrons and Start/End shortcuts.
 - Verify direct touch painting in the product layout. Long-press conventions,
   other advanced touch gestures, and complete arrow-key grid navigation remain
   deferred.
@@ -255,9 +298,9 @@ comparison of two distant months may still prefer a two-panel picker.
 
 The current V1 production build contains approximately:
 
-- 29.57 kB JavaScript raw, 7.83 kB gzip.
-- 12.09 kB optional CSS raw, 2.47 kB gzip.
-- 10.30 kB gzip total when the default theme is used.
+- 35.73 kB JavaScript raw, 9.19 kB gzip.
+- 14.24 kB optional CSS raw, 2.82 kB gzip.
+- 12.02 kB gzip total when the default theme is used.
 - No bundled Preact runtime; Preact remains a peer dependency.
 
 Run `npm run build` and then `npm run report:size` to measure the current
@@ -271,17 +314,21 @@ own live datepicker rather than relying on screenshots:
 
 1. Paint a new period and drag its endpoints, paired with basic controlled usage.
 2. Navigate months inside a fixed six-week frame.
-3. Drag into weekday names to reveal the hidden previous-week dates.
-4. Move a complete selected segment while preserving duration.
-5. Build a single day, extend it, and edit a range through contextual guessing.
-6. Correct a guess inline through repeated clicks and next-result outlining.
-7. Jump between off-screen Start and End shortcuts.
-8. Compare directional micro-animation with a reduced-motion presentation.
-9. Style Today, weekends, and non-working dates through `getDayCellProps`, with
+3. Open the month-and-year title, scroll across years, and choose a month
+   without leaving the fixed calendar frame or changing selection.
+4. Drag into weekday names to reveal the hidden previous-week dates.
+5. Move a complete selected segment while preserving duration.
+6. Build a single day, extend it, and edit a range through contextual guessing.
+7. Correct a guess inline through repeated clicks and next-result outlining.
+8. Jump between off-screen Start and End shortcuts.
+9. Compare directional micro-animation with a reduced-motion presentation.
+10. Style Today, weekends, and non-working dates through `getDayCellProps`, with
    the typed callback recipe beside the live result.
-10. Inspect French month, date, weekday, and control-label localization with a
+11. Inspect French month, date, weekday, and control-label localization with a
     Monday-first week, paired with a copyable locale and labels recipe.
-11. Switch component-scoped geometry, color, radius, surface, and motion tokens
+12. Switch between Sunday-, Monday-, and Saturday-first layouts while the
+    selected range and visible month remain unchanged.
+13. Switch component-scoped geometry, color, radius, surface, and motion tokens
     across five skins—including 300px compact and large-day constrained
     examples—with the scoped CSS recipe beside the switcher. Every custom skin
     also demonstrates a contrasting repeated-click preview outline and themed

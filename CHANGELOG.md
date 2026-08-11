@@ -6,6 +6,14 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Added
 
+- Added an in-calendar month-and-year quick jump: the title toggles a fixed-size
+  navigator with four rows of months per year, progressively loaded years in
+  both scroll directions, persistent header arrows, and selection-preserving
+  month jumps. Added matching labels, month/year formatters, class-name hooks,
+  and stable slots for consumer localization and styling.
+- Added a dedicated field-guide chapter for Sunday-, Monday-, and
+  Saturday-first calendars, with a live switcher and copyable `weekStartsOn`
+  recipe.
 - Added a Vercel-ready static demo build with SPA fallback routing for `/story`
   and a dedicated `npm run build:demo` command that leaves the library package
   build unchanged.
@@ -16,9 +24,9 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
   enlarged day tracks inside a constrained 390px calendar.
 - Added a copyable consumer implementation guide covering installation, state ownership, timezone-free values, visible-month control, localization, styling, day customization, forms, and integration verification.
 - Added a responsive interactive `/story` field guide with controlled, cross-month, localized, and externally styled live examples built through the public package entrypoint.
-- Added story smoke coverage for the public integration chapters, eleven live calendars, and interactive theme switching.
+- Added story smoke coverage for the public integration chapters, thirteen live calendars, quick year jumps, interactive week starts, and theme switching.
 - Expanded the implementation story with the product rationale, conventional-picker comparison, gesture catalogue, styling layers, internal state model, and measured production footprint.
-- Rebuilt the main story as eleven focused live exhibits for painting and endpoint drag, stable six-week navigation, weekday-strip hidden dates, whole-segment movement, contextual click construction, inline guess correction, Start/End shortcuts, reduced-motion-aware micro-animation, typed day handling, internationalization, and token theming.
+- Rebuilt the main story as thirteen focused live exhibits for painting and endpoint drag, stable six-week navigation, month-and-year quick jumps, weekday-strip hidden dates, whole-segment movement, contextual click construction, inline guess correction, Start/End shortcuts, reduced-motion-aware micro-animation, typed day handling, internationalization, week starts, and token theming.
 - Added `npm run report:size` to report raw and gzip sizes for the production JavaScript and optional stylesheet.
 
 - Added a 1px, fill-free next-cycle outline that appears only while hovering the date that established the active repeated-click cycle.
@@ -49,6 +57,13 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Changed
 
+- Added an 8px configurable gap between the month/year toggle and both month
+  navigation buttons while preserving their 36px hit areas.
+- Virtualized the month-and-year navigator so scrolling can extend in either
+  direction while only visible years and a small overscan buffer remain mounted.
+- Month chevrons and off-screen Start/End shortcuts now close the month-and-year
+  quick jump and restore the normal six-week date view at their destination,
+  matching direct month selection.
 - Matched the prototype's field-guide link to the field guide's reciprocal
   interactive-demo pill action, including the same hover and keyboard focus
   treatment.
@@ -143,7 +158,7 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Verification
 
-- `npm test`: 60 tests passed.
+- `npm test`: 68 tests passed.
 - `npm run lint`: passed.
 - `npm run check:file-size`: passed.
 - `npm run typecheck`: passed.

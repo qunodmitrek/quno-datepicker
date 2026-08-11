@@ -11,11 +11,11 @@ describe('datepicker field guide', () => {
         name: 'One range model. Every calendar interaction.',
       }),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('grid')).toHaveLength(11);
+    expect(screen.getAllByRole('grid')).toHaveLength(13);
     const contents = screen.getByRole('navigation', {
       name: 'Explore the field guide',
     });
-    expect(within(contents).getAllByRole('link')).toHaveLength(15);
+    expect(within(contents).getAllByRole('link')).toHaveLength(17);
     expect(
       within(contents).queryByRole('link', { name: /Interactive demo/ }),
     ).not.toBeInTheDocument();
@@ -25,12 +25,16 @@ describe('datepicker field guide', () => {
     expect(
       within(contents).getByRole('link', { name: /Custom day styling/ }),
     ).toHaveAttribute('href', '#day-handler');
+    expect(
+      within(contents).getByRole('link', { name: /Jump across years/ }),
+    ).toHaveAttribute('href', '#quick-jump');
     expect(screen.queryByText('Why Quno')).not.toBeInTheDocument();
     expect(screen.queryByText('Quno approach')).not.toBeInTheDocument();
     for (const howTo of [
       'Basic usage how-to',
       'Custom day attributes how-to',
       'Localization how-to',
+      'Choose the first weekday how-to',
       'Theme with tokens how-to',
     ]) {
       expect(
@@ -63,10 +67,49 @@ describe('datepicker field guide', () => {
     expect(
       screen.getByRole('grid', { name: 'Sélecteur de période: août 2026' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('7.83 kB')).toBeInTheDocument();
-    expect(screen.getByText('2.47 kB')).toBeInTheDocument();
+    expect(
+      within(contents).getByRole('link', { name: /Different week starts/ }),
+    ).toHaveAttribute('href', '#week-starts');
+    expect(screen.getByText('9.19 kB')).toBeInTheDocument();
+    expect(screen.getByText('2.82 kB')).toBeInTheDocument();
     expect(screen.getByText(/docs\/implementation-guide\.md/))
       .toBeInTheDocument();
+  });
+
+  it('keeps the quick jump example interactive', () => {
+    render(<DatePickerStory />);
+    const topic = document.querySelector<HTMLElement>(
+      '[data-story-topic="quick-jump"]',
+    );
+    expect(topic).not.toBeNull();
+    fireEvent.click(
+      within(topic as HTMLElement).getByRole('button', {
+        name: /Open month and year navigation/,
+      }),
+    );
+    fireEvent.click(
+      within(topic as HTMLElement).getByRole('button', {
+        name: 'January 2029',
+      }),
+    );
+    expect(within(topic as HTMLElement).getByRole('grid'))
+      .toHaveAccessibleName('Date range picker: January 2029');
+  });
+
+  it('switches the live example between different week starts', () => {
+    render(<DatePickerStory />);
+    const controls = screen.getByRole('group', { name: 'First day of week' });
+    const topic = document.querySelector<HTMLElement>(
+      '[data-story-topic="week-starts"]',
+    );
+    const firstWeekday = () =>
+      topic?.querySelector<HTMLElement>('[data-slot="weekday"]')?.textContent;
+
+    expect(firstWeekday()).toBe('Mon');
+    fireEvent.click(within(controls).getByRole('button', { name: 'Sunday' }));
+    expect(firstWeekday()).toBe('Sun');
+    fireEvent.click(within(controls).getByRole('button', { name: 'Saturday' }));
+    expect(firstWeekday()).toBe('Sat');
   });
 
   it('keeps the theming story interactive', () => {

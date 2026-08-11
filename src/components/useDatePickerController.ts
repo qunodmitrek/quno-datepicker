@@ -101,6 +101,18 @@ export const useDatePickerController = ({
   };
   const navigate = (direction: MonthDirection): void =>
     navigateFrom(direction, 'navigation');
+  const goToMonth = (month: IsoDate): void => {
+    stopEdgeNavigation();
+    setInteraction(idle());
+    setClickCycle(null);
+    const target = startOfMonth(month);
+    if (target === visibleMonth) {
+      setMonthMotion(null);
+      return;
+    }
+    const direction = compareDates(target, visibleMonth) < 0 ? -1 : 1;
+    changeMonth(target, direction, 'navigation');
+  };
   const dragSelection =
     interaction.type === 'idle' ? null : interaction.current;
   const renderedSelection = dragSelection ?? selection;
@@ -192,6 +204,7 @@ export const useDatePickerController = ({
     cancelDrag,
     clear,
     navigate,
+    goToMonth,
     startEdgeNavigation,
     stopEdgeNavigation,
     jumpToEndpoint,

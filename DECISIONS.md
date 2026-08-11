@@ -561,3 +561,35 @@ This file records decisions that should remain stable across implementation sess
 - Context: The production package build uses Vite library mode and intentionally emits no HTML, while Vercel needs a static application entrypoint for the interactive demo and direct `/story` visits.
 - Decision: Keep `npm run build` dedicated to publishable library artifacts and add `npm run build:demo` for a bundled static application in `demo-dist`. Configure Vercel to publish that directory and rewrite application routes to `index.html`.
 - Consequences: Deployments include Preact and the demo experience without changing the package bundle, peer-dependency contract, or measured library footprint. New client-side demo routes remain reachable on direct navigation through the same fallback.
+
+## QDP-071 — Demonstrate week starts independently from locale
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-009, QDP-053, and QDP-066
+- Context: The internationalization exhibit uses a Monday-first week, but it does not show that week alignment is an independent product setting or make alternative regional and organizational layouts easy to compare.
+- Decision: Add a twelfth field-guide chapter with one public-entrypoint datepicker that switches live between Sunday-, Monday-, and Saturday-first layouts. Keep its month and selection stable, pair it with a copyable `weekStartsOn` recipe, and retain localization as a separate chapter.
+- Consequences: Consumers can see weekday labels and date cells realign without conflating week order with translated copy. The field guide contents, smoke coverage, README, and implementation guide now describe twelve live contracts.
+
+## QDP-072 — Keep long-distance navigation inside the calendar frame
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-002, QDP-009, and QDP-053
+- Context: Repeated month-chevron clicks are inefficient for distant dates, but a separate dialog or expanded panel would break the single stable calendar frame and obscure the current navigation context.
+- Decision: Make the month-and-year heading toggle an in-place quick-jump view with the same body height as the six-week calendar. Keep the header and month chevrons fixed, render each year as a labeled three-column by four-row month grid, and extend the internal year list in chunks near either scroll edge. Choosing a month updates only the visible month and closes the quick jump; clicking the heading again or pressing Escape closes without navigating.
+- Consequences: Long-distance navigation preserves selection, uses `onVisibleMonthChange` rather than `onChange`, and returns directly to a selectable 42-cell month. New labels, formatters, class-name slots, and stable data slots make the navigation localizable and themeable. The field guide now demonstrates thirteen primary contracts.
+
+## QDP-073 — End quick-jump mode on every navigation action
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-072
+- Context: Leaving the year navigator open after a month-chevron or off-screen endpoint jump makes navigation appear incomplete and requires a second action before the destination dates can be selected.
+- Decision: Treat direct month selection, either month chevron, and both Start/End endpoint shortcuts as terminal quick-jump actions. Each changes the visible month through its existing path and restores the normal six-week date view in the same interaction. Keep title-toggle and Escape dismissal non-navigating.
+- Consequences: Every navigation control lands on selectable dates immediately, selection remains unchanged, and `onVisibleMonthChange` retains its existing notification semantics.
+
+## QDP-074 — Virtualize the quick-jump year timeline
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-072
+- Context: Progressively extending the year timeline makes distant dates reachable, but retaining every loaded year would make the number of mounted month controls grow for the lifetime of the quick-jump view.
+- Decision: Represent the full scroll range with measured year-height spacers and mount only the visible years plus a two-year overscan buffer on each side. Preserve chunked extension at both edges and compensate the scroll position when earlier years are prepended.
+- Consequences: The default viewport mounts no more than six year groups, or 72 month buttons, while keeping bidirectional long-distance scrolling continuous. Consumers may customize the scoped year-block height; runtime measurement keeps the virtual window aligned with that rendered size.

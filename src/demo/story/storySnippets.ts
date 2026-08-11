@@ -46,9 +46,24 @@ export const localizationSnippet = `<QunoDatePicker
     end: 'Fin',
     previousMonth: 'Mois précédent',
     nextMonth: 'Mois suivant',
+    openMonthNavigation: 'Ouvrir la navigation par mois et année',
+    closeMonthNavigation: 'Fermer la navigation par mois et année',
+    monthNavigation: 'Choisir un mois et une année',
     hint: '',
   }}
 />`;
+
+export const weekStartSnippet = `import { useState } from 'preact/hooks';
+import { QunoDatePicker, type WeekStart } from '@quno/datepicker';
+
+const [weekStartsOn, setWeekStartsOn] =
+  useState<WeekStart>(1);
+
+<button onClick={() => setWeekStartsOn(0)}>Sunday</button>
+<button onClick={() => setWeekStartsOn(1)}>Monday</button>
+<button onClick={() => setWeekStartsOn(6)}>Saturday</button>
+
+<QunoDatePicker weekStartsOn={weekStartsOn} />;`;
 
 export const themingSnippet = `.booking-dates {
   --quno-picker-width: min(100%, 320px);

@@ -16,6 +16,15 @@ export const StableViewExample = (): JSX.Element => (
   </div>
 );
 
+export const QuickJumpExample = (): JSX.Element => (
+  <QunoDatePicker
+    className="story__picker"
+    defaultValue={{ start: '2026-08-10', end: '2026-08-18' }}
+    initialMonth="2026-08-01"
+    labels={labels}
+  />
+);
+
 export const HiddenRowExample = (): JSX.Element => (
   <QunoDatePicker
     className="story__picker story__picker--violet"

@@ -10,6 +10,7 @@ import type {
   ResolvedDatePickerConfig,
 } from './datePickerTypes';
 import type { JSX } from 'preact';
+import { useState } from 'preact/hooks';
 
 export const QunoDatePicker = ({
   value,
@@ -27,6 +28,7 @@ export const QunoDatePicker = ({
   onChange,
   onVisibleMonthChange,
 }: QunoDatePickerProps): JSX.Element => {
+  const [monthNavigationOpen, setMonthNavigationOpen] = useState(false);
   const config: ResolvedDatePickerConfig = {
     locale,
     labels: { ...DEFAULT_LABELS, ...labels },
@@ -71,16 +73,27 @@ export const QunoDatePicker = ({
         position="before"
         monthChangeSource={controller.monthChangeSource}
         config={config}
-        onJump={controller.jumpToEndpoint}
+        onJump={(date) => {
+          controller.jumpToEndpoint(date);
+          setMonthNavigationOpen(false);
+        }}
       />
-      <Calendar controller={controller} config={config} />
+      <Calendar
+        controller={controller}
+        config={config}
+        monthNavigationOpen={monthNavigationOpen}
+        onMonthNavigationOpenChange={setMonthNavigationOpen}
+      />
       <OffscreenPills
         selection={controller.selection}
         visibleMonth={controller.visibleMonth}
         position="after"
         monthChangeSource={controller.monthChangeSource}
         config={config}
-        onJump={controller.jumpToEndpoint}
+        onJump={(date) => {
+          controller.jumpToEndpoint(date);
+          setMonthNavigationOpen(false);
+        }}
       />
       {config.labels.hint && (
         <p

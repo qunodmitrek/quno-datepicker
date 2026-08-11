@@ -19,6 +19,18 @@ const formatMonth = (month: IsoDate, locale: string): string =>
     timeZone: 'UTC',
   }).format(new Date(`${month}T00:00:00Z`));
 
+const formatMonthOption = (month: IsoDate, locale: string): string =>
+  new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    timeZone: 'UTC',
+  }).format(new Date(`${month}T00:00:00Z`));
+
+const formatYear = (month: IsoDate, locale: string): string =>
+  new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${month}T00:00:00Z`));
+
 const formatDayLabel = (date: IsoDate, locale: string): string =>
   new Intl.DateTimeFormat(locale, {
     weekday: 'long',
@@ -43,6 +55,9 @@ export const DEFAULT_LABELS: QunoDatePickerLabels = {
   end: 'End',
   previousMonth: 'Previous month',
   nextMonth: 'Next month',
+  openMonthNavigation: 'Open month and year navigation',
+  closeMonthNavigation: 'Close month and year navigation',
+  monthNavigation: 'Choose a month and year',
   chooseAction: 'Change selected day to',
   startDate: 'Start date',
   endDate: 'End date',
@@ -53,6 +68,8 @@ export const DEFAULT_LABELS: QunoDatePickerLabels = {
 export const DEFAULT_FORMATTERS: QunoDatePickerFormatters = {
   date: formatDate,
   month: formatMonth,
+  monthOption: formatMonthOption,
+  year: formatYear,
   dayLabel: formatDayLabel,
   weekday: formatWeekday,
 };

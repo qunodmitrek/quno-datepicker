@@ -51,6 +51,9 @@ export type QunoDatePickerLabels = {
   end: string;
   previousMonth: string;
   nextMonth: string;
+  openMonthNavigation: string;
+  closeMonthNavigation: string;
+  monthNavigation: string;
   chooseAction: string;
   startDate: string;
   endDate: string;
@@ -61,6 +64,8 @@ export type QunoDatePickerLabels = {
 export type QunoDatePickerFormatters = {
   date: (date: IsoDate, locale: string) => string;
   month: (month: IsoDate, locale: string) => string;
+  monthOption: (month: IsoDate, locale: string) => string;
+  year: (month: IsoDate, locale: string) => string;
   dayLabel: (date: IsoDate, locale: string) => string;
   weekday: (dayIndex: number, locale: string) => string;
 };
@@ -100,7 +105,12 @@ export type QunoDatePickerSlot =
   | 'monthHeader'
   | 'previousButton'
   | 'monthHeading'
+  | 'monthHeadingButton'
   | 'nextButton'
+  | 'monthNavigation'
+  | 'yearGroup'
+  | 'yearHeading'
+  | 'monthOption'
   | 'actionMenu'
   | 'actionTitle'
   | 'actionButton'

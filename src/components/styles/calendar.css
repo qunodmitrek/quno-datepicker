@@ -20,7 +20,8 @@
 
 .quno-date-picker__month-header {
   display: grid;
-  grid-template-columns: 40px 1fr 40px;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  column-gap: var(--quno-picker-month-header-gap, 8px);
   align-items: center;
   height: 36px;
   margin-bottom: 14px;
@@ -39,15 +40,8 @@
   text-align: center;
 }
 
-.quno-date-picker__month-header h2 > span {
-  display: block;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.quno-date-picker__month-header button {
+.quno-date-picker__month-header > [data-slot='previous-button'],
+.quno-date-picker__month-header > [data-slot='next-button'] {
   display: grid;
   width: 36px;
   height: 36px;
@@ -60,14 +54,14 @@
   cursor: pointer;
 }
 
-.quno-date-picker__month-header button svg {
+.quno-date-picker__month-header > button svg {
   display: block;
   width: 16px;
   height: 16px;
 }
 
-.quno-date-picker__month-header button:hover,
-.quno-date-picker__month-header button:focus-visible {
+.quno-date-picker__month-header > button:hover,
+.quno-date-picker__month-header > button:focus-visible {
   border-color: var(--quno-picker-primary, #0167ff);
   color: var(--quno-picker-primary, #0167ff);
   outline: none;

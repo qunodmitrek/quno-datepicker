@@ -7,7 +7,9 @@ type Props = {
   visibleMonth: IsoDate;
   monthMotion: MonthDirection | null;
   config: ResolvedDatePickerConfig;
+  monthNavigationOpen: boolean;
   onNavigate: (direction: MonthDirection) => void;
+  onToggleMonthNavigation: () => void;
 };
 
 const Chevron = ({ direction }: { direction: MonthDirection }): JSX.Element => (
@@ -27,9 +29,12 @@ export const CalendarHeader = ({
   visibleMonth,
   monthMotion,
   config,
+  monthNavigationOpen,
   onNavigate,
+  onToggleMonthNavigation,
 }: Props): JSX.Element => {
   const { labels, formatters, locale, classNames } = config;
+  const monthLabel = formatters.month(visibleMonth, locale);
   return (
     <div
       className={clsx(
@@ -58,7 +63,25 @@ export const CalendarHeader = ({
               : undefined
         }
       >
-        <span key={visibleMonth}>{formatters.month(visibleMonth, locale)}</span>
+        <button
+          type="button"
+          className={clsx(
+            'quno-date-picker__month-heading-button',
+            classNames?.monthHeadingButton,
+          )}
+          data-slot="month-heading-button"
+          aria-label={`${monthLabel}. ${
+            monthNavigationOpen
+              ? labels.closeMonthNavigation
+              : labels.openMonthNavigation
+          }`}
+          aria-expanded={monthNavigationOpen}
+          onClick={onToggleMonthNavigation}
+        >
+          <span key={visibleMonth}>
+            {monthLabel}
+          </span>
+        </button>
       </h2>
       <button
         type="button"

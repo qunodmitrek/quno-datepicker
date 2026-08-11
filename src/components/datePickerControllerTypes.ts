@@ -24,6 +24,7 @@ export type DatePickerController = {
   cancelDrag: () => void;
   clear: () => void;
   navigate: (direction: MonthDirection) => void;
+  goToMonth: (month: IsoDate) => void;
   startEdgeNavigation: (direction: MonthDirection) => void;
   stopEdgeNavigation: () => void;
   jumpToEndpoint: (date: IsoDate) => void;

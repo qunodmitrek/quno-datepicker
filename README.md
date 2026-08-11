@@ -14,11 +14,11 @@ Update these records in the same change as the code they describe.
 
 - [Implementation guide](./docs/implementation-guide.md) — copyable setup,
   state, localization, styling, and form-integration recipes.
-- Interactive field guide — run `npm run dev` and open `/story` for eleven live
+- Interactive field guide — run `npm run dev` and open `/story` for thirteen live
   chapters covering painting, dragging, the stable six-week view, hidden-week
-  navigation, click correction, endpoint shortcuts, motion, day handlers,
-  internationalization, and theming, with implementation recipes placed beside
-  their live outcomes.
+  navigation, year jumps, click correction, endpoint shortcuts, motion, day handlers,
+  internationalization, week-start layouts, and theming, with implementation
+  recipes placed beside their live outcomes.
 
 ## V1 behavior
 
@@ -36,6 +36,14 @@ Update these records in the same change as the code they describe.
 - Holding a drag at either month edge navigates after a 400 ms delay and repeats while held.
 - When the visible month changes, its name and day numbers enter vertically in the travel direction while the calendar frame and selection geometry stay fixed. Motion is disabled when the user prefers reduced motion.
 - Previous/next controls use symmetric SVG chevrons centered within their unchanged circular hit areas.
+- Clicking the month-and-year heading replaces the date body in-place with a
+  scrollable year navigator. Each year shows twelve month buttons in four rows;
+  scrolling progressively adds years in either direction, while a virtual
+  window mounts only the visible years and a small overscan buffer. The fixed
+  header and month chevrons remain available. Choosing a month, using either
+  chevron, or jumping through an off-screen Start/End shortcut restores the
+  destination's six-week date grid; clicking the heading again closes without
+  navigating. None of these navigation actions changes selection.
 - Every view keeps a fixed six-week grid with only the weekday-aligned leading dates needed for the current month. The month heading reserves one non-wrapping line; labels wider than the available center column truncate instead of increasing the calendar height. When the natural aligned month grid ends exactly on month-end, a trailing week is appended within that six-week minimum. While a drag is over the weekday-name strip, the dates where the transient selected range overlaps the hidden previous week replace their weekday labels; this grows toward or away from the pointer according to the selected range rather than assuming one direction. Weekday labels and revealed dates occupy the same explicit seven-column row track, so changing between names and numbers cannot change grid height. Leaving the strip for any other cell immediately restores every weekday label without ending the drag.
 - Releasing on a leading or trailing day from an adjacent month switches the calendar to that month.
 - Off-screen endpoints appear as Start/End pills before or after the calendar. Pills retain their intrinsic width and height while sliding out from behind the calendar. When a month-chevron click moves a previously visible selection off-screen, the calendar stays anchored and only the newly required controls slide from beneath it. Outside that navigation transition, the calendar may move down to uncover Start or up to uncover End only when no endpoint control is already visible. Once any pill is shown, the calendar stays fixed and only a newly required control slides into the adjacent space. When an endpoint becomes visible, its pill remains full-size while the surrounding layout space closes and the intact button slides back underneath the calendar before removal. Clicking a pill jumps to its month with the same directional vertical name-and-number scroll.
@@ -156,9 +164,9 @@ The default stylesheet does not write theme values to `:root`. Every default is 
 }
 ```
 
-Additional tokens cover disabled and outside-month text, the selection-summary surface, endpoint-pill colors/spacing/radius/shadow/type, before/after shadow offsets, and track direction/wrapping/alignment/gap, desktop/mobile day sizing, the cycle-preview outline (`--quno-picker-cycle-preview`), month-scroll duration/distance, and endpoint-pill reveal duration/distance (`--quno-picker-pill-reveal-duration` and `--quno-picker-pill-reveal-distance`). Start and End pills can also be targeted individually through `data-endpoint`. The `/story` theme switcher includes compact and large-day skins to exercise these contracts under tighter constraints. Inspect `QunoDatePicker.css` for the complete token list.
+Additional tokens cover disabled and outside-month text, the selection-summary surface, endpoint-pill colors/spacing/radius/shadow/type, before/after shadow offsets, and track direction/wrapping/alignment/gap, desktop/mobile day sizing, month-header spacing (`--quno-picker-month-header-gap`), the virtualized year-block height (`--quno-picker-year-navigation-year-height`), the cycle-preview outline (`--quno-picker-cycle-preview`), month-scroll duration/distance, and endpoint-pill reveal duration/distance (`--quno-picker-pill-reveal-duration` and `--quno-picker-pill-reveal-distance`). Start and End pills can also be targeted individually through `data-endpoint`. The `/story` theme switcher includes compact and large-day skins to exercise these contracts under tighter constraints. Inspect `QunoDatePicker.css` for the complete token list.
 
-Every meaningful element also has a stable `data-slot` value, including `root`, `selection-header`, `clear-button`, `pills`, `pill`, `calendar`, `month-header`, `month-heading`, `weekdays`, `weekday`, `overflow-day`, `grid`, `day`, `handle`, and `hint`. The root exposes `data-pill-before` and `data-pill-after` while matching off-screen endpoints are present; pill containers expose `data-presence="entering|visible|exiting"`, and individual controls expose the same lifecycle through `data-item-presence`; the month heading and grid expose `data-month-motion="previous|next"`; the calendar and grid expose `data-dragging="move"` while a whole range, one-day selection, or endpoint is directly manipulated, and the grid exposes `data-interaction-active` for the complete pointer gesture; the weekday strip exposes `data-drag-active` and `data-drag-overflow`; date cells expose state through `data-selected`, `data-committed`, `data-range-start`, `data-range-end`, `data-outside`, `data-cycle-trigger`, and cycle-preview segment attributes.
+Every meaningful element also has a stable `data-slot` value, including `root`, `selection-header`, `clear-button`, `pills`, `pill`, `calendar`, `month-header`, `month-heading`, `month-heading-button`, `month-navigation`, `year-group`, `year-heading`, `month-option`, `weekdays`, `weekday`, `overflow-day`, `grid`, `day`, `handle`, and `hint`. The root exposes `data-pill-before` and `data-pill-after` while matching off-screen endpoints are present; pill containers expose `data-presence="entering|visible|exiting"`, and individual controls expose the same lifecycle through `data-item-presence`; the month heading and grid expose `data-month-motion="previous|next"`; the calendar exposes `data-view="dates|month-navigation"`; the active month option exposes `aria-current="date"`; the calendar and grid expose `data-dragging="move"` while a whole range, one-day selection, or endpoint is directly manipulated, and the grid exposes `data-interaction-active` for the complete pointer gesture; the weekday strip exposes `data-drag-active` and `data-drag-overflow`; date cells expose state through `data-selected`, `data-committed`, `data-range-start`, `data-range-end`, `data-outside`, `data-cycle-trigger`, and cycle-preview segment attributes.
 
 For utility-class systems or CSS modules, pass project classes without replacing the built-in behavior classes:
 
@@ -179,7 +187,7 @@ Passing an empty `labels.hint` omits the optional hint element, allowing a host 
 
 ## Localization and formatting
 
-`locale` controls the built-in `Intl.DateTimeFormat` output. All visible and accessible copy can be replaced with `labels`, and individual date, month, day-label, and weekday renderings can be replaced with `formatters`. `weekStartsOn` accepts weekday indices `0` through `6`, where `0` is Sunday.
+`locale` controls the built-in `Intl.DateTimeFormat` output. All visible and accessible copy can be replaced with `labels`, and individual date, title, month-option, year, day-label, and weekday renderings can be replaced with `formatters`. `weekStartsOn` accepts weekday indices `0` through `6`, where `0` is Sunday.
 
 ## Package output
 
@@ -189,8 +197,8 @@ Passing an empty `labels.hint` omits the optional hint element, allowing a host 
 - `dist/quno-datepicker.css` — optional default theme.
 - `dist/index.d.ts` and component/model declaration files — public TypeScript contracts.
 
-The current production output is approximately 29.57 kB JavaScript (7.83 kB
-gzip) plus 12.09 kB optional CSS (2.47 kB gzip). Preact is external. Run
+The current production output is approximately 35.73 kB JavaScript (9.19 kB
+gzip) plus 14.24 kB optional CSS (2.82 kB gzip). Preact is external. Run
 `npm run report:size` after a build for current measured values.
 
 The interactive demo remains available through `npm run dev`; it is not part of the published JavaScript entry.
