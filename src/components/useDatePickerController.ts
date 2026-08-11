@@ -19,6 +19,10 @@ import {
   updateInteraction,
   type DateClickCycle,
 } from './datePickerInteraction';
+import type {
+  DatePickerController,
+  MonthChangeSource,
+} from './datePickerControllerTypes';
 import type { DatePickerInteraction } from './datePickerTypes';
 
 type ControllerOptions = {
@@ -30,29 +34,6 @@ type ControllerOptions = {
   autoNavigateRepeatDelay: number;
   onChange?: (value: DateRange | null) => void;
   onVisibleMonthChange?: (month: IsoDate) => void;
-};
-
-export type MonthChangeSource = 'navigation' | 'interaction' | 'endpoint';
-
-export type DatePickerController = {
-  selection: DateRange | null;
-  renderedSelection: DateRange | null;
-  cycleDate: IsoDate | null;
-  cyclePreview: DateRange | null;
-  visibleMonth: IsoDate;
-  monthMotion: MonthDirection | null;
-  monthChangeSource: MonthChangeSource | null;
-  interaction: DatePickerInteraction;
-  gridDates: IsoDate[];
-  weekdays: number[];
-  beginDrag: (date: IsoDate) => void;
-  enterDay: (date: IsoDate) => void;
-  finishDrag: (date: IsoDate) => void;
-  clear: () => void;
-  navigate: (direction: MonthDirection) => void;
-  startEdgeNavigation: (direction: MonthDirection) => void;
-  stopEdgeNavigation: () => void;
-  jumpToEndpoint: (date: IsoDate) => void;
 };
 
 export const useDatePickerController = ({
@@ -164,6 +145,11 @@ export const useDatePickerController = ({
     }
   };
 
+  const cancelDrag = (): void => {
+    stopEdgeNavigation();
+    setInteraction(idle());
+  };
+
   const startEdgeNavigation = (direction: MonthDirection): void => {
     if (interaction.type === 'idle') return;
     stopEdgeNavigation();
@@ -203,6 +189,7 @@ export const useDatePickerController = ({
     beginDrag,
     enterDay,
     finishDrag,
+    cancelDrag,
     clear,
     navigate,
     startEdgeNavigation,

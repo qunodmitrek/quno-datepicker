@@ -36,7 +36,7 @@ describe('datepicker field guide', () => {
         name: 'Mark the dates that matter to your product.',
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText('7.02 kB')).toBeInTheDocument();
+    expect(screen.getByText('7.73 kB')).toBeInTheDocument();
     expect(screen.getByText('2.32 kB')).toBeInTheDocument();
     expect(screen.getByText(/docs\/implementation-guide\.md/))
       .toBeInTheDocument();

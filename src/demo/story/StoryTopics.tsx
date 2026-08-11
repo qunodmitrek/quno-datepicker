@@ -24,8 +24,8 @@ export const StoryTopics = (): JSX.Element => (
   <>
     <StoryFeature id="paint" number="01" kicker="Primary interaction"
       title="Paint first. Drag everything."
-      copy="Press an empty date and drag to paint a period. Start, End, and the selected band are direct manipulation targets; the public value changes only when the pointer is released."
-      instruction="Drag from 4 to 9. Then grab either blue endpoint to resize it."
+      copy="Press an empty date with a pointer or finger and drag to paint a period. Start, End, and the selected band are direct manipulation targets; the public value changes only when the gesture is released."
+      instruction="Drag from 4 to 9 with a pointer or finger. Then grab either blue endpoint to resize it."
       howTo={<StoryHowTo title="Basic usage" language="TSX"
         copy="Import behavior and optional styles, then give the picker one range value and one change handler."
         code={basicUsageSnippet} />}>
@@ -40,7 +40,7 @@ export const StoryTopics = (): JSX.Element => (
     <StoryFeature id="hidden-row" number="03" kicker="Hidden week"
       title="Day names become another row of dates."
       copy="During painting or endpoint dragging, the weekday strip becomes a progressive hidden previous week. Only dates reached by the selected segment appear, and the header keeps exactly the same height."
-      instruction="Drag Start upward into MON–SUN, move across the labels, then leave the strip.">
+      instruction="With a pointer or finger, drag Start upward into MON–SUN, move across the labels, then leave the strip.">
       <HiddenRowExample />
     </StoryFeature>
     <StoryFeature id="segment-drag" number="04" kicker="Segment movement"

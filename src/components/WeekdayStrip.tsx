@@ -7,13 +7,14 @@ import {
   type IsoDate,
   type WeekStart,
 } from './dateRangeModel';
-import type { DatePickerController } from './useDatePickerController';
+import type { DatePickerController } from './datePickerControllerTypes';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
 import type { JSX } from 'preact';
 
 type Props = {
   controller: DatePickerController;
   config: ResolvedDatePickerConfig;
+  touchOverflowIndex: number | null;
 };
 
 type StripMode =
@@ -27,7 +28,11 @@ const targetIndex = (target: EventTarget | null, weekdays: number[]): number => 
   return weekdays.indexOf(Number(element?.dataset.dayIndex));
 };
 
-export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
+export const WeekdayStrip = ({
+  controller,
+  config,
+  touchOverflowIndex,
+}: Props): JSX.Element => {
   const [mode, setMode] = useState<StripMode>({ type: 'weekdays' });
   const { classNames, formatters, locale } = config;
   const { interaction, renderedSelection, weekdays } = controller;
@@ -38,8 +43,12 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
   );
 
   useEffect(() => {
-    if (!dragActive) setMode({ type: 'weekdays' });
-  }, [dragActive]);
+    if (!dragActive || touchOverflowIndex === null) {
+      setMode({ type: 'weekdays' });
+      return;
+    }
+    setMode({ type: 'previous-dates', pointerIndex: touchOverflowIndex });
+  }, [dragActive, touchOverflowIndex]);
 
   const revealAt = (index: number): void => {
     if (!dragActive || index < 0) return;
@@ -84,6 +93,8 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
               className={classNames?.weekday}
               data-slot="weekday"
               data-day-index={dayIndex}
+              data-touch-date={date}
+              data-touch-index={index}
               onPointerEnter={() => revealAt(index)}
             >
               {formatters.weekday(dayIndex, locale)}
@@ -125,6 +136,8 @@ export const WeekdayStrip = ({ controller, config }: Props): JSX.Element => {
             data-slot="overflow-day"
             data-day-index={dayIndex}
             data-date={date}
+            data-touch-date={date}
+            data-touch-index={index}
             data-selected={selected ? 'true' : undefined}
             data-range-start={isStart ? 'true' : undefined}
             data-range-end={isEnd ? 'true' : undefined}

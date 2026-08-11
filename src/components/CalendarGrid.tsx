@@ -12,6 +12,7 @@ import type {
   QunoDatePickerDayCellContext,
   ResolvedDatePickerConfig,
 } from './datePickerTypes';
+import { useDayPointer } from './useDayPointer';
 import type { JSX } from 'preact';
 
 type Props = {
@@ -19,6 +20,7 @@ type Props = {
   visibleMonth: IsoDate;
   monthMotion: MonthDirection | null;
   movingSelection: boolean;
+  interactionActive: boolean;
   cycleDate: IsoDate | null;
   cyclePreview: DateRange | null;
   selection: DateRange | null;
@@ -27,6 +29,8 @@ type Props = {
   onBegin: (date: IsoDate) => void;
   onEnter: (date: IsoDate) => void;
   onFinish: (date: IsoDate) => void;
+  onCancel: () => void;
+  onOverflowChange: (index: number | null) => void;
 };
 
 export const CalendarGrid = ({
@@ -34,6 +38,7 @@ export const CalendarGrid = ({
   visibleMonth,
   monthMotion,
   movingSelection,
+  interactionActive,
   cycleDate,
   cyclePreview,
   selection,
@@ -42,9 +47,27 @@ export const CalendarGrid = ({
   onBegin,
   onEnter,
   onFinish,
+  onCancel,
+  onOverflowChange,
 }: Props): JSX.Element => {
   const { labels, formatters, locale, classNames, getDayCellProps } = config;
   const today = todayIso();
+  const pointer = useDayPointer({
+    interactionActive,
+    begin: onBegin,
+    enter: ({ date, overflowIndex }) => {
+      onOverflowChange(overflowIndex);
+      onEnter(date);
+    },
+    finish: ({ date }) => {
+      onOverflowChange(null);
+      onFinish(date);
+    },
+    cancel: () => {
+      onOverflowChange(null);
+      onCancel();
+    },
+  });
   return (
     <div
       className={clsx('quno-date-picker__grid', classNames?.grid)}
@@ -133,14 +156,16 @@ export const CalendarGrid = ({
             aria-label={formatters.dayLabel(date, locale)}
             aria-selected={committed}
             onPointerDown={(event) => {
-              event.preventDefault();
-              onBegin(date);
+              onOverflowChange(null);
+              pointer.beginPointer(event, date);
             }}
-            onPointerEnter={() => onEnter(date)}
-            onPointerUp={(event) => {
-              event.preventDefault();
-              onFinish(date);
+            onPointerMove={pointer.movePointer}
+            onPointerEnter={() => {
+              onOverflowChange(null);
+              onEnter(date);
             }}
+            onPointerUp={(event) => pointer.finishPointer(event, date)}
+            onPointerCancel={pointer.cancelPointer}
           >
             <span>{Number(date.slice(-2))}</span>
             {(isStart || isEnd) && (

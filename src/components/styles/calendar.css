@@ -79,6 +79,10 @@
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
+.quno-date-picker__grid {
+  touch-action: none;
+}
+
 .quno-date-picker__weekdays {
   grid-template-rows: var(--quno-picker-day-size, 42px);
   padding-bottom: 8px;

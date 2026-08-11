@@ -1,4 +1,4 @@
-import type { DatePickerController } from './useDatePickerController';
+import type { DatePickerController } from './datePickerControllerTypes';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
 import type { JSX } from 'preact';
 type Props = {

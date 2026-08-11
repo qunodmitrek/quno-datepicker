@@ -66,6 +66,7 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Fixed
 
+- Direct-touch painting now works under iPhone's implicit pointer capture by resolving move and release coordinates to the date beneath the finger. Captured touch drags also reveal, clear, and commit hidden previous-week dates through the weekday strip; the grid suppresses page panning during date gestures, pointer cancellation discards transient state, and cross-month drags survive grid remounts.
 - Month-chevron navigation now keeps the calendar anchored when a previously visible selection becomes off-screen; newly required Start and End controls slide from beneath the calendar without also translating it.
 - Month headings now occupy one fixed, non-wrapping line and truncate unusually long custom labels, preventing month navigation from changing the calendar height in the demo, story, or consuming layouts.
 - Scoped story heading typography away from nested datepicker month headings, preserving the six-week example's height across differently sized month names.
@@ -99,7 +100,7 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Verification
 
-- `npm test`: 55 tests passed.
+- `npm test`: 58 tests passed.
 - `npm run lint`: passed.
 - `npm run check:file-size`: passed.
 - `npm run typecheck`: passed.

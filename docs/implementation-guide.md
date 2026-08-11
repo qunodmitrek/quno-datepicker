@@ -92,6 +92,15 @@ Pointer gestures are direct manipulation:
 - Hold at a month edge to continue the drag after delayed navigation.
 - Release on an adjacent-month date to move the visible calendar there.
 
+The same paint, resize, and move gestures accept direct touch. On iPhone the
+grid resolves the date currently beneath the finger rather than the element
+that received the initial touch, so implicit pointer capture does not collapse
+a painted range back to its starting day. Page scrolling remains available
+outside the date grid. Moving the captured finger into a weekday label reveals
+that hidden previous-week date through the same typed drag model. Returning to
+the normal grid clears the projection; releasing on the hidden date commits it
+and navigates to its month.
+
 Only one pointer gesture owns the interaction at a time: painting, endpoint
 resizing, or whole-range movement. That separation prevents a resize from
 turning into a new range or a range move from also editing an endpoint. Pointer
@@ -194,8 +203,9 @@ implement disabled-date rules, presets, or natural-language parsing.
 - Apply product tokens and day-cell presentation hooks.
 - Verify click cycling, endpoint crossing, whole-range dragging, Clear, and
   off-screen endpoint navigation in the product layout.
-- Add keyboard and touch expectations appropriate to the host; advanced touch
-  gestures and complete arrow-key grid navigation remain deferred.
+- Verify direct touch painting in the product layout. Long-press conventions,
+  other advanced touch gestures, and complete arrow-key grid navigation remain
+  deferred.
 
 ## Why this differs from a conventional range picker
 
@@ -216,9 +226,9 @@ comparison of two distant months may still prefer a two-panel picker.
 
 The current V1 production build contains approximately:
 
-- 26.42 kB JavaScript raw, 7.02 kB gzip.
-- 11.28 kB optional CSS raw, 2.32 kB gzip.
-- 9.34 kB gzip total when the default theme is used.
+- 29.11 kB JavaScript raw, 7.73 kB gzip.
+- 11.32 kB optional CSS raw, 2.32 kB gzip.
+- 10.05 kB gzip total when the default theme is used.
 - No bundled Preact runtime; Preact remains a peer dependency.
 
 Run `npm run build` and then `npm run report:size` to measure the current

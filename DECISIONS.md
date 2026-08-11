@@ -465,3 +465,19 @@ This file records decisions that should remain stable across implementation sess
 - Context: Calling `/story` an implementation story while placing one generic import snippet after every product exhibit separates the “how” from the behavior it configures. Basic usage, custom day attributes, and theming are easier to understand next to their live outcomes.
 - Decision: Treat `/story` as a product-and-implementation field guide. Place copyable basic usage beside primary interaction, `getDayCellProps` beside custom-day presentation, and scoped CSS tokens beside theming. Replace the generic implementation appendix with a concise pointer to the complete reference document.
 - Consequences: Readers can move directly from rationale to a relevant recipe without losing the editorial flow. The implementation guide remains the exhaustive contract, the story retains live examples, and future recipes should live with the exhibit they affect rather than accumulate in a detached appendix.
+
+## QDP-059 — Resolve direct touch by coordinates
+
+- Date: 2026-08-11
+- Status: Accepted; narrows the touch deferral in QDP-008
+- Context: iPhone implicitly captures a direct-touch pointer on the day where it begins. Subsequent move and release events continue targeting that original button, so target-based enter/up handlers collapse painting to one day even when the finger crosses several cells.
+- Decision: Let the starting day retain pointer capture, but resolve every active move and release through `document.elementFromPoint` at the current pointer coordinates. Disable native touch panning only on the date grid, cancel transient interaction on `pointercancel`, and use the controller's explicit interaction state to continue after a cross-month grid remount.
+- Consequences: Tap, paint, endpoint resize, and whole-range movement share the same mouse, pen, and direct-touch model on iPhone. Page scrolling remains available outside the grid. Long-press semantics, touch dragging into the hidden weekday row, and other advanced touch conventions remain deferred until separately specified.
+
+## QDP-060 — Include the weekday strip in captured touch hit testing
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes the hidden-row touch deferral in QDP-059 and refines QDP-045
+- Context: After direct grid painting was made coordinate-based, iPhone still could not enter the hidden previous-week row because implicit capture prevented the weekday strip from receiving its own pointer-enter and pointer-up events.
+- Decision: Give every weekday label and revealed overflow cell an internal touch date and column index. Coordinate hit testing returns either a normal grid target or a weekday-strip target. Calendar-level projection state passes the weekday index to the existing discriminated strip mode, clears it on re-entry to the grid or cancellation, and commits the resolved hidden date on release.
+- Consequences: Mouse and direct touch now share progressive hidden-week reveal, clearing, selection projection, and outside-month commitment. The weekday row keeps its fixed height and presentation-only day callback behavior. Long-press semantics and other advanced touch conventions remain deferred.

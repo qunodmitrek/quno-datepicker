@@ -94,7 +94,7 @@ export const FootprintStory = (): JSX.Element => (
   <section className="story__wide story__footprint" id="footprint">
     <div className="story__section-heading">
       <span>Production footprint</span>
-      <h2>About 9.3 kB gzip with the default theme</h2>
+      <h2>About 10.1 kB gzip with the default theme</h2>
       <p>
         V1 ships as typed ESM. Preact remains a peer dependency, so the package
         does not bundle another framework runtime. The stylesheet is optional.
@@ -102,12 +102,12 @@ export const FootprintStory = (): JSX.Element => (
     </div>
     <div className="story__metrics">
       <div>
-        <strong>7.02 kB</strong><span>JavaScript gzip</span>
-        <small>26.42 kB raw</small>
+        <strong>7.73 kB</strong><span>JavaScript gzip</span>
+        <small>29.11 kB raw</small>
       </div>
       <div>
         <strong>2.32 kB</strong><span>CSS gzip</span>
-        <small>11.28 kB raw</small>
+        <small>11.32 kB raw</small>
       </div>
       <div>
         <strong>0 kB</strong><span>Bundled Preact</span>

@@ -1,5 +1,5 @@
-import { type DateRange, type IsoDate, type MonthDirection, type WeekStart } from './dateRangeModel';
-import type { DatePickerInteraction } from './datePickerTypes';
+import { type DateRange, type IsoDate, type WeekStart } from './dateRangeModel';
+import type { DatePickerController } from './datePickerControllerTypes';
 type ControllerOptions = {
     value?: DateRange | null;
     defaultValue: DateRange | null;
@@ -9,27 +9,6 @@ type ControllerOptions = {
     autoNavigateRepeatDelay: number;
     onChange?: (value: DateRange | null) => void;
     onVisibleMonthChange?: (month: IsoDate) => void;
-};
-export type MonthChangeSource = 'navigation' | 'interaction' | 'endpoint';
-export type DatePickerController = {
-    selection: DateRange | null;
-    renderedSelection: DateRange | null;
-    cycleDate: IsoDate | null;
-    cyclePreview: DateRange | null;
-    visibleMonth: IsoDate;
-    monthMotion: MonthDirection | null;
-    monthChangeSource: MonthChangeSource | null;
-    interaction: DatePickerInteraction;
-    gridDates: IsoDate[];
-    weekdays: number[];
-    beginDrag: (date: IsoDate) => void;
-    enterDay: (date: IsoDate) => void;
-    finishDrag: (date: IsoDate) => void;
-    clear: () => void;
-    navigate: (direction: MonthDirection) => void;
-    startEdgeNavigation: (direction: MonthDirection) => void;
-    stopEdgeNavigation: () => void;
-    jumpToEndpoint: (date: IsoDate) => void;
 };
 export declare const useDatePickerController: ({ value, defaultValue, initialMonth, weekStartsOn, autoNavigateDelay, autoNavigateRepeatDelay, onChange, onVisibleMonthChange, }: ControllerOptions) => DatePickerController;
 export {};

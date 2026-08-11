@@ -2,9 +2,10 @@ import clsx from 'clsx';
 import { CalendarGrid } from './CalendarGrid';
 import { CalendarHeader } from './CalendarHeader';
 import { WeekdayStrip } from './WeekdayStrip';
-import type { DatePickerController } from './useDatePickerController';
+import type { DatePickerController } from './datePickerControllerTypes';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
 import type { JSX } from 'preact';
+import { useState } from 'preact/hooks';
 
 type Props = {
   controller: DatePickerController;
@@ -12,6 +13,9 @@ type Props = {
 };
 
 export const Calendar = ({ controller, config }: Props): JSX.Element => {
+  const [touchOverflowIndex, setTouchOverflowIndex] = useState<number | null>(
+    null,
+  );
   const { classNames } = config;
   const movingSelection =
     controller.interaction.type === 'drag-range' ||
@@ -47,7 +51,11 @@ export const Calendar = ({ controller, config }: Props): JSX.Element => {
         onNavigate={controller.navigate}
       />
 
-      <WeekdayStrip controller={controller} config={config} />
+      <WeekdayStrip
+        controller={controller}
+        config={config}
+        touchOverflowIndex={touchOverflowIndex}
+      />
 
       <CalendarGrid
         key={controller.visibleMonth}
@@ -55,6 +63,7 @@ export const Calendar = ({ controller, config }: Props): JSX.Element => {
         visibleMonth={controller.visibleMonth}
         monthMotion={controller.monthMotion}
         movingSelection={movingSelection}
+        interactionActive={controller.interaction.type !== 'idle'}
         cycleDate={controller.cycleDate}
         cyclePreview={controller.cyclePreview}
         selection={controller.selection}
@@ -63,6 +72,8 @@ export const Calendar = ({ controller, config }: Props): JSX.Element => {
         onBegin={controller.beginDrag}
         onEnter={controller.enterDay}
         onFinish={controller.finishDrag}
+        onCancel={controller.cancelDrag}
+        onOverflowChange={setTouchOverflowIndex}
       />
     </div>
   );

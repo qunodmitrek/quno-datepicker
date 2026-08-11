@@ -31,6 +31,7 @@ Update these records in the same change as the code they describe.
 - Drag inside the selected period to move it by snapped calendar days without changing duration.
 - Whole-range, one-day, and start/end endpoint drags use a grabbing cursor and suppress the ordinary hovered-day outline while the pointer action is active.
 - Begin a drag outside the selected period to paint a fresh range from that cell. Until movement occurs, the same pointer action remains an ordinary contextual click on the existing range.
+- Mouse, pen, and direct-touch painting resolve the calendar cell currently under the pointer even when iPhone implicitly captures the gesture on its starting cell. Moving a captured finger into the weekday strip resolves and progressively reveals the matching hidden previous-week dates; returning to the grid clears them, and release commits through the same outside-month behavior. The date grid owns touch movement instead of page panning while a gesture is active; scrolling remains available outside the grid.
 - Holding a drag at either month edge navigates after a 400 ms delay and repeats while held.
 - When the visible month changes, its name and day numbers enter vertically in the travel direction while the calendar frame and selection geometry stay fixed. Motion is disabled when the user prefers reduced motion.
 - Previous/next controls use symmetric SVG chevrons centered within their unchanged circular hit areas.
@@ -161,12 +162,12 @@ Passing an empty `labels.hint` omits the optional hint element, allowing a host 
 - `dist/quno-datepicker.css` — optional default theme.
 - `dist/index.d.ts` and component/model declaration files — public TypeScript contracts.
 
-The current production output is approximately 26.42 kB JavaScript (7.02 kB
-gzip) plus 11.28 kB optional CSS (2.32 kB gzip). Preact is external. Run
+The current production output is approximately 29.11 kB JavaScript (7.73 kB
+gzip) plus 11.32 kB optional CSS (2.32 kB gzip). Preact is external. Run
 `npm run report:size` after a build for current measured values.
 
 The interactive demo remains available through `npm run dev`; it is not part of the published JavaScript entry.
 
 ## Deferred beyond V1
 
-Natural-language parsing, presets, disabled-date constraints, long-press touch gestures, and pill editing/dragging are intentionally not included yet. Native button focus and activation work, but full arrow-key grid navigation and advanced touch handling remain follow-up work.
+Natural-language parsing, presets, disabled-date constraints, long-press touch gestures, and pill editing/dragging are intentionally not included yet. Direct touch painting and dragging work on the date grid, and native button focus and activation work, but full arrow-key grid navigation and advanced touch handling remain follow-up work.

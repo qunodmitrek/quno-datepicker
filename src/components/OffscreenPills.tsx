@@ -5,7 +5,7 @@ import {
   type IsoDate,
 } from './dateRangeModel';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
-import type { MonthChangeSource } from './useDatePickerController';
+import type { MonthChangeSource } from './datePickerControllerTypes';
 import type { JSX } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
