@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/preact';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { QunoDatePicker } from '../src';
-import { day, overflowDay, weekday } from './datePickerTestUtils';
+import { day, overflowDay, slot, weekday } from './datePickerTestUtils';
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -36,6 +36,50 @@ describe('QunoDatePicker touch painting', () => {
       start: '2026-08-04',
       end: '2026-08-09',
     });
+  });
+
+  it('keeps the last valid date while the finger crosses a grid gap', () => {
+    const onChange = vi.fn();
+    render(
+      <QunoDatePicker initialMonth="2026-08-01" onChange={onChange} />,
+    );
+    const origin = day('2026-08-04');
+
+    fireEvent.pointerDown(origin, { pointerId: 8, pointerType: 'touch' });
+    expect(slot('grid')).toHaveAttribute('data-interaction-active', 'true');
+    hitDate('2026-08-09');
+    fireEvent.pointerMove(origin, { pointerId: 8, pointerType: 'touch' });
+    expect(day('2026-08-06')).toHaveAttribute('data-selected', 'true');
+
+    hitElement(slot('grid'));
+    fireEvent.pointerMove(origin, { pointerId: 8, pointerType: 'touch' });
+    expect(day('2026-08-06')).toHaveAttribute('data-selected', 'true');
+    fireEvent.pointerUp(origin, { pointerId: 8, pointerType: 'touch' });
+
+    expect(onChange).toHaveBeenLastCalledWith({
+      start: '2026-08-04',
+      end: '2026-08-09',
+    });
+    expect(slot('grid')).not.toHaveAttribute('data-interaction-active');
+  });
+
+  it('does not repaint for repeated touch moves within one date', () => {
+    const styleDay = vi.fn(() => undefined);
+    render(
+      <QunoDatePicker
+        initialMonth="2026-08-01"
+        getDayCellProps={styleDay}
+      />,
+    );
+    const origin = day('2026-08-04');
+
+    fireEvent.pointerDown(origin, { pointerId: 10, pointerType: 'touch' });
+    hitDate('2026-08-09');
+    fireEvent.pointerMove(origin, { pointerId: 10, pointerType: 'touch' });
+    const callsAfterDateChange = styleDay.mock.calls.length;
+    fireEvent.pointerMove(origin, { pointerId: 10, pointerType: 'touch' });
+
+    expect(styleDay).toHaveBeenCalledTimes(callsAfterDateChange);
   });
 
   it('discards the transient range when the touch pointer is cancelled', () => {

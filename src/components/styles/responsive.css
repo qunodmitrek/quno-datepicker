@@ -46,6 +46,12 @@
       color 140ms ease,
       box-shadow 140ms ease;
   }
+
+  .quno-date-picker__grid[data-interaction-active='true']
+    .quno-date-picker__day
+    > span {
+    transition: none;
+  }
 }
 
 @keyframes quno-date-picker-number-from-top {

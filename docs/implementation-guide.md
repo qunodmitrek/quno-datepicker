@@ -95,7 +95,10 @@ Pointer gestures are direct manipulation:
 The same paint, resize, and move gestures accept direct touch. On iPhone the
 grid resolves the date currently beneath the finger rather than the element
 that received the initial touch, so implicit pointer capture does not collapse
-a painted range back to its starting day. Page scrolling remains available
+a painted range back to its starting day. Repeated raw moves within one date do
+not rerender the preview, and a brief hit-test gap retains the last valid date.
+Day-color transitions pause until release, preventing earlier transient
+endpoints from lingering outside the range. Page scrolling remains available
 outside the date grid. Moving the captured finger into a weekday label reveals
 that hidden previous-week date through the same typed drag model. Returning to
 the normal grid clears the projection; releasing on the hidden date commits it
@@ -162,9 +165,21 @@ Set component-scoped tokens on `className` or a wrapper:
 
 ```css
 .booking-dates {
-  --quno-picker-width: 100%;
+  --quno-picker-width: min(100%, 320px);
+  --quno-picker-day-size: 36px;
+  --quno-picker-day-size-mobile: 34px;
   --quno-picker-primary: #6d28d9;
   --quno-picker-primary-soft: #f0e8ff;
+  --quno-picker-selection-surface: #f0e8ff;
+  --quno-picker-cycle-preview: #db2777;
+  --quno-picker-pill-surface: #f0e8ff;
+  --quno-picker-pill-border: #6d28d9;
+  --quno-picker-pill-text: #4c1d95;
+  --quno-picker-pill-radius: 8px;
+  --quno-picker-pill-shadow: 4px 4px 0 #db2777;
+  --quno-picker-pills-direction: row;
+  --quno-picker-pills-wrap: nowrap;
+  --quno-picker-pills-gap: 6px;
   --quno-picker-text: #21172f;
   --quno-picker-calendar-radius: 12px;
   --quno-picker-day-radius: 6px;
@@ -178,6 +193,13 @@ Set component-scoped tokens on `className` or a wrapper:
 For deeper styling, use `classNames` or stable `data-slot` attributes. Preserve
 the documented state attributes when styling selection, dragging, month motion,
 endpoint-pill presence, weekday overflow, and repeated-click previews.
+Individual endpoint controls expose `data-endpoint="start|end"` when a design
+needs to distinguish them. Pill gap, padding, border width, font size, and label
+weight also have component-scoped `--quno-picker-pill-*` tokens. Constrained
+layouts can set `--quno-picker-pills-direction`, `-wrap`, `-align`, and `-gap` while
+retaining each control at full size. Themes with solid vertical shadows can use
+`--quno-picker-pill-offset-before` and `--quno-picker-pill-offset-after` to
+place stable controls beyond those painted shadow areas.
 
 ## 9. Integrate with forms
 
@@ -214,6 +236,13 @@ around coordinating two date inputs. It keeps one calendar visible, represents
 single-day and multi-day values with one type, and treats click, endpoint drag,
 whole-range movement, and new-range painting as transformations of that value.
 
+That removes several common sources of range-picker friction: there is no
+required From-then-To sequence, a single day needs one click, editing does not
+restart the range, and repeating a contextual click corrects an unwanted
+endpoint guess. The fixed six-week view, trailing context row, hidden prior
+week, and equivalent direct-touch gestures keep those edits spatially stable
+across month boundaries and mobile layouts.
+
 This is especially useful when users revise ranges repeatedly or work with long
 periods. Off-screen endpoint controls preserve context without a second month.
 Committed state remains separate from hover and drag previews, so the host does
@@ -226,9 +255,9 @@ comparison of two distant months may still prefer a two-panel picker.
 
 The current V1 production build contains approximately:
 
-- 29.11 kB JavaScript raw, 7.73 kB gzip.
-- 11.32 kB optional CSS raw, 2.32 kB gzip.
-- 10.05 kB gzip total when the default theme is used.
+- 29.57 kB JavaScript raw, 7.81 kB gzip.
+- 12.09 kB optional CSS raw, 2.47 kB gzip.
+- 10.28 kB gzip total when the default theme is used.
 - No bundled Preact runtime; Preact remains a peer dependency.
 
 Run `npm run build` and then `npm run report:size` to measure the current
@@ -250,5 +279,11 @@ own live datepicker rather than relying on screenshots:
 8. Compare directional micro-animation with a reduced-motion presentation.
 9. Style Today, weekends, and non-working dates through `getDayCellProps`, with
    the typed callback recipe beside the live result.
-10. Switch component-scoped color, radius, surface, and motion tokens without
-    changing behavior, with the scoped CSS recipe beside the switcher.
+10. Inspect French month, date, weekday, and control-label localization with a
+    Monday-first week, paired with a copyable locale and labels recipe.
+11. Switch component-scoped geometry, color, radius, surface, and motion tokens
+    across five skins—including 300px compact and large-day constrained
+    examples—with the scoped CSS recipe beside the switcher. Every custom skin
+    also demonstrates a contrasting repeated-click preview outline and themed
+    Start/End pills after month navigation; Candy additionally matches its
+    summary surface to its selected-day fill.

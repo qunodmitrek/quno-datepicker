@@ -22,7 +22,7 @@
   box-sizing: border-box;
 }
 
-.quno-date-picker button {
+.quno-date-picker :where(button) {
   font: inherit;
 }
 
@@ -34,7 +34,10 @@
   padding: 14px 16px;
   border: 1px solid var(--quno-picker-border, #dfe3eb);
   border-radius: var(--quno-picker-header-radius, 12px);
-  background: var(--quno-picker-surface, #fff);
+  background: var(
+    --quno-picker-selection-surface,
+    var(--quno-picker-surface, #fff)
+  );
   box-shadow: var(--quno-picker-header-shadow, 0 8px 30px rgb(20 32 43 / 7%));
 }
 

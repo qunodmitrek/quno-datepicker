@@ -73,6 +73,7 @@ export const CalendarGrid = ({
       className={clsx('quno-date-picker__grid', classNames?.grid)}
       data-slot="grid"
       data-dragging={movingSelection ? 'move' : undefined}
+      data-interaction-active={interactionActive ? 'true' : undefined}
       data-month-motion={
         monthMotion === -1 ? 'previous' : monthMotion === 1 ? 'next' : undefined
       }
@@ -160,7 +161,8 @@ export const CalendarGrid = ({
               pointer.beginPointer(event, date);
             }}
             onPointerMove={pointer.movePointer}
-            onPointerEnter={() => {
+            onPointerEnter={(event) => {
+              if (event.pointerType === 'touch') return;
               onOverflowChange(null);
               onEnter(date);
             }}

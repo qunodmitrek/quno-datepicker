@@ -2,29 +2,39 @@ import type { JSX } from 'preact';
 
 const comparisons = [
   [
-    'Calendar surface',
-    'Often two months side by side',
-    'One stable six-week month',
+    'Forced order',
+    'Choose From first, then choose To',
+    'Click, paint, resize, or move in any order',
   ],
   [
-    'Editing',
-    'Start a new selection sequence',
-    'Edit the range already present',
+    'Layout stability',
+    'Uneven month geometry or shifting two-panel layouts',
+    'One stable six-week month and one-line title',
   ],
   [
-    'Long ranges',
-    'Navigate away from an unseen endpoint',
-    'Persistent Start and End controls',
+    'Editing an existing range',
+    'Restart the From–To selection sequence',
+    'Jump near an endpoint, click nearby, or drag it directly',
   ],
   [
-    'Pointer model',
-    'Mostly click-to-pick',
-    'Resize, move, paint, and cross months',
+    'Selecting one day',
+    'Often click the same date twice',
+    'One click creates start equal to end',
   ],
   [
-    'Customization',
-    'Theme-specific markup',
-    'Tokens, slots, callbacks, or no CSS',
+    'Fixing a wrong guess',
+    'An outside date often starts a new selection',
+    'One click applies context; repeat it for the other endpoint or one day',
+  ],
+  [
+    'Cross-month dragging',
+    'Only the small adjacent-date overlap is usable',
+    'A trailing context row plus a hidden prior week in the day names',
+  ],
+  [
+    'Mobile parity',
+    'Touch is often a reduced tap-only flow',
+    'Tap, paint, resize, move, and hidden-week drag use the same model',
   ],
 ];
 
@@ -34,26 +44,26 @@ export const DifferenceStory = (): JSX.Element => (
       <span>Why another datepicker?</span>
       <h2>Range editing, not two date inputs sharing a box</h2>
       <p>
-        Conventional range pickers optimize for choosing Start and then End.
-        Quno optimizes for seeing and reshaping one existing period. That makes
-        the interaction compact and continuous when dates change repeatedly.
+        The difference is not the number of calendars by itself. It is whether
+        choosing and correcting a period follows the user’s intent or forces a
+        From–To sequence to start over.
       </p>
     </div>
     <div
       className="story__comparison"
       role="table"
-      aria-label="Picker comparison"
+      aria-label="Range picker friction comparison"
     >
       <div className="story__comparison-row story__comparison-head" role="row">
-        <span role="columnheader">Concern</span>
+        <span role="columnheader">Friction</span>
         <span role="columnheader">Conventional pattern</span>
-        <span role="columnheader">Quno approach</span>
+        <span role="columnheader">Direct range editing</span>
       </div>
-      {comparisons.map(([concern, common, quno]) => (
+      {comparisons.map(([concern, common, directEditing]) => (
         <div className="story__comparison-row" role="row" key={concern}>
           <strong role="cell">{concern}</strong>
           <span role="cell">{common}</span>
-          <span role="cell">{quno}</span>
+          <span role="cell">{directEditing}</span>
         </div>
       ))}
     </div>
@@ -94,7 +104,7 @@ export const FootprintStory = (): JSX.Element => (
   <section className="story__wide story__footprint" id="footprint">
     <div className="story__section-heading">
       <span>Production footprint</span>
-      <h2>About 10.1 kB gzip with the default theme</h2>
+      <h2>About 10.3 kB gzip with the default theme</h2>
       <p>
         V1 ships as typed ESM. Preact remains a peer dependency, so the package
         does not bundle another framework runtime. The stylesheet is optional.
@@ -102,12 +112,12 @@ export const FootprintStory = (): JSX.Element => (
     </div>
     <div className="story__metrics">
       <div>
-        <strong>7.73 kB</strong><span>JavaScript gzip</span>
-        <small>29.11 kB raw</small>
+        <strong>7.81 kB</strong><span>JavaScript gzip</span>
+        <small>29.57 kB raw</small>
       </div>
       <div>
-        <strong>2.32 kB</strong><span>CSS gzip</span>
-        <small>11.32 kB raw</small>
+        <strong>2.47 kB</strong><span>CSS gzip</span>
+        <small>12.09 kB raw</small>
       </div>
       <div>
         <strong>0 kB</strong><span>Bundled Preact</span>

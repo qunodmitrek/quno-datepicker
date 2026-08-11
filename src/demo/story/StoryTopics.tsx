@@ -11,12 +11,17 @@ import {
   ShortcutExample,
   StableViewExample,
 } from './NavigationExamples';
-import { DayHandlerExample, ThemeExample } from './CustomizationExamples';
+import {
+  DayHandlerExample,
+  LocalizationExample,
+  ThemeExample,
+} from './CustomizationExamples';
 import { StoryFeature } from './StoryFeature';
 import { StoryHowTo } from './StoryHowTo';
 import {
   basicUsageSnippet,
   customDaysSnippet,
+  localizationSnippet,
   themingSnippet,
 } from './storySnippets';
 
@@ -75,17 +80,26 @@ export const StoryTopics = (): JSX.Element => (
     </StoryFeature>
     <StoryFeature id="day-handler" number="09" kicker="Day handler"
       title="Mark the dates that matter to your product."
-      copy="Give Quno one function that runs for every date. It can add a class, color, or tooltip for Today, weekends, non-working days, holidays, or availability. Quno still owns clicks, dragging, focus, and screen-reader labels, so styling a date cannot break selection."
-      instruction="Today has an orange ring, weekends are brown, and every Wednesday is crossed out. The calendar remains fully interactive."
+      copy="Give the component one function that runs for every date. It can add a class, color, or tooltip for Today, weekends, non-working days, holidays, or availability. The datepicker still owns clicks, dragging, focus, and screen-reader labels, so styling a date cannot break selection."
+      instruction="Today has an orange ring, weekends are brown, every Wednesday is crossed out, and 27 August is marked by its exact date. The calendar remains fully interactive."
       howTo={<StoryHowTo title="Custom day attributes" language="TSX"
-        copy="Return presentation-only props from typed date context; Quno keeps every interaction handler."
+        copy="Return presentation-only props from typed date context; the component keeps every interaction handler."
         code={customDaysSnippet} />}>
       <DayHandlerExample />
     </StoryFeature>
-    <StoryFeature id="theming" number="10" kicker="Design tokens"
+    <StoryFeature id="localization" number="10" kicker="Internationalization"
+      title="Locale is more than a translated month name."
+      copy="Locale-aware month, date, day-label, and weekday formatting work together with translated interface labels and a configurable first day of the week. Products can replace any formatter without changing timezone-free values."
+      instruction="Navigate months, inspect the French date summary and weekday labels, then use Effacer. Monday remains the first column."
+      howTo={<StoryHowTo title="Localization" language="TSX"
+        copy="Set the locale and week start, then translate every visible control label your product uses."
+        code={localizationSnippet} />}>
+      <LocalizationExample />
+    </StoryFeature>
+    <StoryFeature id="theming" number="11" kicker="Design tokens"
       title="Fixed contracts, flexible skin."
-      copy="Component-scoped tokens control sizes, colors, radii, surfaces, shadows, and motion. Stable slot classes support deeper layouts, and the complete default stylesheet remains optional."
-      instruction="Switch themes; the interaction and calendar geometry remain the same."
+      copy="Component-scoped tokens control geometry as well as color, radii, surfaces, shadows, endpoint pills, and motion. Acid compresses the calendar into 300px; Candy enlarges its day tracks inside 390px and carries its pink selected-day fill into the period summary."
+      instruction="Switch to Acid or Candy. Click 15 and hover it for the next-click outline, then use a month chevron once to reveal the themed Start and End pills."
       howTo={<StoryHowTo title="Theme with tokens" language="CSS + TSX"
         copy="Set scoped custom properties on the component class; no global theme selector is required."
         code={themingSnippet} />} reverse>

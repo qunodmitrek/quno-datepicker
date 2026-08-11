@@ -68,7 +68,10 @@ export const WeekdayStrip = ({
       data-drag-overflow={mode.type === 'previous-dates' ? 'previous' : undefined}
       data-drag-active={dragActive ? 'true' : undefined}
       aria-hidden="true"
-      onPointerEnter={(event) => revealAt(targetIndex(event.target, weekdays))}
+      onPointerEnter={(event) => {
+        if (event.pointerType === 'touch') return;
+        revealAt(targetIndex(event.target, weekdays));
+      }}
       onPointerLeave={() => setMode({ type: 'weekdays' })}
       onPointerUp={(event) => {
         if (!dragActive) return;
@@ -95,7 +98,9 @@ export const WeekdayStrip = ({
               data-day-index={dayIndex}
               data-touch-date={date}
               data-touch-index={index}
-              onPointerEnter={() => revealAt(index)}
+              onPointerEnter={(event) => {
+                if (event.pointerType !== 'touch') revealAt(index);
+              }}
             >
               {formatters.weekday(dayIndex, locale)}
             </span>
@@ -142,7 +147,9 @@ export const WeekdayStrip = ({
             data-range-start={isStart ? 'true' : undefined}
             data-range-end={isEnd ? 'true' : undefined}
             data-outside="true"
-            onPointerEnter={() => revealAt(index)}
+            onPointerEnter={(event) => {
+              if (event.pointerType !== 'touch') revealAt(index);
+            }}
             onPointerUp={(event) => {
               event.preventDefault();
               event.stopPropagation();

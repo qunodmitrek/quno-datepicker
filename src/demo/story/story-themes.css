@@ -1,0 +1,101 @@
+.story__picker--warm,
+.story__theme--warm {
+  --quno-picker-primary: #d45a1f;
+  --quno-picker-primary-soft: #fff0e8;
+  --quno-picker-cycle-preview: #087f5b;
+  --quno-picker-pill-surface: #fff0e8;
+  --quno-picker-pill-border: #d45a1f;
+  --quno-picker-pill-text: #8a3412;
+  --quno-picker-pill-radius: 12px;
+}
+
+.story__picker--violet,
+.story__theme--violet {
+  --quno-picker-primary: #6d28d9;
+  --quno-picker-primary-soft: #f0e8ff;
+  --quno-picker-cycle-preview: #db2777;
+  --quno-picker-pill-surface: #f0e8ff;
+  --quno-picker-pill-border: #6d28d9;
+  --quno-picker-pill-text: #4c1d95;
+  --quno-picker-pill-radius: 8px;
+}
+
+.story__theme--violet {
+  --quno-picker-calendar-radius: 8px;
+  --quno-picker-day-radius: 50%;
+}
+
+.story__theme--warm {
+  --quno-picker-calendar-radius: 24px;
+  --quno-picker-header-radius: 18px;
+  --quno-picker-day-radius: 5px;
+}
+
+.story__theme--acid {
+  --quno-picker-width: min(100%, 300px);
+  --quno-picker-day-size: 34px;
+  --quno-picker-day-size-mobile: 34px;
+  --quno-picker-primary: #eaff00;
+  --quno-picker-primary-soft: #ff3cac;
+  --quno-picker-cycle-preview: #25f4ee;
+  --quno-picker-on-primary: #11130c;
+  --quno-picker-surface: #171913;
+  --quno-picker-text: #f8ffe8;
+  --quno-picker-muted: #b8c692;
+  --quno-picker-border: #eaff00;
+  --quno-picker-calendar-radius: 0;
+  --quno-picker-header-radius: 0;
+  --quno-picker-day-radius: 0;
+  --quno-picker-calendar-shadow: 8px 8px 0 #ff3cac;
+  --quno-picker-header-shadow: 5px 5px 0 #25f4ee;
+  --quno-picker-font-family: "Arial Black", Impact, sans-serif;
+  --quno-picker-pill-surface: #ff3cac;
+  --quno-picker-pill-border: #eaff00;
+  --quno-picker-pill-text: #11130c;
+  --quno-picker-pill-radius: 0;
+  --quno-picker-pill-font-size: 12px;
+  --quno-picker-pill-gap: 4px;
+  --quno-picker-pill-padding: 8px 5px;
+  --quno-picker-pill-shadow: 5px 5px 0 #25f4ee;
+  --quno-picker-pill-offset-before: 17px;
+  --quno-picker-pill-offset-after: 20px;
+  --quno-picker-pills-direction: row;
+  --quno-picker-pills-gap: 6px;
+  --quno-picker-pills-wrap: nowrap;
+  --quno-picker-pill-reveal-distance: 90px;
+}
+
+.story__theme--candy {
+  --quno-picker-width: min(100%, 390px);
+  --quno-picker-day-size: 48px;
+  --quno-picker-day-size-mobile: 44px;
+  --quno-picker-primary: #7c3aed;
+  --quno-picker-primary-soft: #ffd1e3;
+  --quno-picker-selection-surface: #ffd1e3;
+  --quno-picker-cycle-preview: #e11d48;
+  --quno-picker-on-primary: #fff7fb;
+  --quno-picker-surface: #fff7fb;
+  --quno-picker-text: #402060;
+  --quno-picker-muted: #9d5c82;
+  --quno-picker-border: #ff8fbd;
+  --quno-picker-calendar-radius: 38px;
+  --quno-picker-header-radius: 28px;
+  --quno-picker-day-radius: 50%;
+  --quno-picker-calendar-shadow: 0 18px 0 #b8f2e6;
+  --quno-picker-header-shadow: 0 8px 0 #ffe66d;
+  --quno-picker-font-family: Georgia, "Times New Roman", serif;
+  --quno-picker-pill-surface: #ffd1e3;
+  --quno-picker-pill-border: #ff8fbd;
+  --quno-picker-pill-text: #7c3aed;
+  --quno-picker-pill-radius: 999px;
+  --quno-picker-pill-shadow: 0 6px 0 #ffe66d;
+  --quno-picker-pill-offset-before: 16px;
+  --quno-picker-pill-offset-after: 26px;
+  --quno-picker-pills-wrap: wrap;
+}
+
+@media (max-width: 440px) {
+  .story__theme--candy {
+    --quno-picker-pill-reveal-distance: 90px;
+  }
+}

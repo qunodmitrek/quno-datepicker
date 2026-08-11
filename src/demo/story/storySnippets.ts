@@ -14,18 +14,57 @@ export const customDaysSnippet = `import {
 } from '@quno/datepicker';
 
 const styleDay: QunoDatePickerDayCellCustomizer = ({
+  date,
   isToday,
   isWeekend,
-}) => ({
-  className: isWeekend ? 'booking-date--weekend' : undefined,
-  title: isToday ? 'Today' : undefined,
-});
+  weekday,
+}) => {
+  const isNonWorking = weekday === 3; // Sunday is 0; Wednesday is 3.
+  const isHoliday = date === '2026-08-27';
+  return {
+    className: [
+      isToday && 'booking-date--today',
+      isWeekend && 'booking-date--weekend',
+      isNonWorking && 'booking-date--non-working',
+      isHoliday && 'booking-date--holiday',
+    ].filter(Boolean).join(' '),
+    title: isHoliday ? 'Clinic holiday' : undefined,
+  };
+};
 
 <QunoDatePicker getDayCellProps={styleDay} />;`;
 
+export const localizationSnippet = `<QunoDatePicker
+  locale="fr-FR"
+  weekStartsOn={1}
+  labels={{
+    calendar: 'Sélecteur de période',
+    selectedPeriod: 'Période sélectionnée',
+    chooseDate: 'Choisir une date',
+    clear: 'Effacer',
+    start: 'Début',
+    end: 'Fin',
+    previousMonth: 'Mois précédent',
+    nextMonth: 'Mois suivant',
+    hint: '',
+  }}
+/>`;
+
 export const themingSnippet = `.booking-dates {
+  --quno-picker-width: min(100%, 320px);
+  --quno-picker-day-size: 36px;
   --quno-picker-primary: #6d28d9;
   --quno-picker-primary-soft: #f0e8ff;
+  --quno-picker-selection-surface: #f0e8ff;
+  --quno-picker-cycle-preview: #db2777;
+  --quno-picker-pill-surface: #f0e8ff;
+  --quno-picker-pill-border: #6d28d9;
+  --quno-picker-pill-text: #4c1d95;
+  --quno-picker-pill-radius: 8px;
+  --quno-picker-pill-shadow: 4px 4px 0 #db2777;
+  --quno-picker-pills-direction: row;
+  --quno-picker-pills-wrap: nowrap;
+  --quno-picker-pills-gap: 6px;
   --quno-picker-calendar-radius: 12px;
   --quno-picker-day-radius: 6px;
 }

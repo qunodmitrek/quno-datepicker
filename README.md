@@ -14,10 +14,11 @@ Update these records in the same change as the code they describe.
 
 - [Implementation guide](./docs/implementation-guide.md) — copyable setup,
   state, localization, styling, and form-integration recipes.
-- Interactive field guide — run `npm run dev` and open `/story` for ten live
+- Interactive field guide — run `npm run dev` and open `/story` for eleven live
   chapters covering painting, dragging, the stable six-week view, hidden-week
-  navigation, click correction, endpoint shortcuts, motion, day handlers, and
-  theming, with implementation recipes placed beside their live outcomes.
+  navigation, click correction, endpoint shortcuts, motion, day handlers,
+  internationalization, and theming, with implementation recipes placed beside
+  their live outcomes.
 
 ## V1 behavior
 
@@ -31,7 +32,7 @@ Update these records in the same change as the code they describe.
 - Drag inside the selected period to move it by snapped calendar days without changing duration.
 - Whole-range, one-day, and start/end endpoint drags use a grabbing cursor and suppress the ordinary hovered-day outline while the pointer action is active.
 - Begin a drag outside the selected period to paint a fresh range from that cell. Until movement occurs, the same pointer action remains an ordinary contextual click on the existing range.
-- Mouse, pen, and direct-touch painting resolve the calendar cell currently under the pointer even when iPhone implicitly captures the gesture on its starting cell. Moving a captured finger into the weekday strip resolves and progressively reveals the matching hidden previous-week dates; returning to the grid clears them, and release commits through the same outside-month behavior. The date grid owns touch movement instead of page panning while a gesture is active; scrolling remains available outside the grid.
+- Mouse, pen, and direct-touch painting resolve the calendar cell currently under the pointer even when iPhone implicitly captures the gesture on its starting cell. Touch moves are coalesced by resolved calendar date; crossing a grid gap retains the last valid date instead of snapping the preview back to the captured origin. Day-color transitions pause during the active gesture so earlier endpoints cannot leave short-lived visual ghosts. Moving a captured finger into the weekday strip resolves and progressively reveals the matching hidden previous-week dates; returning to the grid clears them, and release commits through the same outside-month behavior. The date grid owns touch movement instead of page panning while a gesture is active; scrolling remains available outside the grid.
 - Holding a drag at either month edge navigates after a 400 ms delay and repeats while held.
 - When the visible month changes, its name and day numbers enter vertically in the travel direction while the calendar frame and selection geometry stay fixed. Motion is disabled when the user prefers reduced motion.
 - Previous/next controls use symmetric SVG chevrons centered within their unchanged circular hit areas.
@@ -117,9 +118,21 @@ The default stylesheet does not write theme values to `:root`. Every default is 
 ```css
 .booking-dates {
   --quno-picker-width: 100%;
+  --quno-picker-day-size: 36px;
+  --quno-picker-day-size-mobile: 34px;
   --quno-picker-font-family: "Source Sans 3", sans-serif;
   --quno-picker-primary: #6d28d9;
   --quno-picker-primary-soft: #ede9fe;
+  --quno-picker-selection-surface: #ede9fe;
+  --quno-picker-cycle-preview: #db2777;
+  --quno-picker-pill-surface: #ede9fe;
+  --quno-picker-pill-border: #6d28d9;
+  --quno-picker-pill-text: #4c1d95;
+  --quno-picker-pill-radius: 8px;
+  --quno-picker-pill-shadow: 4px 4px 0 #db2777;
+  --quno-picker-pills-direction: row;
+  --quno-picker-pills-wrap: nowrap;
+  --quno-picker-pills-gap: 6px;
   --quno-picker-text: #1f172a;
   --quno-picker-muted: #6b6475;
   --quno-picker-border: #ddd6e8;
@@ -129,9 +142,9 @@ The default stylesheet does not write theme values to `:root`. Every default is 
 }
 ```
 
-Additional tokens cover disabled and outside-month text, pill colors, shadows, day sizing, the cycle-preview outline (`--quno-picker-cycle-preview`), month-scroll duration/distance, and endpoint-pill reveal duration/distance (`--quno-picker-pill-reveal-duration` and `--quno-picker-pill-reveal-distance`). Inspect `QunoDatePicker.css` for the complete token list.
+Additional tokens cover disabled and outside-month text, the selection-summary surface, endpoint-pill colors/spacing/radius/shadow/type, before/after shadow offsets, and track direction/wrapping/alignment/gap, desktop/mobile day sizing, the cycle-preview outline (`--quno-picker-cycle-preview`), month-scroll duration/distance, and endpoint-pill reveal duration/distance (`--quno-picker-pill-reveal-duration` and `--quno-picker-pill-reveal-distance`). Start and End pills can also be targeted individually through `data-endpoint`. The `/story` theme switcher includes compact and large-day skins to exercise these contracts under tighter constraints. Inspect `QunoDatePicker.css` for the complete token list.
 
-Every meaningful element also has a stable `data-slot` value, including `root`, `selection-header`, `clear-button`, `pills`, `pill`, `calendar`, `month-header`, `month-heading`, `weekdays`, `weekday`, `overflow-day`, `grid`, `day`, `handle`, and `hint`. The root exposes `data-pill-before` and `data-pill-after` while matching off-screen endpoints are present; pill containers expose `data-presence="entering|visible|exiting"`, and individual controls expose the same lifecycle through `data-item-presence`; the month heading and grid expose `data-month-motion="previous|next"`; the calendar and grid expose `data-dragging="move"` while a whole range, one-day selection, or endpoint is directly manipulated; the weekday strip exposes `data-drag-active` and `data-drag-overflow`; date cells expose state through `data-selected`, `data-committed`, `data-range-start`, `data-range-end`, `data-outside`, `data-cycle-trigger`, and cycle-preview segment attributes.
+Every meaningful element also has a stable `data-slot` value, including `root`, `selection-header`, `clear-button`, `pills`, `pill`, `calendar`, `month-header`, `month-heading`, `weekdays`, `weekday`, `overflow-day`, `grid`, `day`, `handle`, and `hint`. The root exposes `data-pill-before` and `data-pill-after` while matching off-screen endpoints are present; pill containers expose `data-presence="entering|visible|exiting"`, and individual controls expose the same lifecycle through `data-item-presence`; the month heading and grid expose `data-month-motion="previous|next"`; the calendar and grid expose `data-dragging="move"` while a whole range, one-day selection, or endpoint is directly manipulated, and the grid exposes `data-interaction-active` for the complete pointer gesture; the weekday strip exposes `data-drag-active` and `data-drag-overflow`; date cells expose state through `data-selected`, `data-committed`, `data-range-start`, `data-range-end`, `data-outside`, `data-cycle-trigger`, and cycle-preview segment attributes.
 
 For utility-class systems or CSS modules, pass project classes without replacing the built-in behavior classes:
 
@@ -162,8 +175,8 @@ Passing an empty `labels.hint` omits the optional hint element, allowing a host 
 - `dist/quno-datepicker.css` — optional default theme.
 - `dist/index.d.ts` and component/model declaration files — public TypeScript contracts.
 
-The current production output is approximately 29.11 kB JavaScript (7.73 kB
-gzip) plus 11.32 kB optional CSS (2.32 kB gzip). Preact is external. Run
+The current production output is approximately 29.57 kB JavaScript (7.81 kB
+gzip) plus 12.09 kB optional CSS (2.47 kB gzip). Preact is external. Run
 `npm run report:size` after a build for current measured values.
 
 The interactive demo remains available through `npm run dev`; it is not part of the published JavaScript entry.

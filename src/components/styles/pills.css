@@ -7,10 +7,12 @@
 
 .quno-date-picker__pills-track {
   display: flex;
+  flex-direction: var(--quno-picker-pills-direction, row);
+  flex-wrap: var(--quno-picker-pills-wrap, nowrap);
   overflow: visible;
   min-height: 0;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: var(--quno-picker-pills-align, flex-start);
+  gap: var(--quno-picker-pills-gap, 8px);
   padding: 0 4px;
 }
 
@@ -19,20 +21,29 @@
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 11px;
-  border: 1px solid var(--quno-picker-pill-border, #b9d0f6);
-  border-radius: 999px;
+  gap: var(--quno-picker-pill-gap, 7px);
+  padding: var(--quno-picker-pill-padding, 8px 11px);
+  border: var(--quno-picker-pill-border-width, 1px) solid
+    var(--quno-picker-pill-border, #b9d0f6);
+  border-radius: var(--quno-picker-pill-radius, 999px);
   background: var(--quno-picker-pill-surface, #f5f9ff);
+  box-shadow: var(--quno-picker-pill-shadow, none);
   color: var(--quno-picker-pill-text, #194c95);
   cursor: pointer;
-  font-size: 12px;
-  margin-top: 8px;
+  font-size: var(--quno-picker-pill-font-size, 12px);
   white-space: nowrap;
 }
 
+.quno-date-picker__pills--before .quno-date-picker__pill {
+  margin-top: var(--quno-picker-pill-offset-before, 8px);
+}
+
+.quno-date-picker__pills--after .quno-date-picker__pill {
+  margin-top: var(--quno-picker-pill-offset-after, 8px);
+}
+
 .quno-date-picker__pill span:first-child {
-  font-weight: 750;
+  font-weight: var(--quno-picker-pill-label-weight, 750);
 }
 
 .quno-date-picker__pill:hover,

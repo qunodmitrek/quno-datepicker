@@ -78,6 +78,7 @@
 }
 
 .story__idea-grid article {
+  align-content: start;
   display: grid;
   gap: 8px;
 }

@@ -30,10 +30,16 @@ const pointerTarget = (target: EventTarget | null): DayPointerTarget | null => {
   };
 };
 
-const currentTarget = (event: DayPointerEvent): DayPointerTarget | null => {
-  const hit = document.elementFromPoint?.(event.clientX, event.clientY);
-  return pointerTarget(hit) ?? pointerTarget(event.target);
-};
+const currentTarget = (event: DayPointerEvent): DayPointerTarget | null =>
+  typeof document.elementFromPoint === 'function'
+    ? pointerTarget(document.elementFromPoint(event.clientX, event.clientY))
+    : pointerTarget(event.target);
+
+const sameTarget = (
+  left: DayPointerTarget,
+  right: DayPointerTarget,
+): boolean =>
+  left.date === right.date && left.overflowIndex === right.overflowIndex;
 
 const pointerId = (event: DayPointerEvent): number => event.pointerId ?? 0;
 
@@ -60,7 +66,10 @@ export const useDayPointer = ({
   finish,
   cancel,
 }: Callbacks) => {
-  const active = useRef<{ id: number; start: IsoDate } | null>(null);
+  const active = useRef<{
+    id: number;
+    last: DayPointerTarget;
+  } | null>(null);
   const matches = (event: DayPointerEvent): boolean =>
     active.current?.id === pointerId(event) ||
     (active.current === null && interactionActive);
@@ -74,7 +83,10 @@ export const useDayPointer = ({
     beginPointer: (event: DayPointerEvent, date: IsoDate): void => {
       event.preventDefault();
       const id = pointerId(event);
-      active.current = { id, start: date };
+      active.current = {
+        id,
+        last: { date, overflowIndex: null },
+      };
       capture(event.currentTarget, id);
       begin(date);
     },
@@ -82,15 +94,28 @@ export const useDayPointer = ({
       if (!matches(event)) return;
       event.preventDefault();
       const target = currentTarget(event);
-      if (target) enter(target);
+      if (
+        !target ||
+        (active.current && sameTarget(active.current.last, target))
+      ) {
+        return;
+      }
+      if (active.current) {
+        active.current.last = target;
+      } else {
+        active.current = { id: pointerId(event), last: target };
+      }
+      enter(target);
     },
     finishPointer: (event: DayPointerEvent, fallback: IsoDate): void => {
       if (!matches(event)) return;
       event.preventDefault();
-      const target = currentTarget(event) ?? {
-        date: active.current?.start ?? fallback,
-        overflowIndex: null,
-      };
+      const target =
+        currentTarget(event) ??
+        active.current?.last ?? {
+          date: fallback,
+          overflowIndex: null,
+        };
       release(event);
       finish(target);
     },

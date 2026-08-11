@@ -6,11 +6,16 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Added
 
+- Added a live internationalization chapter with French formatting and labels,
+  Monday-first week layout, a copyable public-API recipe, and table-of-contents
+  coverage.
+- Added Acid and Candy story themes that exercise a 300px compact calendar and
+  enlarged day tracks inside a constrained 390px calendar.
 - Added a copyable consumer implementation guide covering installation, state ownership, timezone-free values, visible-month control, localization, styling, day customization, forms, and integration verification.
 - Added a responsive interactive `/story` field guide with controlled, cross-month, localized, and externally styled live examples built through the public package entrypoint.
-- Added story smoke coverage for the public integration chapters, ten live calendars, and interactive theme switching.
+- Added story smoke coverage for the public integration chapters, eleven live calendars, and interactive theme switching.
 - Expanded the implementation story with the product rationale, conventional-picker comparison, gesture catalogue, styling layers, internal state model, and measured production footprint.
-- Rebuilt the main story as ten focused live exhibits for painting and endpoint drag, stable six-week navigation, weekday-strip hidden dates, whole-segment movement, contextual click construction, inline guess correction, Start/End shortcuts, reduced-motion-aware micro-animation, typed day handling, and token theming.
+- Rebuilt the main story as eleven focused live exhibits for painting and endpoint drag, stable six-week navigation, weekday-strip hidden dates, whole-segment movement, contextual click construction, inline guess correction, Start/End shortcuts, reduced-motion-aware micro-animation, typed day handling, internationalization, and token theming.
 - Added `npm run report:size` to report raw and gzip sizes for the production JavaScript and optional stylesheet.
 
 - Added a 1px, fill-free next-cycle outline that appears only while hovering the date that established the active repeated-click cycle.
@@ -41,6 +46,18 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Changed
 
+- Moved the field guide's loose top links into a complete table of contents in
+  the opening section, with descriptive destinations for every live chapter,
+  architecture, footprint, and API reference. Replaced brand-dependent labels
+  such as “Why Quno” and “Quno approach” with task-oriented language.
+- Expanded endpoint-pill theming with component-scoped radius, shadow, spacing,
+  border-width, type, and track-layout tokens; all custom story skins now style
+  Start and End controls, Acid keeps both controls on one compact 300px row,
+  and the live theme instructions explicitly reveal them.
+- Candy now uses its selected-day pink for the selected-period summary surface.
+- Gave every custom story skin a deliberate contrasting cycle-preview outline
+  and expanded the theming recipes to show width and day-size tokens.
+- Rebuilt the field guide comparison around seven user frictions—forced From–To order, layout instability, restarted edits, two-click single days, mistake correction, limited cross-month drag context, and reduced mobile behavior—instead of treating side-by-side calendars as a concern by itself.
 - Reframed `/story` as a blended product-and-implementation field guide: basic usage now sits beside the primary interaction, custom day attributes beside the day-handler exhibit, and token theming beside the live theme switcher; the generic implementation appendix became a concise complete-reference pointer.
 - Replaced the prototype start page's dense interaction paragraphs with a scannable five-action legend highlighting Click, Click again, endpoint drag, period drag, and outside painting.
 - Rewrote the story's day-handler exhibit around concrete Today, weekend, non-working-day, holiday, and availability styling examples while clarifying that the library retains interaction and accessibility behavior.
@@ -66,6 +83,19 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Fixed
 
+- Acid endpoint controls now retain a visible gap beyond the solid header and
+  calendar shadows and stay together on one non-wrapping row at the theme's
+  300px constraint. The pill font-size token now wins over inherited button
+  typography, and the spacing between controls is themeable.
+- Architecture-card code chips no longer stretch to absorb leftover card
+  height, so their blue backgrounds keep consistent vertical padding.
+- Candy and Acid endpoint pills now use separate before/after offsets sized for
+  their solid header and calendar shadows, preventing stable controls from
+  remaining underneath a shadow after their reveal motion finishes.
+- Reduced iPhone painting churn by ignoring repeated touch moves within the
+  same resolved date, retaining the last valid date through grid hit-test gaps,
+  suppressing touch `pointerenter` duplicates, and pausing day-color transitions
+  until release so obsolete transient endpoints cannot remain visible.
 - Direct-touch painting now works under iPhone's implicit pointer capture by resolving move and release coordinates to the date beneath the finger. Captured touch drags also reveal, clear, and commit hidden previous-week dates through the weekday strip; the grid suppresses page panning during date gestures, pointer cancellation discards transient state, and cross-month drags survive grid remounts.
 - Month-chevron navigation now keeps the calendar anchored when a previously visible selection becomes off-screen; newly required Start and End controls slide from beneath the calendar without also translating it.
 - Month headings now occupy one fixed, non-wrapping line and truncate unusually long custom labels, preventing month navigation from changing the calendar height in the demo, story, or consuming layouts.
@@ -94,13 +124,17 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Documentation
 
+- Made the field guide's custom-day recipe show the exact typed weekday rule
+  used by its live example: `weekday === 3` marks Wednesdays as non-working.
+- Added a date-specific holiday to the custom-day exhibit and its copyable
+  recipe, making the callback's timezone-free `date` value visible in use.
 - Added `AGENTS.md` as the repository-wide source of implementation, documentation, scope, and verification instructions.
 - Added `DECISIONS.md` to retain product and architecture rationale.
 - Added this changelog and linked all project records from `README.md`.
 
 ### Verification
 
-- `npm test`: 58 tests passed.
+- `npm test`: 60 tests passed.
 - `npm run lint`: passed.
 - `npm run check:file-size`: passed.
 - `npm run typecheck`: passed.

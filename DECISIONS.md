@@ -481,3 +481,67 @@ This file records decisions that should remain stable across implementation sess
 - Context: After direct grid painting was made coordinate-based, iPhone still could not enter the hidden previous-week row because implicit capture prevented the weekday strip from receiving its own pointer-enter and pointer-up events.
 - Decision: Give every weekday label and revealed overflow cell an internal touch date and column index. Coordinate hit testing returns either a normal grid target or a weekday-strip target. Calendar-level projection state passes the weekday index to the existing discriminated strip mode, clears it on re-entry to the grid or cancellation, and commits the resolved hidden date on release.
 - Consequences: Mouse and direct touch now share progressive hidden-week reveal, clearing, selection projection, and outside-month commitment. The weekday row keeps its fixed height and presentation-only day callback behavior. Long-press semantics and other advanced touch conventions remain deferred.
+
+## QDP-061 — Compare user friction rather than calendar count
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-052
+- Context: “Often two months side by side” describes a conventional layout but is not itself a user concern. It leaves the field guide unable to explain what becomes easier when Quno uses one stable, directly editable range.
+- Decision: Structure the comparison around seven user frictions: forced selection order, unstable layout, restarting an existing edit, two-click single-day selection, correcting an unwanted contextual guess, narrow cross-month drag context, and reduced mobile interactions. Mention one-versus-two calendars only as an explanation of layout stability.
+- Consequences: The comparison now states observable tasks and outcomes rather than presenting visual difference as inherent superiority. Each Quno claim maps to a live exhibit and implemented test contract elsewhere in the field guide.
+
+## QDP-062 — Exercise theme geometry in the live story
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-009, QDP-053, and QDP-058
+- Context: Three palette-and-radius variants do not prove that the component can fit harder host constraints, and a cycle-preview outline that retains the default blue can look accidental inside a strongly branded skin.
+- Decision: Keep the theming contract component-scoped and add two deliberately expressive story skins: a 300px compact calendar and a constrained 390px calendar with enlarged day tracks. Set a contrasting `--quno-picker-cycle-preview` value for every custom story skin and include the geometry and preview tokens in copyable recipes.
+- Consequences: The live switcher demonstrates width, desktop/mobile day sizing, palette, radius, typography, and shadow changes without altering component behavior or the public API. Future story themes should keep the next-click outline legible against both their selected fill and surface.
+
+## QDP-063 — Theme endpoint pills and selection summaries explicitly
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-009 and QDP-062
+- Context: Strongly branded calendar and day styles leave off-screen Start/End controls looking like default-theme attachments. A shared surface token also prevents a theme from matching its selected-period summary to the range fill without recoloring the entire calendar.
+- Decision: Preserve the existing pill color tokens, class hook, and `data-endpoint` contract while adding component-scoped pill radius, shadow, spacing, border-width, typography, and track-layout tokens. Give the selection header its own `--quno-picker-selection-surface` token with the calendar surface as fallback. Exercise both contracts in every custom story skin and in the copyable theme recipe.
+- Consequences: Consumers can theme both endpoint controls together through tokens, stack or wrap them under width pressure without resizing them, or distinguish Start from End through stable attributes and classes. Themes can coordinate the summary with selected days independently of the calendar surface; Candy uses this to share one pink range color across both presentations, while Acid stacks full-size pills inside 300px.
+
+## QDP-064 — Render touch painting once per calendar-date change
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-059 and QDP-060
+- Context: iPhone emits many captured `pointermove` events inside one day cell. When coordinate hit testing briefly lands on a grid gap, falling back to the captured origin collapses and repaints the transient range; 140ms day-color transitions can also leave obsolete endpoint circles visible after the finger has moved on.
+- Decision: Store the last valid coordinate-resolved touch target and call the interaction update only when its date or hidden-week index changes. If `elementFromPoint` finds no date during an active capture, retain that last target for preview and release instead of using the captured event target. Ignore touch `pointerenter` updates and disable day-span color transitions while the grid exposes `data-interaction-active`.
+- Consequences: Painting renders at calendar-date granularity rather than raw event frequency, crossing cell gaps cannot flash the origin selection, and released values still use the most recent valid date. Mouse and pen pointer-enter behavior, committed state, hidden-week projection, and cross-month continuation remain unchanged.
+
+## QDP-065 — Make the field guide contents task-oriented
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-051 and QDP-058
+- Context: Five loose links above the field-guide title neither describe the full page nor behave like a useful table of contents. Labels such as “Why Quno” and “Quno approach” assume brand familiarity instead of explaining the destination or comparison.
+- Decision: Place one complete, semantic table of contents after the opening introduction. Link every numbered live chapter plus the range-editing overview, interaction architecture, production footprint, API reference, and prototype. Name destinations by the task or contract they explain; reserve the product name for package identity rather than benefit labels.
+- Consequences: First-time readers can scan the whole guide before committing to the long page, assistive technology receives one named contents landmark, and links remain understandable without prior knowledge of the product name. New top-level story chapters must be added to this contents list with descriptive labels.
+
+## QDP-066 — Demonstrate internationalization as a live contract
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-009, QDP-053, and QDP-065
+- Context: Localization is documented as an API recipe but absent from the live field guide, so readers cannot see locale-aware dates, weekday order, translated controls, and accessibility labels working together.
+- Decision: Add internationalization as the tenth live chapter and move theming to chapter eleven. Render one French, Monday-first public-entrypoint example with translated visible and accessible labels, a concise interaction instruction, and a copyable `locale`, `weekStartsOn`, and `labels` recipe. Add the chapter to the opening contents and smoke coverage.
+- Consequences: The field guide now demonstrates eleven primary contracts. Consumers can evaluate internationalization visually and copy its configuration in context, while custom formatter recipes remain in the complete implementation guide.
+
+## QDP-067 — Offset endpoint pills beyond opaque theme shadows
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-032, QDP-037, and QDP-063
+- Context: Endpoint pills intentionally render below the calendar stacking layer so entry and exit read as motion from behind it. The default 8px stable offset works with a soft shadow, but Candy's opaque 18px downward calendar shadow continues to cover an after-calendar pill after motion settles.
+- Decision: Replace the fixed pill top margin with component-scoped `--quno-picker-pill-offset-before` and `--quno-picker-pill-offset-after` tokens, each retaining an 8px default. Size the Candy and Acid theme offsets to clear their solid vertical header/calendar shadows while preserving the existing z-index, full-size control, lifecycle, and reveal animation contracts.
+- Consequences: Strong-shadow themes can create a clean stable gap on either calendar edge without weakening the behind-calendar reveal illusion. Default consumers retain existing geometry, and before/after controls can account for asymmetric theme shadows independently.
+
+## QDP-068 — Keep compact-theme endpoint controls on one row
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes the Acid-specific stacking consequence in QDP-063
+- Context: Stacking Acid's Start and End controls made related endpoint actions scan as separate blocks and amplified layout movement. Its solid calendar shadow also left too little optical separation from an after-calendar control.
+- Decision: Keep both Acid endpoint controls on one non-wrapping row at the 300px theme constraint. Apply the public pill font-size token correctly, expose the track gap as `--quno-picker-pills-gap`, compact only Acid's internal spacing, and retain 12px of clear space beyond either vertical shadow.
+- Consequences: Start and End remain visually grouped and preserve their interaction order above or below the calendar. The longest dates used by the live example fit without shrinking, wrapping, or clipping either full-size button; other themes retain the default row and gap behavior unless explicitly customized.
