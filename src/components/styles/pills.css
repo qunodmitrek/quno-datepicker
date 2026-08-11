@@ -78,7 +78,9 @@
   }
 
   .quno-date-picker:has(
-      .quno-date-picker__pills--after[data-presence='entering']
+      .quno-date-picker__pills--after[data-presence='entering']:not(
+          [data-calendar-reveal='stationary']
+        )
     ):not(:has(.quno-date-picker__pill[data-item-presence='visible'])):not(
       :has(.quno-date-picker__pills--before[data-presence='entering'])
     ):not(

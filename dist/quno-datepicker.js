@@ -1,148 +1,156 @@
-import { jsx as c, jsxs as S } from "preact/jsx-runtime";
-import { useState as I, useEffect as W, useMemo as ut, useRef as Q } from "preact/hooks";
-function X(t) {
-  var e, n, r = "";
-  if (typeof t == "string" || typeof t == "number") r += t;
+import { jsx as p, jsxs as B } from "preact/jsx-runtime";
+import { useState as $, useEffect as J, useMemo as mt, useRef as P } from "preact/hooks";
+function at(t) {
+  var e, n, a = "";
+  if (typeof t == "string" || typeof t == "number") a += t;
   else if (typeof t == "object") if (Array.isArray(t)) {
-    var i = t.length;
-    for (e = 0; e < i; e++) t[e] && (n = X(t[e])) && (r && (r += " "), r += n);
-  } else for (n in t) t[n] && (r && (r += " "), r += n);
-  return r;
+    var d = t.length;
+    for (e = 0; e < d; e++) t[e] && (n = at(t[e])) && (a && (a += " "), a += n);
+  } else for (n in t) t[n] && (a && (a += " "), a += n);
+  return a;
 }
-function T() {
-  for (var t, e, n = 0, r = "", i = arguments.length; n < i; n++) (t = arguments[n]) && (e = X(t)) && (r && (r += " "), r += e);
-  return r;
+function E() {
+  for (var t, e, n = 0, a = "", d = arguments.length; n < d; n++) (t = arguments[n]) && (e = at(t)) && (a && (a += " "), a += e);
+  return a;
 }
-const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getUTCFullYear()}-${O(t.getUTCMonth() + 1)}-${O(
+const yt = 864e5, z = (t) => t.toString().padStart(2, "0"), H = (t) => `${t.getUTCFullYear()}-${z(t.getUTCMonth() + 1)}-${z(
   t.getUTCDate()
-)}`, A = (t) => {
-  const [e, n, r] = t.split("-").map(Number);
-  return new Date(Date.UTC(e, n - 1, r));
-}, Y = () => {
+)}`, L = (t) => {
+  const [e, n, a] = t.split("-").map(Number);
+  return new Date(Date.UTC(e, n - 1, a));
+}, V = () => {
   const t = /* @__PURE__ */ new Date();
-  return `${t.getFullYear()}-${O(t.getMonth() + 1)}-${O(
+  return `${t.getFullYear()}-${z(t.getMonth() + 1)}-${z(
     t.getDate()
   )}`;
-}, E = (t, e) => t.localeCompare(e), P = (t, e) => {
-  const n = A(t);
-  return n.setUTCDate(n.getUTCDate() + e), j(n);
-}, Z = (t, e) => Math.round((A(t).getTime() - A(e).getTime()) / pt), R = (t) => `${t.slice(0, 7)}-01`, N = (t) => {
-  const e = A(R(t));
-  return e.setUTCMonth(e.getUTCMonth() + 1), e.setUTCDate(0), j(e);
-}, gt = (t, e) => {
-  const n = A(R(t));
-  return n.setUTCMonth(n.getUTCMonth() + e), j(n);
-}, V = (t, e) => t.slice(0, 7) === e.slice(0, 7), L = (t, e) => E(t, e) <= 0 ? { start: t, end: e } : { start: e, end: t }, tt = (t, e) => {
+}, q = (t, e) => t.localeCompare(e), W = (t, e) => {
+  const n = L(t);
+  return n.setUTCDate(n.getUTCDate() + e), H(n);
+}, K = (t, e) => Math.round((L(t).getTime() - L(e).getTime()) / yt), j = (t) => `${t.slice(0, 7)}-01`, rt = (t) => {
+  const e = L(j(t));
+  return e.setUTCMonth(e.getUTCMonth() + 1), e.setUTCDate(0), H(e);
+}, ft = (t, e) => {
+  const n = L(j(t));
+  return n.setUTCMonth(n.getUTCMonth() + e), H(n);
+}, ot = (t, e) => t.slice(0, 7) === e.slice(0, 7), Z = (t, e) => q(t, e) <= 0 ? { start: t, end: e } : { start: e, end: t }, it = (t, e) => {
   if (t.start === t.end)
-    return E(e, t.start) < 0 ? "start" : "end";
-  const n = Math.abs(Z(e, t.start)), r = Math.abs(Z(e, t.end));
-  return n < r ? "start" : "end";
-}, et = (t, e, n) => {
-  const r = e === "start" ? t.end : t.start, i = e === "start" ? E(n, r) > 0 : E(n, r) < 0;
+    return q(e, t.start) < 0 ? "start" : "end";
+  const n = Math.abs(K(e, t.start)), a = Math.abs(K(e, t.end));
+  return n < a ? "start" : "end";
+}, dt = (t, e, n) => {
+  const a = e === "start" ? t.end : t.start, d = e === "start" ? q(n, a) > 0 : q(n, a) < 0;
   return {
-    range: L(n, r),
-    endpoint: i ? e === "start" ? "end" : "start" : e
+    range: Z(n, a),
+    endpoint: d ? e === "start" ? "end" : "start" : e
   };
-}, ht = (t, e, n) => n === "single" ? { start: e, end: e } : et(t, n, e).range, vt = (t, e) => {
-  const n = E(e, t.start) < 0 ? "start" : E(e, t.end) > 0 ? "end" : tt(t, e);
+}, kt = (t, e, n) => n === "single" ? { start: e, end: e } : dt(t, n, e).range, Dt = (t, e) => {
+  const n = q(e, t.start) < 0 ? "start" : q(e, t.end) > 0 ? "end" : it(t, e);
   return {
     defaultAction: n,
     alternatives: [n === "start" ? "end" : "start", "single"]
   };
-}, St = (t, e) => t ? et(t, tt(t, e), e).range : { start: e, end: e }, yt = (t, e, n) => {
-  const r = Z(n, e);
+}, Wt = (t, e) => t ? dt(t, it(t, e), e).range : { start: e, end: e }, _t = (t, e, n) => {
+  const a = K(n, e);
   return {
-    start: P(t.start, r),
-    end: P(t.end, r)
+    start: W(t.start, a),
+    end: W(t.end, a)
   };
-}, ft = (t, e = 1) => {
-  const n = A(R(t)), r = (n.getUTCDay() - e + 7) % 7, i = P(j(n), -r), u = A(N(t)), d = ((e + 6) % 7 - u.getUTCDay() + 7) % 7, p = j(u), M = P(p, d), _ = (Z(M, i) + 1) / 7, k = Math.max(6, _ + (M === p ? 1 : 0)) * 7;
+}, bt = (t, e = 1) => {
+  const n = L(j(t)), a = (n.getUTCDay() - e + 7) % 7, d = W(H(n), -a), u = L(rt(t)), o = ((e + 6) % 7 - u.getUTCDay() + 7) % 7, g = H(u), w = W(g, o), _ = (K(w, d) + 1) / 7, D = Math.max(6, _ + (w === g ? 1 : 0)) * 7;
   return Array.from(
-    { length: k },
-    (m, h) => P(i, h)
+    { length: D },
+    (C, k) => W(d, k)
   );
-}, B = (t, e) => E(t, e.start) >= 0 && E(t, e.end) <= 0, G = (t, e) => E(t, R(e)) < 0 ? "before" : E(t, N(e)) > 0 ? "after" : "visible", mt = ({
+}, I = (t, e) => q(t, e.start) >= 0 && q(t, e.end) <= 0, X = (t, e) => q(t, j(e)) < 0 ? "before" : q(t, rt(e)) > 0 ? "after" : "visible", wt = ({
   dates: t,
   visibleMonth: e,
   monthMotion: n,
-  movingSelection: r,
-  selection: i,
-  renderedSelection: u,
-  config: s,
-  onBegin: d,
-  onEnter: p,
-  onFinish: M
+  movingSelection: a,
+  cycleDate: d,
+  cyclePreview: u,
+  selection: l,
+  renderedSelection: o,
+  config: g,
+  onBegin: w,
+  onEnter: _,
+  onFinish: T
 }) => {
-  const { labels: _, formatters: D, locale: k, classNames: m, getDayCellProps: h } = s, a = Y();
-  return /* @__PURE__ */ c(
+  const { labels: D, formatters: C, locale: k, classNames: r, getDayCellProps: v } = g, s = V();
+  return /* @__PURE__ */ p(
     "div",
     {
-      className: T("quno-date-picker__grid", m == null ? void 0 : m.grid),
+      className: E("quno-date-picker__grid", r == null ? void 0 : r.grid),
       "data-slot": "grid",
-      "data-dragging": r ? "move" : void 0,
+      "data-dragging": a ? "move" : void 0,
       "data-month-motion": n === -1 ? "previous" : n === 1 ? "next" : void 0,
       role: "grid",
-      "aria-label": `${_.calendar}: ${D.month(
+      "aria-label": `${D.calendar}: ${C.month(
         e,
         k
       )}`,
-      children: t.map((o) => {
-        const l = V(o, e), g = i ? B(o, i) : !1, y = u ? B(o, u) : !1, b = (u == null ? void 0 : u.start) === o, w = (u == null ? void 0 : u.end) === o, x = A(
-          o
-        ).getUTCDay(), f = h == null ? void 0 : h({
-          date: o,
-          weekday: x,
-          isToday: o === a,
-          isWeekend: x === 0 || x === 6,
-          isOutside: !l,
-          isSelected: y,
-          isCommitted: g,
-          isRangeStart: b,
-          isRangeEnd: w
+      children: t.map((i, y) => {
+        const f = ot(i, e), c = l ? I(i, l) : !1, b = o ? I(i, o) : !1, m = (o == null ? void 0 : o.start) === i, x = (o == null ? void 0 : o.end) === i, A = u ? I(i, u) : !1, G = A && (y % 7 === 0 || !u || !I(t[y - 1], u)), Q = A && (y % 7 === 6 || !u || !I(t[y + 1], u)), Y = L(
+          i
+        ).getUTCDay(), U = v == null ? void 0 : v({
+          date: i,
+          weekday: Y,
+          isToday: i === s,
+          isWeekend: Y === 0 || Y === 6,
+          isOutside: !f,
+          isSelected: b,
+          isCommitted: c,
+          isRangeStart: m,
+          isRangeEnd: x
         });
-        return /* @__PURE__ */ S(
+        return /* @__PURE__ */ B(
           "button",
           {
             type: "button",
             role: "gridcell",
-            className: T(
+            className: E(
               "quno-date-picker__day",
               {
-                "quno-date-picker__day--outside": !l,
-                "quno-date-picker__day--selected": y,
-                "quno-date-picker__day--committed": g,
-                "quno-date-picker__day--start": b,
-                "quno-date-picker__day--end": w
+                "quno-date-picker__day--outside": !f,
+                "quno-date-picker__day--selected": b,
+                "quno-date-picker__day--committed": c,
+                "quno-date-picker__day--start": m,
+                "quno-date-picker__day--end": x
               },
-              m == null ? void 0 : m.day,
-              f == null ? void 0 : f.className
+              r == null ? void 0 : r.day,
+              U == null ? void 0 : U.className
             ),
-            style: f == null ? void 0 : f.style,
-            title: f == null ? void 0 : f.title,
+            style: U == null ? void 0 : U.style,
+            title: U == null ? void 0 : U.title,
             "data-slot": "day",
-            "data-date": o,
-            "data-range-start": b ? "true" : void 0,
-            "data-range-end": w ? "true" : void 0,
-            "data-outside": l ? void 0 : "true",
-            "data-selected": y ? "true" : void 0,
-            "data-committed": g ? "true" : void 0,
-            "aria-label": D.dayLabel(o, k),
-            "aria-selected": g,
-            onPointerDown: (q) => {
-              q.preventDefault(), d(o);
+            "data-date": i,
+            "data-cycle-trigger": d === i ? "true" : void 0,
+            "data-cycle-preview": A ? "true" : void 0,
+            "data-cycle-preview-start": G ? "true" : void 0,
+            "data-cycle-preview-end": Q ? "true" : void 0,
+            "data-cycle-preview-range-start": (u == null ? void 0 : u.start) === i ? "true" : void 0,
+            "data-cycle-preview-range-end": (u == null ? void 0 : u.end) === i ? "true" : void 0,
+            "data-range-start": m ? "true" : void 0,
+            "data-range-end": x ? "true" : void 0,
+            "data-outside": f ? void 0 : "true",
+            "data-selected": b ? "true" : void 0,
+            "data-committed": c ? "true" : void 0,
+            "aria-label": C.dayLabel(i, k),
+            "aria-selected": c,
+            onPointerDown: (O) => {
+              O.preventDefault(), w(i);
             },
-            onPointerEnter: () => p(o),
-            onPointerUp: (q) => {
-              q.preventDefault(), M(o);
+            onPointerEnter: () => _(i),
+            onPointerUp: (O) => {
+              O.preventDefault(), T(i);
             },
             children: [
-              /* @__PURE__ */ c("span", { children: Number(o.slice(-2)) }),
-              (b || w) && /* @__PURE__ */ c(
+              /* @__PURE__ */ p("span", { children: Number(i.slice(-2)) }),
+              (m || x) && /* @__PURE__ */ p(
                 "i",
                 {
-                  className: T(
+                  className: E(
                     "quno-date-picker__handle",
-                    m == null ? void 0 : m.handle
+                    r == null ? void 0 : r.handle
                   ),
                   "data-slot": "handle",
                   "aria-hidden": "true"
@@ -150,12 +158,12 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
               )
             ]
           },
-          o
+          i
         );
       })
     }
   );
-}, J = ({ direction: t }) => /* @__PURE__ */ c("svg", { viewBox: "0 0 16 16", "aria-hidden": "true", focusable: "false", children: /* @__PURE__ */ c(
+}, tt = ({ direction: t }) => /* @__PURE__ */ p("svg", { viewBox: "0 0 16 16", "aria-hidden": "true", focusable: "false", children: /* @__PURE__ */ p(
   "path",
   {
     d: t === -1 ? "M10 3.5 5.5 8 10 12.5" : "M6 3.5 10.5 8 6 12.5",
@@ -165,176 +173,176 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
     "stroke-linejoin": "round",
     "stroke-width": "1.6"
   }
-) }), kt = ({
+) }), Tt = ({
   visibleMonth: t,
   monthMotion: e,
   config: n,
-  onNavigate: r
+  onNavigate: a
 }) => {
-  const { labels: i, formatters: u, locale: s, classNames: d } = n;
-  return /* @__PURE__ */ S(
+  const { labels: d, formatters: u, locale: l, classNames: o } = n;
+  return /* @__PURE__ */ B(
     "div",
     {
-      className: T(
+      className: E(
         "quno-date-picker__month-header",
-        d == null ? void 0 : d.monthHeader
+        o == null ? void 0 : o.monthHeader
       ),
       "data-slot": "month-header",
       children: [
-        /* @__PURE__ */ c(
+        /* @__PURE__ */ p(
           "button",
           {
             type: "button",
-            className: d == null ? void 0 : d.previousButton,
+            className: o == null ? void 0 : o.previousButton,
             "data-slot": "previous-button",
-            "aria-label": i.previousMonth,
-            onClick: () => r(-1),
-            children: /* @__PURE__ */ c(J, { direction: -1 })
+            "aria-label": d.previousMonth,
+            onClick: () => a(-1),
+            children: /* @__PURE__ */ p(tt, { direction: -1 })
           }
         ),
-        /* @__PURE__ */ c(
+        /* @__PURE__ */ p(
           "h2",
           {
-            className: d == null ? void 0 : d.monthHeading,
+            className: o == null ? void 0 : o.monthHeading,
             "data-slot": "month-heading",
             "data-month-motion": e === -1 ? "previous" : e === 1 ? "next" : void 0,
-            children: /* @__PURE__ */ c("span", { children: u.month(t, s) }, t)
+            children: /* @__PURE__ */ p("span", { children: u.month(t, l) }, t)
           }
         ),
-        /* @__PURE__ */ c(
+        /* @__PURE__ */ p(
           "button",
           {
             type: "button",
-            className: d == null ? void 0 : d.nextButton,
+            className: o == null ? void 0 : o.nextButton,
             "data-slot": "next-button",
-            "aria-label": i.nextMonth,
-            onClick: () => r(1),
-            children: /* @__PURE__ */ c(J, { direction: 1 })
+            "aria-label": d.nextMonth,
+            onClick: () => a(1),
+            children: /* @__PURE__ */ p(tt, { direction: 1 })
           }
         )
       ]
     }
   );
-}, z = (t, e) => {
+}, et = (t, e) => {
   const n = t == null ? void 0 : t.closest(
     "[data-day-index]"
   );
   return e.indexOf(Number(n == null ? void 0 : n.dataset.dayIndex));
-}, Dt = ({ controller: t, config: e }) => {
-  const [n, r] = I({ type: "weekdays" }), { classNames: i, formatters: u, locale: s } = e, { interaction: d, renderedSelection: p, weekdays: M } = t, _ = d.type !== "idle", D = Y(), k = Array.from(
+}, Ct = ({ controller: t, config: e }) => {
+  const [n, a] = $({ type: "weekdays" }), { classNames: d, formatters: u, locale: l } = e, { interaction: o, renderedSelection: g, weekdays: w } = t, _ = o.type !== "idle", T = V(), D = Array.from(
     { length: 7 },
-    (a, o) => P(t.gridDates[0], o - 7)
+    (r, v) => W(t.gridDates[0], v - 7)
   );
-  W(() => {
-    _ || r({ type: "weekdays" });
+  J(() => {
+    _ || a({ type: "weekdays" });
   }, [_]);
-  const m = (a) => {
-    !_ || a < 0 || (r({ type: "previous-dates", pointerIndex: a }), t.enterDay(k[a]));
-  }, h = (a) => {
-    r({ type: "weekdays" }), t.finishDrag(a);
+  const C = (r) => {
+    !_ || r < 0 || (a({ type: "previous-dates", pointerIndex: r }), t.enterDay(D[r]));
+  }, k = (r) => {
+    a({ type: "weekdays" }), t.finishDrag(r);
   };
-  return /* @__PURE__ */ c(
+  return /* @__PURE__ */ p(
     "div",
     {
-      className: T("quno-date-picker__weekdays", i == null ? void 0 : i.weekdays),
+      className: E("quno-date-picker__weekdays", d == null ? void 0 : d.weekdays),
       "data-slot": "weekdays",
       "data-drag-overflow": n.type === "previous-dates" ? "previous" : void 0,
       "data-drag-active": _ ? "true" : void 0,
       "aria-hidden": "true",
-      onPointerEnter: (a) => m(z(a.target, M)),
-      onPointerLeave: () => r({ type: "weekdays" }),
-      onPointerUp: (a) => {
+      onPointerEnter: (r) => C(et(r.target, w)),
+      onPointerLeave: () => a({ type: "weekdays" }),
+      onPointerUp: (r) => {
         if (!_) return;
-        const o = z(a.target, M);
-        o < 0 || (a.preventDefault(), h(k[o]));
+        const v = et(r.target, w);
+        v < 0 || (r.preventDefault(), k(D[v]));
       },
-      children: M.map((a, o) => {
-        var q;
-        const l = k[o], g = p ? B(l, p) : !1;
-        if (!(n.type === "previous-dates" && (g || o === n.pointerIndex)))
-          return /* @__PURE__ */ c(
+      children: w.map((r, v) => {
+        var x;
+        const s = D[v], i = g ? I(s, g) : !1;
+        if (!(n.type === "previous-dates" && (i || v === n.pointerIndex)))
+          return /* @__PURE__ */ p(
             "span",
             {
-              className: i == null ? void 0 : i.weekday,
+              className: d == null ? void 0 : d.weekday,
               "data-slot": "weekday",
-              "data-day-index": a,
-              onPointerEnter: () => m(o),
-              children: u.weekday(a, s)
+              "data-day-index": r,
+              onPointerEnter: () => C(v),
+              children: u.weekday(r, l)
             },
-            a
+            r
           );
-        const b = (p == null ? void 0 : p.start) === l, w = (p == null ? void 0 : p.end) === l, x = t.selection ? B(l, t.selection) : !1, f = (q = e.getDayCellProps) == null ? void 0 : q.call(e, {
-          date: l,
-          weekday: a,
-          isToday: l === D,
-          isWeekend: a === 0 || a === 6,
+        const f = (g == null ? void 0 : g.start) === s, c = (g == null ? void 0 : g.end) === s, b = t.selection ? I(s, t.selection) : !1, m = (x = e.getDayCellProps) == null ? void 0 : x.call(e, {
+          date: s,
+          weekday: r,
+          isToday: s === T,
+          isWeekend: r === 0 || r === 6,
           isOutside: !0,
-          isSelected: g,
-          isCommitted: x,
-          isRangeStart: b,
-          isRangeEnd: w
+          isSelected: i,
+          isCommitted: b,
+          isRangeStart: f,
+          isRangeEnd: c
         });
-        return /* @__PURE__ */ c(
+        return /* @__PURE__ */ p(
           "span",
           {
-            className: T(
+            className: E(
               "quno-date-picker__day",
               "quno-date-picker__day--outside",
               "quno-date-picker__overflow-day",
-              g && "quno-date-picker__day--selected",
-              b && "quno-date-picker__day--start",
-              w && "quno-date-picker__day--end",
-              i == null ? void 0 : i.day,
-              i == null ? void 0 : i.overflowDay,
-              f == null ? void 0 : f.className
+              i && "quno-date-picker__day--selected",
+              f && "quno-date-picker__day--start",
+              c && "quno-date-picker__day--end",
+              d == null ? void 0 : d.day,
+              d == null ? void 0 : d.overflowDay,
+              m == null ? void 0 : m.className
             ),
-            style: f == null ? void 0 : f.style,
-            title: f == null ? void 0 : f.title,
+            style: m == null ? void 0 : m.style,
+            title: m == null ? void 0 : m.title,
             "data-slot": "overflow-day",
-            "data-day-index": a,
-            "data-date": l,
-            "data-selected": g ? "true" : void 0,
-            "data-range-start": b ? "true" : void 0,
-            "data-range-end": w ? "true" : void 0,
+            "data-day-index": r,
+            "data-date": s,
+            "data-selected": i ? "true" : void 0,
+            "data-range-start": f ? "true" : void 0,
+            "data-range-end": c ? "true" : void 0,
             "data-outside": "true",
-            onPointerEnter: () => m(o),
-            onPointerUp: (H) => {
-              H.preventDefault(), H.stopPropagation(), h(l);
+            onPointerEnter: () => C(v),
+            onPointerUp: (A) => {
+              A.preventDefault(), A.stopPropagation(), k(s);
             },
-            children: /* @__PURE__ */ c("span", { children: Number(l.slice(-2)) })
+            children: /* @__PURE__ */ p("span", { children: Number(s.slice(-2)) })
           },
-          a
+          r
         );
       })
     }
   );
-}, _t = ({ controller: t, config: e }) => {
-  const { classNames: n } = e, r = t.interaction.type === "drag-range" || t.interaction.type === "drag-endpoint";
-  return /* @__PURE__ */ S(
+}, Et = ({ controller: t, config: e }) => {
+  const { classNames: n } = e, a = t.interaction.type === "drag-range" || t.interaction.type === "drag-endpoint";
+  return /* @__PURE__ */ B(
     "div",
     {
-      className: T("quno-date-picker__calendar-shell", n == null ? void 0 : n.calendar),
+      className: E("quno-date-picker__calendar-shell", n == null ? void 0 : n.calendar),
       "data-slot": "calendar",
-      "data-dragging": r ? "move" : void 0,
+      "data-dragging": a ? "move" : void 0,
       children: [
-        ["previous", "next"].map((i) => /* @__PURE__ */ c(
+        ["previous", "next"].map((d) => /* @__PURE__ */ p(
           "div",
           {
-            className: T(
+            className: E(
               "quno-date-picker__edge",
-              `quno-date-picker__edge--${i}`,
+              `quno-date-picker__edge--${d}`,
               n == null ? void 0 : n.edge
             ),
             "data-slot": "edge",
-            "data-direction": i,
+            "data-direction": d,
             "aria-hidden": "true",
-            onPointerEnter: () => t.startEdgeNavigation(i === "previous" ? -1 : 1),
+            onPointerEnter: () => t.startEdgeNavigation(d === "previous" ? -1 : 1),
             onPointerLeave: t.stopEdgeNavigation
           },
-          i
+          d
         )),
-        /* @__PURE__ */ c(
-          kt,
+        /* @__PURE__ */ p(
+          Tt,
           {
             visibleMonth: t.visibleMonth,
             monthMotion: t.monthMotion,
@@ -342,14 +350,16 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
             onNavigate: t.navigate
           }
         ),
-        /* @__PURE__ */ c(Dt, { controller: t, config: e }),
-        /* @__PURE__ */ c(
-          mt,
+        /* @__PURE__ */ p(Ct, { controller: t, config: e }),
+        /* @__PURE__ */ p(
+          wt,
           {
             dates: t.gridDates,
             visibleMonth: t.visibleMonth,
             monthMotion: t.monthMotion,
-            movingSelection: r,
+            movingSelection: a,
+            cycleDate: t.cycleDate,
+            cyclePreview: t.cyclePreview,
             selection: t.selection,
             renderedSelection: t.renderedSelection,
             config: e,
@@ -362,25 +372,25 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
       ]
     }
   );
-}, bt = (t, e) => new Intl.DateTimeFormat(e, {
+}, Mt = (t, e) => new Intl.DateTimeFormat(e, {
   day: "numeric",
   month: "short",
   year: "numeric",
   timeZone: "UTC"
-}).format(/* @__PURE__ */ new Date(`${t}T00:00:00Z`)), wt = (t, e) => new Intl.DateTimeFormat(e, {
+}).format(/* @__PURE__ */ new Date(`${t}T00:00:00Z`)), qt = (t, e) => new Intl.DateTimeFormat(e, {
   month: "long",
   year: "numeric",
   timeZone: "UTC"
-}).format(/* @__PURE__ */ new Date(`${t}T00:00:00Z`)), Tt = (t, e) => new Intl.DateTimeFormat(e, {
+}).format(/* @__PURE__ */ new Date(`${t}T00:00:00Z`)), xt = (t, e) => new Intl.DateTimeFormat(e, {
   weekday: "long",
   day: "numeric",
   month: "long",
   year: "numeric",
   timeZone: "UTC"
-}).format(/* @__PURE__ */ new Date(`${t}T00:00:00Z`)), Mt = (t, e) => new Intl.DateTimeFormat(e, {
+}).format(/* @__PURE__ */ new Date(`${t}T00:00:00Z`)), Ut = (t, e) => new Intl.DateTimeFormat(e, {
   weekday: "short",
   timeZone: "UTC"
-}).format(new Date(Date.UTC(2026, 7, 2 + t))), Ct = {
+}).format(new Date(Date.UTC(2026, 7, 2 + t))), At = {
   calendar: "Date range picker",
   selectedPeriod: "Selected period",
   chooseDate: "Choose a date",
@@ -394,161 +404,175 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
   endDate: "End date",
   thisDate: "This date",
   hint: "Click again to cycle a date role, or drag outside the period to paint a new one."
-}, Et = {
-  date: bt,
-  month: wt,
-  dayLabel: Tt,
-  weekday: Mt
-}, K = ({
+}, Rt = {
+  date: Mt,
+  month: qt,
+  dayLabel: xt,
+  weekday: Ut
+}, nt = ({
   selection: t,
   visibleMonth: e,
   position: n,
-  config: r,
-  onJump: i
+  monthChangeSource: a,
+  config: d,
+  onJump: u
 }) => {
-  const u = ut(
+  const l = mt(
     () => t ? [
       { endpoint: "start", date: t.start },
       { endpoint: "end", date: t.end }
     ].filter(
-      ({ date: a }) => G(a, e) === n
+      ({ date: s }) => X(s, e) === n
     ) : [],
     [n, t, e]
-  ), [s, d] = I(
-    () => u.map((a) => ({ ...a, phase: "entering" }))
-  ), p = Q(null);
-  W(() => {
-    d((a) => {
-      const o = a.map((g) => {
-        const y = u.find(
-          ({ endpoint: b }) => b === g.endpoint
+  ), [o, g] = $(
+    () => l.map((s) => ({
+      ...s,
+      phase: "entering",
+      calendarReveal: "moving"
+    }))
+  ), w = P(null), _ = P(e);
+  J(() => {
+    const s = _.current !== e && a === "navigation" ? "stationary" : "moving";
+    _.current = e, g((i) => {
+      const y = i.map((c) => {
+        const b = l.find(
+          ({ endpoint: m }) => m === c.endpoint
         );
-        return y ? {
-          ...y,
-          phase: g.phase === "exiting" ? "entering" : g.phase
-        } : { ...g, phase: "exiting" };
-      }), l = u.filter(
-        ({ endpoint: g }) => !a.some((y) => y.endpoint === g)
-      ).map((g) => ({ ...g, phase: "entering" }));
-      return [...o, ...l];
+        return b ? {
+          ...b,
+          phase: c.phase === "exiting" ? "entering" : c.phase,
+          calendarReveal: c.phase === "exiting" ? s : c.calendarReveal
+        } : { ...c, phase: "exiting" };
+      }), f = l.filter(
+        ({ endpoint: c }) => !i.some((b) => b.endpoint === c)
+      ).map((c) => ({
+        ...c,
+        phase: "entering",
+        calendarReveal: s
+      }));
+      return [...y, ...f];
     });
-  }, [u]);
-  const M = s.map(({ endpoint: a, phase: o }) => `${a}:${o}`).join("|");
-  if (W(() => {
-    var l;
-    const a = (l = p.current) == null ? void 0 : l.querySelector(
+  }, [l, a, e]);
+  const T = o.map(({ endpoint: s, phase: i }) => `${s}:${i}`).join("|");
+  if (J(() => {
+    var y;
+    const s = (y = w.current) == null ? void 0 : y.querySelector(
       '[data-item-presence="entering"], [data-item-presence="exiting"]'
     );
-    if (!a) return;
-    const o = window.getComputedStyle(a).animationName;
-    (!o || o === "none") && d(
-      (g) => g.flatMap(
-        (y) => y.phase === "exiting" ? [] : [{ ...y, phase: "visible" }]
+    if (!s) return;
+    const i = window.getComputedStyle(s).animationName;
+    (!i || i === "none") && g(
+      (f) => f.flatMap(
+        (c) => c.phase === "exiting" ? [] : [{ ...c, phase: "visible" }]
       )
     );
-  }, [M]), !s.length) return null;
-  const _ = s.every(({ phase: a }) => a === "exiting") ? "exiting" : s.some(({ phase: a }) => a === "visible") ? "visible" : "entering", { labels: D, formatters: k, locale: m, classNames: h } = r;
-  return /* @__PURE__ */ c(
+  }, [T]), !o.length) return null;
+  const D = o.every(({ phase: s }) => s === "exiting") ? "exiting" : o.some(({ phase: s }) => s === "visible") ? "visible" : "entering", { labels: C, formatters: k, locale: r, classNames: v } = d;
+  return /* @__PURE__ */ p(
     "div",
     {
-      ref: p,
-      className: T(
+      ref: w,
+      className: E(
         "quno-date-picker__pills",
         `quno-date-picker__pills--${n}`,
-        h == null ? void 0 : h.pills
+        v == null ? void 0 : v.pills
       ),
       "data-slot": "pills",
       "data-position": n,
-      "data-presence": _,
-      "aria-hidden": _ === "exiting" || void 0,
-      children: /* @__PURE__ */ c("div", { className: "quno-date-picker__pills-track", children: s.map(({ endpoint: a, date: o, phase: l }) => /* @__PURE__ */ S(
+      "data-presence": D,
+      "data-calendar-reveal": o.some(
+        ({ phase: s, calendarReveal: i }) => s === "entering" && i === "stationary"
+      ) ? "stationary" : void 0,
+      "aria-hidden": D === "exiting" || void 0,
+      children: /* @__PURE__ */ p("div", { className: "quno-date-picker__pills-track", children: o.map(({ endpoint: s, date: i, phase: y }) => /* @__PURE__ */ B(
         "button",
         {
           type: "button",
-          className: T("quno-date-picker__pill", h == null ? void 0 : h.pill),
+          className: E("quno-date-picker__pill", v == null ? void 0 : v.pill),
           "data-slot": "pill",
-          "data-endpoint": a,
+          "data-endpoint": s,
           "data-position": n,
-          "data-item-presence": l,
-          "aria-hidden": l === "exiting" || void 0,
-          disabled: l === "exiting",
-          onClick: () => i(o),
+          "data-item-presence": y,
+          "aria-hidden": y === "exiting" || void 0,
+          disabled: y === "exiting",
+          onClick: () => u(i),
           onAnimationEnd: () => {
-            d(
-              (g) => g.flatMap((y) => y.endpoint !== a || y.phase !== l ? [y] : l === "entering" ? [{ ...y, phase: "visible" }] : [])
+            g(
+              (f) => f.flatMap((c) => c.endpoint !== s || c.phase !== y ? [c] : y === "entering" ? [{ ...c, phase: "visible" }] : [])
             );
           },
           children: [
-            /* @__PURE__ */ c("span", { children: a === "start" ? D.start : D.end }),
-            k.date(o, m),
-            /* @__PURE__ */ c("span", { "aria-hidden": "true", children: n === "before" ? "↑" : "↓" })
+            /* @__PURE__ */ p("span", { children: s === "start" ? C.start : C.end }),
+            k.date(i, r),
+            /* @__PURE__ */ p("span", { "aria-hidden": "true", children: n === "before" ? "↑" : "↓" })
           ]
         },
-        a
+        s
       )) })
     }
   );
-}, xt = ({
+}, St = ({
   selection: t,
   config: e,
   onClear: n
 }) => {
-  const { labels: r, formatters: i, locale: u, classNames: s } = e, d = t ? t.start === t.end ? i.date(t.start, u) : `${i.date(t.start, u)} – ${i.date(
+  const { labels: a, formatters: d, locale: u, classNames: l } = e, o = t ? t.start === t.end ? d.date(t.start, u) : `${d.date(t.start, u)} – ${d.date(
     t.end,
     u
-  )}` : r.chooseDate;
-  return /* @__PURE__ */ S(
+  )}` : a.chooseDate;
+  return /* @__PURE__ */ B(
     "header",
     {
-      className: T(
+      className: E(
         "quno-date-picker__selection-header",
-        s == null ? void 0 : s.selectionHeader
+        l == null ? void 0 : l.selectionHeader
       ),
       "data-slot": "selection-header",
       children: [
-        /* @__PURE__ */ S("div", { children: [
-          /* @__PURE__ */ c(
+        /* @__PURE__ */ B("div", { children: [
+          /* @__PURE__ */ p(
             "span",
             {
-              className: T(
+              className: E(
                 "quno-date-picker__eyebrow",
-                s == null ? void 0 : s.selectionEyebrow
+                l == null ? void 0 : l.selectionEyebrow
               ),
               "data-slot": "selection-eyebrow",
-              children: r.selectedPeriod
+              children: a.selectedPeriod
             }
           ),
-          /* @__PURE__ */ c(
+          /* @__PURE__ */ p(
             "strong",
             {
-              className: s == null ? void 0 : s.selectionSummary,
+              className: l == null ? void 0 : l.selectionSummary,
               "data-slot": "selection-summary",
-              children: d
+              children: o
             }
           )
         ] }),
-        /* @__PURE__ */ c(
+        /* @__PURE__ */ p(
           "button",
           {
             type: "button",
-            className: T("quno-date-picker__clear", s == null ? void 0 : s.clearButton),
+            className: E("quno-date-picker__clear", l == null ? void 0 : l.clearButton),
             "data-slot": "clear-button",
             disabled: !t,
             onClick: n,
-            children: r.clear
+            children: a.clear
           }
         )
       ]
     }
   );
-}, U = () => ({ type: "idle" }), qt = (t, e, n) => ({
+}, F = () => ({ type: "idle" }), $t = (t, e, n) => ({
   type: "drag-endpoint",
   endpoint: e,
   origin: n,
   anchor: e === "start" ? t.end : t.start,
   current: t,
   moved: !1
-}), Ut = (t, e) => {
+}), It = (t, e) => {
   if (!t)
     return {
       type: "create",
@@ -557,7 +581,7 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
       moved: !1
     };
   const n = e === t.start ? "start" : e === t.end ? "end" : null;
-  return n ? qt(t, n, e) : B(e, t) ? {
+  return n ? $t(t, n, e) : I(e, t) ? {
     type: "drag-range",
     origin: e,
     original: t,
@@ -570,27 +594,27 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
     current: t,
     moved: !1
   };
-}, nt = (t, e) => t.type === "idle" ? t : t.type === "create" ? {
+}, st = (t, e) => t.type === "idle" ? t : t.type === "create" ? {
   ...t,
-  current: L(t.origin, e),
+  current: Z(t.origin, e),
   moved: t.moved || e !== t.origin
 } : t.type === "paint-pending" ? e === t.origin ? t : {
   type: "create",
   origin: t.origin,
-  current: L(t.origin, e),
+  current: Z(t.origin, e),
   moved: !0
 } : t.type === "drag-range" ? {
   ...t,
-  current: yt(t.original, t.origin, e),
+  current: _t(t.original, t.origin, e),
   moved: t.moved || e !== t.origin
 } : {
   ...t,
-  endpoint: E(e, t.anchor) <= 0 ? "start" : "end",
-  current: L(t.anchor, e),
+  endpoint: q(e, t.anchor) <= 0 ? "start" : "end",
+  current: Z(t.anchor, e),
   moved: t.moved || e !== t.origin
-}, at = (t) => {
+}, N = (t) => {
   for (let e = t.index + 1; e < t.actions.length; e += 1) {
-    const n = ht(
+    const n = kt(
       t.original,
       t.date,
       t.actions[e]
@@ -599,25 +623,25 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
       return { cycle: e === t.actions.length - 1 ? null : { ...t, index: e, value: n }, value: n, changed: !0 };
   }
   return { cycle: null, value: t.value, changed: !1 };
-}, At = (t, e) => {
+}, Ft = (t, e) => {
   if (t.type === "idle")
     return { interaction: t };
   if (t.type === "paint-pending" && e !== t.origin)
     return {
-      interaction: U(),
-      value: L(t.origin, e)
+      interaction: F(),
+      value: Z(t.origin, e)
     };
   if (t.moved) {
-    const d = nt(t, e);
-    return d.type === "idle" ? { interaction: d } : { interaction: U(), value: d.current };
+    const o = st(t, e);
+    return o.type === "idle" ? { interaction: o } : { interaction: F(), value: o.current };
   }
   if (t.type === "create")
-    return { interaction: U(), value: { start: e, end: e } };
-  const n = t.type === "paint-pending" ? t.original : t.current, r = vt(n, e), i = r.defaultAction === "start" ? "end" : "start", u = [
-    r.defaultAction,
-    i,
+    return { interaction: F(), value: { start: e, end: e } };
+  const n = t.type === "paint-pending" ? t.original : t.current, a = Dt(n, e), d = a.defaultAction === "start" ? "end" : "start", u = [
+    a.defaultAction,
+    d,
     "single"
-  ], s = at({
+  ], l = N({
     date: e,
     original: n,
     actions: u,
@@ -625,161 +649,166 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
     value: n
   });
   return {
-    interaction: U(),
-    value: s.changed ? s.value : void 0,
-    cycle: s.cycle ?? void 0
+    interaction: F(),
+    value: l.changed ? l.value : void 0,
+    cycle: l.cycle ?? void 0
   };
-}, $t = ({
+}, Lt = ({
   value: t,
   defaultValue: e,
   initialMonth: n,
-  weekStartsOn: r,
-  autoNavigateDelay: i,
+  weekStartsOn: a,
+  autoNavigateDelay: d,
   autoNavigateRepeatDelay: u,
-  onChange: s,
-  onVisibleMonthChange: d
+  onChange: l,
+  onVisibleMonthChange: o
 }) => {
-  const p = t !== void 0, [M, _] = I(e), D = p ? t ?? null : M, [k, m] = I(
-    R(n ?? (D == null ? void 0 : D.start) ?? Y())
-  ), [h, a] = I(null), [o, l] = I(U()), [g, y] = I(null), b = Q(null), w = () => {
+  const g = t !== void 0, [w, _] = $(e), T = g ? t ?? null : w, [D, C] = $(
+    j(n ?? (T == null ? void 0 : T.start) ?? V())
+  ), [k, r] = $(null), [v, s] = $(null), [i, y] = $(F()), [f, c] = $(null), b = P(null), m = () => {
     b.current !== null && (window.clearTimeout(b.current), b.current = null);
   };
-  W(() => w, []);
-  const x = (v) => {
-    p || _(v), s == null || s(v);
-  }, f = (v, C = null) => {
-    a(C), m(v), d == null || d(v);
-  }, q = (v) => {
-    a(v), m((C) => {
-      const $ = gt(C, v);
-      return d == null || d($), $;
-    }), y(null);
-  }, rt = (o.type === "idle" ? null : o.current) ?? D, ot = (v) => {
-    w(), l(Ut(D, v));
-  }, it = (v) => {
-    l((C) => nt(C, v));
-  }, dt = (v) => {
-    if (w(), (g == null ? void 0 : g.date) === v && o.type !== "idle" && !o.moved) {
-      const F = at(g);
-      y(F.cycle), l(U()), F.changed && x(F.value);
+  J(() => m, []);
+  const x = (h) => {
+    g || _(h), l == null || l(h);
+  }, A = (h, M = null, R = "interaction") => {
+    r(M), s(R), C(h), o == null || o(h);
+  }, G = (h, M) => {
+    r(h), s(M), C((R) => {
+      const S = ft(R, h);
+      return o == null || o(S), S;
+    }), c(null);
+  }, Q = (h) => G(h, "navigation"), U = (i.type === "idle" ? null : i.current) ?? T, O = (f == null ? void 0 : f.date) ?? null, lt = f ? N(f).value : null, ct = (h) => {
+    m(), y(It(T, h));
+  }, ut = (h) => {
+    y((M) => st(M, h));
+  }, pt = (h) => {
+    if (m(), (f == null ? void 0 : f.date) === h && i.type !== "idle" && !i.moved) {
+      const S = N(f);
+      c(S.cycle), y(F()), S.changed && x(S.value);
       return;
     }
-    const $ = At(o, v);
-    if (l($.interaction), y($.cycle ?? null), $.value && x($.value), !V(v, k)) {
-      const F = E(v, k) < 0 ? -1 : 1;
-      f(R(v), F);
+    const R = Ft(i, h);
+    if (y(R.interaction), c(R.cycle ?? null), R.value && x(R.value), !ot(h, D)) {
+      const S = q(h, D) < 0 ? -1 : 1;
+      A(j(h), S, "interaction");
     }
-  }, st = (v) => {
-    if (o.type === "idle") return;
-    w();
-    const C = () => {
-      q(v), b.current = window.setTimeout(C, u);
+  }, gt = (h) => {
+    if (i.type === "idle") return;
+    m();
+    const M = () => {
+      G(h, "interaction"), b.current = window.setTimeout(M, u);
     };
-    b.current = window.setTimeout(C, i);
-  }, lt = () => {
-    w(), l(U()), y(null), x(null);
-  }, ct = (v) => {
-    w(), l(U()), y(null);
-    const C = E(v, k) < 0 ? -1 : 1;
-    f(R(v), C);
+    b.current = window.setTimeout(M, d);
+  }, ht = () => {
+    m(), y(F()), c(null), x(null);
+  }, vt = (h) => {
+    m(), y(F()), c(null);
+    const M = q(h, D) < 0 ? -1 : 1;
+    A(j(h), M, "endpoint");
   };
   return {
-    selection: D,
-    renderedSelection: rt,
-    visibleMonth: k,
-    monthMotion: h,
-    interaction: o,
-    gridDates: ft(k, r),
-    weekdays: Array.from({ length: 7 }, (v, C) => (r + C) % 7),
-    beginDrag: ot,
-    enterDay: it,
-    finishDrag: dt,
-    clear: lt,
-    navigate: q,
-    startEdgeNavigation: st,
-    stopEdgeNavigation: w,
-    jumpToEndpoint: ct
+    selection: T,
+    renderedSelection: U,
+    cycleDate: O,
+    cyclePreview: lt,
+    visibleMonth: D,
+    monthMotion: k,
+    monthChangeSource: v,
+    interaction: i,
+    gridDates: bt(D, a),
+    weekdays: Array.from({ length: 7 }, (h, M) => (a + M) % 7),
+    beginDrag: ct,
+    enterDay: ut,
+    finishDrag: pt,
+    clear: ht,
+    navigate: Q,
+    startEdgeNavigation: gt,
+    stopEdgeNavigation: m,
+    jumpToEndpoint: vt
   };
-}, Pt = ({
+}, Ot = ({
   value: t,
   defaultValue: e = null,
   initialMonth: n,
-  locale: r = "en-GB",
-  labels: i,
+  locale: a = "en-GB",
+  labels: d,
   formatters: u,
-  weekStartsOn: s = 1,
-  className: d,
-  classNames: p,
-  getDayCellProps: M,
+  weekStartsOn: l = 1,
+  className: o,
+  classNames: g,
+  getDayCellProps: w,
   autoNavigateDelay: _ = 400,
-  autoNavigateRepeatDelay: D = 650,
-  onChange: k,
-  onVisibleMonthChange: m
+  autoNavigateRepeatDelay: T = 650,
+  onChange: D,
+  onVisibleMonthChange: C
 }) => {
-  const h = {
-    locale: r,
-    labels: { ...Ct, ...i },
-    formatters: { ...Et, ...u },
-    classNames: p,
-    getDayCellProps: M
-  }, a = $t({
+  const k = {
+    locale: a,
+    labels: { ...At, ...d },
+    formatters: { ...Rt, ...u },
+    classNames: g,
+    getDayCellProps: w
+  }, r = Lt({
     value: t,
     defaultValue: e,
     initialMonth: n,
-    weekStartsOn: s,
+    weekStartsOn: l,
     autoNavigateDelay: _,
-    autoNavigateRepeatDelay: D,
-    onChange: k,
-    onVisibleMonthChange: m
-  }), o = a.selection ? [
-    G(a.selection.start, a.visibleMonth),
-    G(a.selection.end, a.visibleMonth)
+    autoNavigateRepeatDelay: T,
+    onChange: D,
+    onVisibleMonthChange: C
+  }), v = r.selection ? [
+    X(r.selection.start, r.visibleMonth),
+    X(r.selection.end, r.visibleMonth)
   ] : [];
-  return /* @__PURE__ */ S(
+  return /* @__PURE__ */ B(
     "section",
     {
-      className: T("quno-date-picker", d, p == null ? void 0 : p.root),
+      className: E("quno-date-picker", o, g == null ? void 0 : g.root),
       "data-slot": "root",
-      "data-pill-before": o.includes("before") || void 0,
-      "data-pill-after": o.includes("after") || void 0,
-      "aria-label": h.labels.calendar,
-      onPointerUp: a.stopEdgeNavigation,
+      "data-pill-before": v.includes("before") || void 0,
+      "data-pill-after": v.includes("after") || void 0,
+      "aria-label": k.labels.calendar,
+      onPointerUp: r.stopEdgeNavigation,
       children: [
-        /* @__PURE__ */ c(
-          xt,
+        /* @__PURE__ */ p(
+          St,
           {
-            selection: a.selection,
-            config: h,
-            onClear: a.clear
+            selection: r.selection,
+            config: k,
+            onClear: r.clear
           }
         ),
-        /* @__PURE__ */ c(
-          K,
+        /* @__PURE__ */ p(
+          nt,
           {
-            selection: a.selection,
-            visibleMonth: a.visibleMonth,
+            selection: r.selection,
+            visibleMonth: r.visibleMonth,
             position: "before",
-            config: h,
-            onJump: a.jumpToEndpoint
+            monthChangeSource: r.monthChangeSource,
+            config: k,
+            onJump: r.jumpToEndpoint
           }
         ),
-        /* @__PURE__ */ c(_t, { controller: a, config: h }),
-        /* @__PURE__ */ c(
-          K,
+        /* @__PURE__ */ p(Et, { controller: r, config: k }),
+        /* @__PURE__ */ p(
+          nt,
           {
-            selection: a.selection,
-            visibleMonth: a.visibleMonth,
+            selection: r.selection,
+            visibleMonth: r.visibleMonth,
             position: "after",
-            config: h,
-            onJump: a.jumpToEndpoint
+            monthChangeSource: r.monthChangeSource,
+            config: k,
+            onJump: r.jumpToEndpoint
           }
         ),
-        h.labels.hint && /* @__PURE__ */ c(
+        k.labels.hint && /* @__PURE__ */ p(
           "p",
           {
-            className: T("quno-date-picker__hint", p == null ? void 0 : p.hint),
+            className: E("quno-date-picker__hint", g == null ? void 0 : g.hint),
             "data-slot": "hint",
-            children: h.labels.hint
+            children: k.labels.hint
           }
         )
       ]
@@ -787,21 +816,21 @@ const pt = 864e5, O = (t) => t.toString().padStart(2, "0"), j = (t) => `${t.getU
   );
 };
 export {
-  Pt as QunoDatePicker,
-  P as addDays,
-  gt as addMonths,
-  ht as applyDateAction,
-  ft as calendarGrid,
-  E as compareDates,
-  vt as dateActionContext,
-  Z as differenceInDays,
-  et as editEndpoint,
-  V as isInMonth,
-  B as isWithinRange,
-  G as monthRelation,
-  yt as moveRange,
-  tt as nearestEndpoint,
-  L as normalizeRange,
-  St as selectDate,
-  R as startOfMonth
+  Ot as QunoDatePicker,
+  W as addDays,
+  ft as addMonths,
+  kt as applyDateAction,
+  bt as calendarGrid,
+  q as compareDates,
+  Dt as dateActionContext,
+  K as differenceInDays,
+  dt as editEndpoint,
+  ot as isInMonth,
+  I as isWithinRange,
+  X as monthRelation,
+  _t as moveRange,
+  it as nearestEndpoint,
+  Z as normalizeRange,
+  Wt as selectDate,
+  j as startOfMonth
 };

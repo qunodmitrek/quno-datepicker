@@ -19,6 +19,8 @@ type Props = {
   visibleMonth: IsoDate;
   monthMotion: MonthDirection | null;
   movingSelection: boolean;
+  cycleDate: IsoDate | null;
+  cyclePreview: DateRange | null;
   selection: DateRange | null;
   renderedSelection: DateRange | null;
   config: ResolvedDatePickerConfig;
@@ -32,6 +34,8 @@ export const CalendarGrid = ({
   visibleMonth,
   monthMotion,
   movingSelection,
+  cycleDate,
+  cyclePreview,
   selection,
   renderedSelection,
   config,
@@ -55,7 +59,7 @@ export const CalendarGrid = ({
         locale,
       )}`}
     >
-      {dates.map((date) => {
+      {dates.map((date, index) => {
         const inVisibleMonth = isInMonth(date, visibleMonth);
         const committed = selection ? isWithinRange(date, selection) : false;
         const displayed = renderedSelection
@@ -63,6 +67,19 @@ export const CalendarGrid = ({
           : false;
         const isStart = renderedSelection?.start === date;
         const isEnd = renderedSelection?.end === date;
+        const inCyclePreview = cyclePreview
+          ? isWithinRange(date, cyclePreview)
+          : false;
+        const previewRowStart =
+          inCyclePreview &&
+          (index % 7 === 0 ||
+            !cyclePreview ||
+            !isWithinRange(dates[index - 1], cyclePreview));
+        const previewRowEnd =
+          inCyclePreview &&
+          (index % 7 === 6 ||
+            !cyclePreview ||
+            !isWithinRange(dates[index + 1], cyclePreview));
         const weekday = fromIsoDate(
           date,
         ).getUTCDay() as QunoDatePickerDayCellContext['weekday'];
@@ -98,6 +115,16 @@ export const CalendarGrid = ({
             title={customProps?.title}
             data-slot="day"
             data-date={date}
+            data-cycle-trigger={cycleDate === date ? 'true' : undefined}
+            data-cycle-preview={inCyclePreview ? 'true' : undefined}
+            data-cycle-preview-start={previewRowStart ? 'true' : undefined}
+            data-cycle-preview-end={previewRowEnd ? 'true' : undefined}
+            data-cycle-preview-range-start={
+              cyclePreview?.start === date ? 'true' : undefined
+            }
+            data-cycle-preview-range-end={
+              cyclePreview?.end === date ? 'true' : undefined
+            }
             data-range-start={isStart ? 'true' : undefined}
             data-range-end={isEnd ? 'true' : undefined}
             data-outside={inVisibleMonth ? undefined : 'true'}

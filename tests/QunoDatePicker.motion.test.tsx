@@ -21,6 +21,28 @@ describe('QunoDatePicker motion', () => {
     );
   });
 
+  it('keeps the calendar stationary when navigation reveals endpoint pills', () => {
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+      animationName: 'quno-date-picker-pill-from-calendar-top',
+    } as CSSStyleDeclaration);
+    render(
+      <QunoDatePicker
+        defaultValue={{ start: '2026-08-10', end: '2026-08-20' }}
+        initialMonth="2026-08-01"
+      />,
+    );
+
+    fireEvent.click(slot('previous-button'));
+
+    expect(slot('month-heading')).toHaveTextContent('July 2026');
+    expect(pill('start', 'after').closest('[data-slot="pills"]'))
+      .toHaveAttribute('data-calendar-reveal', 'stationary');
+    expect(pill('end', 'after')).toHaveAttribute(
+      'data-item-presence',
+      'entering',
+    );
+  });
+
   it.each([
     ['start', 'before', 'July 2026'],
     ['end', 'after', 'September 2026'],

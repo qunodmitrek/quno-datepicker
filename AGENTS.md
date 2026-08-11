@@ -9,6 +9,7 @@ Before changing code or behavior, read:
 1. `README.md` for the current product surface and commands.
 2. `DECISIONS.md` for accepted architecture and interaction decisions.
 3. `CHANGELOG.md` for recent implementation history.
+4. `docs/implementation-guide.md` when changing consumer integration guidance or public examples.
 
 Treat these Markdown files as part of the implementation. Keep them accurate in the same change as the code they describe.
 
@@ -20,6 +21,9 @@ Treat these Markdown files as part of the implementation. Keep them accurate in 
 - A decision entry must include its date, status, context, decision, and consequences.
 - Do not silently rewrite an accepted decision. Add a new entry that supersedes it and link the two entries.
 - Keep `README.md` focused on the current state. Historical detail belongs in `CHANGELOG.md`; decision rationale belongs in `DECISIONS.md`.
+- Keep `/story` and `docs/implementation-guide.md` aligned: the story explains benefits through the public entrypoint, while the guide owns copyable integration recipes.
+- Give every primary interaction or customization contract in `/story` its own live public-entrypoint example and concise “Try it” instruction; do not substitute a screenshot or prose-only feature list.
+- After production output changes, run `npm run report:size` and refresh footprint values documented in the story, README, and implementation guide when they differ materially.
 
 ## Product Contracts
 
@@ -28,9 +32,9 @@ Treat these Markdown files as part of the implementation. Keep them accurate in 
 - Represent selection as `null` or an inclusive `{ start, end }` range. A single day is `start === end`.
 - Keep calendar dates timezone-free as `YYYY-MM-DD` values. Date arithmetic must not shift dates through local time zones or DST.
 - Keep the visible month independent from the selected range. Navigation and Clear must not alter each other unexpectedly.
-- Passive hover must not calculate or highlight a possible period and must never select, commit, invoke `onChange`, or navigate. An active drag may update its transient range until release. A first no-movement click commits Start before the range, End after it, or the nearest endpoint inside it. Repeated clicks on that same date advance through the opposite endpoint and then a one-day selection, all derived from the pre-click range. Discard that original context at single day; never wrap back to the first guess. Skip actions whose normalized range equals the displayed cycle value, and emit nothing if all remaining roles are equivalent. Do not render a date-action menu.
+- Passive hover on unrelated dates must not calculate or highlight a possible period and must never select, commit, invoke `onChange`, or navigate. Once a repeated-click cycle exists, hovering only its trigger date may show a fill-free 1px outline of the next non-equivalent cycle value; this cue must use the same cycle derivation as commitment, match the 34px selected-date and endpoint geometry, leave wrapped week edges open rather than drawing false endpoint caps, and must not alter public or committed state. An active drag may update its transient range until release. A first no-movement click commits Start before the range, End after it, or the nearest endpoint inside it. Repeated clicks on that same date advance through the opposite endpoint and then a one-day selection, all derived from the pre-click range. Discard that original context at single day; never wrap back to the first guess. Skip actions whose normalized range equals the displayed cycle value, and emit nothing if all remaining roles are equivalent. Do not render a date-action menu.
 - Endpoint crossing swaps endpoint identity so the dragged handle remains attached to the pointer.
-- Do not render a default underline or visible handle decoration on selected endpoints. Preserve the `handle` slot so consumers may opt into their own presentation.
+- Do not render a default underline or visible handle decoration on selected endpoints. Preserve the `handle` slot so consumers may opt into their own presentation, but keep its default box out of grid layout so endpoint numbers stay centered.
 - Whole-range dragging preserves duration and snaps to calendar days.
 - Pointer-down outside an existing range is pending until intent is known: movement paints a fresh range from that outside origin, while release without movement retains contextual nearest-endpoint click behavior.
 - Adjacent-month changes, including Start/End endpoint-pill jumps, must animate both the month name and day numbers vertically in the navigation direction without moving the grid frame or range geometry, and must respect `prefers-reduced-motion`.
@@ -73,6 +77,7 @@ npm run lint
 npm run check:file-size
 npm run typecheck
 npm run build
+npm run report:size
 npm pack --dry-run
 ```
 

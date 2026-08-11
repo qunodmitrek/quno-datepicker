@@ -1,7 +1,7 @@
-import { render } from '@testing-library/preact';
+import { fireEvent, render } from '@testing-library/preact';
 import { describe, expect, it, vi } from 'vitest';
 import { QunoDatePicker, type DateRange } from '../src';
-import { clickDay, drag } from './datePickerTestUtils';
+import { clickDay, day, drag } from './datePickerTestUtils';
 
 const renderRange = () => {
   const onChange = vi.fn();
@@ -153,5 +153,42 @@ describe('QunoDatePicker repeated date clicks', () => {
       end: '2026-08-20',
     });
     expect(onChange).toHaveBeenCalledTimes(2);
+  });
+
+  it('marks the next segment after hovering the clicked cycle date', () => {
+    const onChange = renderRange();
+
+    fireEvent.pointerEnter(day('2026-08-15'));
+    clickDay('2026-08-15');
+
+    expect(onChange).toHaveBeenLastCalledWith({
+      start: '2026-08-10',
+      end: '2026-08-15',
+    });
+    expect(day('2026-08-15')).toHaveAttribute('data-cycle-trigger', 'true');
+    for (let date = 15; date <= 20; date += 1) {
+      expect(day(`2026-08-${date}`)).toHaveAttribute(
+        'data-cycle-preview',
+        'true',
+      );
+    }
+    expect(day('2026-08-14')).not.toHaveAttribute('data-cycle-preview');
+    expect(day('2026-08-15')).toHaveAttribute(
+      'data-cycle-preview-start',
+      'true',
+    );
+    expect(day('2026-08-15')).toHaveAttribute(
+      'data-cycle-preview-range-start',
+      'true',
+    );
+    expect(day('2026-08-20')).toHaveAttribute(
+      'data-cycle-preview-end',
+      'true',
+    );
+    expect(day('2026-08-20')).toHaveAttribute(
+      'data-cycle-preview-range-end',
+      'true',
+    );
+    expect(onChange).toHaveBeenCalledTimes(1);
   });
 });

@@ -30,6 +30,10 @@
   font-weight: 550;
 }
 
+.quno-date-picker__handle {
+  position: absolute;
+}
+
 .quno-date-picker__day:hover > span,
 .quno-date-picker__day:focus-visible > span {
   outline: 2px solid var(--quno-picker-primary, #0167ff);
@@ -40,6 +44,48 @@
   .quno-date-picker__day:hover
   > span {
   outline: none;
+}
+
+.quno-date-picker__grid:has(
+    .quno-date-picker__day[data-cycle-trigger='true']:hover
+  )
+  .quno-date-picker__day[data-cycle-trigger='true']:hover
+  > span {
+  outline: none;
+}
+
+.quno-date-picker__grid:has(
+    .quno-date-picker__day[data-cycle-trigger='true']:hover
+  )
+  .quno-date-picker__day[data-cycle-preview='true']::after {
+  position: absolute;
+  z-index: 2;
+  inset: 4px var(--quno-cycle-preview-right, 0) 4px
+    var(--quno-cycle-preview-left, 0);
+  border-top: 1px solid var(--quno-picker-cycle-preview, #0167ff);
+  border-bottom: 1px solid var(--quno-picker-cycle-preview, #0167ff);
+  content: "";
+  pointer-events: none;
+}
+
+.quno-date-picker__day[data-cycle-preview-range-start='true']::after {
+  --quno-cycle-preview-left: calc(50% - 17px);
+
+  border-left: 1px solid var(--quno-picker-cycle-preview, #0167ff);
+  border-radius: var(--quno-picker-day-radius, 9px) 0 0
+    var(--quno-picker-day-radius, 9px);
+}
+
+.quno-date-picker__day[data-cycle-preview-range-end='true']::after {
+  --quno-cycle-preview-right: calc(50% - 17px);
+
+  border-right: 1px solid var(--quno-picker-cycle-preview, #0167ff);
+  border-radius: 0 var(--quno-picker-day-radius, 9px)
+    var(--quno-picker-day-radius, 9px) 0;
+}
+
+.quno-date-picker__day[data-cycle-preview-range-start='true'][data-cycle-preview-range-end='true']::after {
+  border-radius: var(--quno-picker-day-radius, 9px);
 }
 
 .quno-date-picker__day--outside {

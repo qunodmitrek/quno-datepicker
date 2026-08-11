@@ -6,6 +6,14 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Added
 
+- Added a copyable consumer implementation guide covering installation, state ownership, timezone-free values, visible-month control, localization, styling, day customization, forms, and integration verification.
+- Added a responsive interactive `/story` field guide with controlled, cross-month, localized, and externally styled live examples built through the public package entrypoint.
+- Added story smoke coverage for the public integration chapters, ten live calendars, and interactive theme switching.
+- Expanded the implementation story with the product rationale, conventional-picker comparison, gesture catalogue, styling layers, internal state model, and measured production footprint.
+- Rebuilt the main story as ten focused live exhibits for painting and endpoint drag, stable six-week navigation, weekday-strip hidden dates, whole-segment movement, contextual click construction, inline guess correction, Start/End shortcuts, reduced-motion-aware micro-animation, typed day handling, and token theming.
+- Added `npm run report:size` to report raw and gzip sizes for the production JavaScript and optional stylesheet.
+
+- Added a 1px, fill-free next-cycle outline that appears only while hovering the date that established the active repeated-click cycle.
 - Added the standalone Preact and Vite project with a Quno-styled interactive demo.
 - Added a single-calendar date-range picker supporting empty, one-day, and multi-day inclusive selections.
 - Added a contextual date action popover that exposes only alternatives to the endpoint action already applied by the click.
@@ -33,6 +41,9 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Changed
 
+- Replaced the prototype start page's dense interaction paragraphs with a scannable five-action legend highlighting Click, Click again, endpoint drag, period drag, and outside painting.
+- Rewrote the story's day-handler exhibit around concrete Today, weekend, non-working-day, holiday, and availability styling examples while clarifying that the library retains interaction and accessibility behavior.
+- Reframed the story's interaction architecture card around the visible paint, resize, and move gestures, including their conflict-free pointer ownership and clean release behavior.
 - Weekday-strip drag projection now replaces every weekday label overlapped by the transient selected range, so an End endpoint moving into the hidden previous week keeps the selected portion visible in the correct direction.
 - Moved the demo's repeated-click guidance into its left column, removed the selected-range JSON display, suppressed the duplicate calendar hint, and added external Today/weekend cell styling as a consumer example.
 - Empty `labels.hint` values now omit the optional hint element instead of leaving an empty paragraph in the component layout.
@@ -54,6 +65,13 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Fixed
 
+- Month-chevron navigation now keeps the calendar anchored when a previously visible selection becomes off-screen; newly required Start and End controls slide from beneath the calendar without also translating it.
+- Month headings now occupy one fixed, non-wrapping line and truncate unusually long custom labels, preventing month navigation from changing the calendar height in the demo, story, or consuming layouts.
+- Scoped story heading typography away from nested datepicker month headings, preserving the six-week example's height across differently sized month names.
+- Cycle preview borders now match the selected-date geometry: 34px high with endpoint caps aligned to the date circles, while wrapped row continuations reach the calendar edge without extra inset.
+- Wrapped cycle previews no longer draw oversized rounded caps on the Sunday/Monday break; only the preview's actual start and end dates receive endpoint borders.
+- Empty endpoint handle slots no longer participate in day-cell layout, keeping selected date fills and cycle-preview outlines vertically aligned.
+- Cycle preview outlines split cleanly at calendar row boundaries and suppress the clicked cell's ordinary hover ring, keeping the candidate segment legible without changing committed styling.
 - Previous/next month chevrons now use symmetric SVG geometry centered inside the existing circular buttons, avoiding the optical offset from font glyph side-bearings and baselines.
 - Returning a drag from the weekday strip to any normal calendar area now removes all projected dates even when the transient range still overlaps that hidden week.
 - Start and End pills now retain their intrinsic height while their exit track closes, so disappearance reads as a full-size button sliding beneath the calendar instead of a vertically shrinking control.
@@ -80,7 +98,7 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Verification
 
-- `npm test`: 50 tests passed.
+- `npm test`: 55 tests passed.
 - `npm run lint`: passed.
 - `npm run check:file-size`: passed.
 - `npm run typecheck`: passed.

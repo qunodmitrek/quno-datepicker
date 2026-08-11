@@ -369,3 +369,91 @@ This file records decisions that should remain stable across implementation sess
 - Context: Unicode chevron glyphs are centered by their text box, but font-specific side-bearings and baseline metrics make the visible marks appear offset inside otherwise centered circular controls.
 - Decision: Render previous and next chevrons as mirrored paths in the same 16-by-16 SVG view box, centered by the button's existing grid layout. Keep the SVG decorative because each button already has a localized accessible label.
 - Consequences: Both directions have symmetric optical alignment independent of the consumer's font. Button dimensions, hit areas, public slots, labels, navigation behavior, and color inheritance remain unchanged.
+
+## QDP-047 — Preview only the next repeated-click result
+
+- Date: 2026-08-11
+- Status: Accepted; narrowly refines the passive-hover prohibition in QDP-023
+- Context: A repeated click changes a date from its first contextual endpoint interpretation to the next non-equivalent endpoint or single-day result. Without a cue, that upcoming segment is discoverable only after commitment, but restoring general hover range highlighting would reintroduce the ambiguity rejected in QDP-023.
+- Decision: Once a click cycle exists, derive its next non-no-op value with the same cycle function used for commitment. Mark its visible cells and the clicked trigger cell in the DOM, but show a 1px outer outline only while that trigger cell matches `:hover`. Draw no candidate fill, suppress the trigger's ordinary hover ring, split outlines at week-row boundaries, and remove the visual immediately when the trigger is no longer hovered.
+- Consequences: The cue predicts exactly what the next click will select while committed selection, endpoint markers, summary, callbacks, and visible month remain unchanged. Unrelated dates retain QDP-023 behavior, no idle hover state is stored, and consumers may recolor the outline through `--quno-picker-cycle-preview` or the documented state attributes.
+
+## QDP-048 — Match cycle outlines to selected-date geometry
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-047
+- Context: Insetting a cycle outline by fixed distances from each full grid cell makes its endpoint caps wider and taller than the 34px selected-date circles, especially in a wide calendar column.
+- Decision: Give every preview row segment the same 34px vertical extent as a day highlight. Align actual range start and end caps to 17px on either side of their date-cell centers. When a range continues across a week boundary, close that row segment at the calendar edge instead of applying endpoint inset.
+- Consequences: Single-date previews are exactly the selected date size, range endpoints line up with selected endpoint circles, and multi-row previews retain continuous row geometry without becoming artificially narrow at Monday or Sunday.
+
+## QDP-049 — Leave wrapped cycle-preview rows open
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes the row-edge closing behavior in QDP-048
+- Context: Closing a multi-row preview at Sunday and reopening it at Monday gives those ordinary continuation dates full-cell rounded caps. The caps are wider than a selected date and falsely imply additional range endpoints.
+- Decision: Draw rounded vertical caps only on the preview's actual start and end dates, aligned to their 34px selected-date geometry. At a week boundary, extend only the horizontal outline to the calendar edge and leave the continuation open.
+- Consequences: Wrapped previews retain their visual continuity without making Sunday or Monday look selected as endpoints. Single-row and single-day previews keep complete rounded outlines.
+
+## QDP-050 — Keep the empty handle slot out of day layout
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-028 and QDP-048
+- Context: The preserved empty endpoint handle element remained a second grid item after its default underline styling was removed. It shifted selected endpoint numbers upward while the cycle-preview outline stayed centered, exposing the outline below the filled date.
+- Decision: Position the built-in handle slot absolutely so it contributes no grid track or intrinsic height. Keep the element, stable slot, and consumer class hook unchanged.
+- Consequences: Endpoint numbers and fills remain centered like every other date and align exactly with 34px preview caps. Consumers can still opt into a visible handle and may override its scoped positioning.
+
+## QDP-051 — Pair copyable integration guidance with a live story
+
+- Date: 2026-08-11
+- Status: Accepted
+- Context: The prototype demonstrates the finished interaction but does not teach consumers how to own state, localize copy, theme the component, or integrate long cross-month ranges. Quno Calendar established a useful split between API recipes and a benefit-led live field guide.
+- Decision: Maintain `docs/implementation-guide.md` as the copyable consumer contract and `/story` as the editorial, interactive companion. Story examples must import the datepicker through `src/index.ts`, the same public API boundary represented by the package entrypoint.
+- Consequences: Product and engineering teams can evaluate behavior in context while implementation details remain searchable and copyable. The story is demo-only, does not expand the published JavaScript API, and receives smoke coverage alongside the library tests.
+
+## QDP-052 — Explain the product thesis and measured footprint
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-051
+- Context: Setup recipes alone do not explain why the datepicker uses one calendar, how its direct-manipulation model differs from conventional two-panel selection, which styling boundaries consumers can use, or what the package costs to ship.
+- Decision: The live story must cover the product thesis, an explicit and qualified comparison, the complete V1 gesture repertoire, four customization layers, the state architecture, and raw/gzip artifact sizes. Keep a repository command that measures built JavaScript and CSS rather than estimating from source.
+- Consequences: The story can support product evaluation as well as implementation. Footprint claims remain tied to production artifacts, exclude the external Preact peer, and must be refreshed when a build materially changes them.
+
+## QDP-053 — Demonstrate every primary contract live
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-051 and QDP-052
+- Context: A summary calendar and prose list cannot teach direct manipulation, hidden-week drag continuation, click-cycle correction, shortcut motion, or consumer styling. These behaviors are spatial and need an immediately usable state plus a concrete instruction.
+- Decision: Organize the main story around ten numbered contracts: paint/endpoint drag, stable six-week view, weekday-strip hidden dates, whole-segment movement, contextual click construction, inline guess correction, Start/End shortcuts, micro-animation and reduced motion, typed day handling, and token theming. Give every contract its own public-entrypoint datepicker and a short “Try it” instruction.
+- Consequences: The story is intentionally long and interactive like the Quno Calendar field guide. Examples may share fixtures but must remain independently usable, smoke tests count all live calendars, and new primary interaction contracts require a corresponding exhibit.
+
+## QDP-054 — Explain interaction architecture through its visible benefit
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-004 and QDP-052
+- Context: Naming a discriminated union explains the implementation technique but does not tell a product evaluator what the architecture offers during calendar use.
+- Decision: Describe the story's interaction state as one active gesture chosen from paint, resize, or move. Pair that mechanism with its observable benefit: gestures cannot collide, and pointer release returns the calendar to rest. Keep the discriminated-union terminology in engineering documentation where its type-system meaning has context.
+- Consequences: The architecture story remains technically accurate while becoming useful without TypeScript knowledge. Future state-model explanations should connect internal constraints to visible interaction guarantees.
+
+## QDP-055 — Reserve one line for every month heading
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-025 and QDP-053
+- Context: A fixed six-week grid does not create a stable calendar if a longer month-and-year label wraps and increases the header height. Locales and consumer formatters can produce labels wider than the default English examples.
+- Decision: Give the month header a fixed 36px row, keep its center heading to one line, and truncate overflow with an ellipsis. Preserve the complete label in the heading's accessible text.
+- Consequences: Month navigation cannot move surrounding layout because of title wrapping. Ordinary month names remain visible in full, unusually long customized labels trade visible completeness for stable geometry, and consumers may override the scoped styles when a different layout contract is intentional.
+
+## QDP-056 — Keep the calendar anchored when navigation creates pills
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-032 and QDP-038
+- Context: When a range is fully visible and a month-chevron click navigates away from it, both endpoints can become off-screen at once. Translating the calendar to introduce the resulting controls duplicates the navigation motion and makes the stable calendar appear to jump.
+- Decision: Track whether a month change came from direct calendar navigation, an interaction release, or an endpoint jump. Endpoint pills first required by direct month navigation use a stationary-calendar reveal: each full-size control slides from beneath the calendar, while the calendar shell receives no reveal translation. Preserve the established reveal rules for other month-change sources.
+- Consequences: The August 10–20 to previous-month transition keeps the calendar anchored while Start and End appear below it. Drag continuation and endpoint-jump transitions retain their existing directional motion, reduced-motion behavior remains unchanged, and each pill records its reveal mode for deterministic styling and tests.
+
+## QDP-057 — Introduce the prototype through actions
+
+- Date: 2026-08-11
+- Status: Accepted
+- Context: Two prose paragraphs on the start page make the datepicker's primary gestures difficult to scan and give the repeated-click correction disproportionate visual weight.
+- Decision: Present the start-page guidance as five highlighted action labels—Click, Click again, Drag an endpoint, Drag the period, and Paint outside—each paired with one short result. Keep the labels semantic text rather than controls because they explain the adjacent live calendar instead of changing it.
+- Consequences: A first-time visitor can identify the gesture repertoire before reading details, direct manipulation remains the visual emphasis, and the implementation story stays available for deeper rationale and examples.

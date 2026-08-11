@@ -38,7 +38,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint --ext .ts,.tsx src tests"
+    "lint": "eslint --ext .ts,.tsx src tests",
+    "report:size": "node scripts/report-size.mjs"
   },
   "dependencies": {
     "clsx": "^2.0.0"

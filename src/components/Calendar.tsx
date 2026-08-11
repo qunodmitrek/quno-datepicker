@@ -55,6 +55,8 @@ export const Calendar = ({ controller, config }: Props): JSX.Element => {
         visibleMonth={controller.visibleMonth}
         monthMotion={controller.monthMotion}
         movingSelection={movingSelection}
+        cycleDate={controller.cycleDate}
+        cyclePreview={controller.cyclePreview}
         selection={controller.selection}
         renderedSelection={controller.renderedSelection}
         config={config}

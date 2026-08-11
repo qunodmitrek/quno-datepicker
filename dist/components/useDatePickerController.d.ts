@@ -10,11 +10,15 @@ type ControllerOptions = {
     onChange?: (value: DateRange | null) => void;
     onVisibleMonthChange?: (month: IsoDate) => void;
 };
+export type MonthChangeSource = 'navigation' | 'interaction' | 'endpoint';
 export type DatePickerController = {
     selection: DateRange | null;
     renderedSelection: DateRange | null;
+    cycleDate: IsoDate | null;
+    cyclePreview: DateRange | null;
     visibleMonth: IsoDate;
     monthMotion: MonthDirection | null;
+    monthChangeSource: MonthChangeSource | null;
     interaction: DatePickerInteraction;
     gridDates: IsoDate[];
     weekdays: number[];

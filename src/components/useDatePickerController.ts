@@ -32,11 +32,16 @@ type ControllerOptions = {
   onVisibleMonthChange?: (month: IsoDate) => void;
 };
 
+export type MonthChangeSource = 'navigation' | 'interaction' | 'endpoint';
+
 export type DatePickerController = {
   selection: DateRange | null;
   renderedSelection: DateRange | null;
+  cycleDate: IsoDate | null;
+  cyclePreview: DateRange | null;
   visibleMonth: IsoDate;
   monthMotion: MonthDirection | null;
+  monthChangeSource: MonthChangeSource | null;
   interaction: DatePickerInteraction;
   gridDates: IsoDate[];
   weekdays: number[];
@@ -67,6 +72,8 @@ export const useDatePickerController = ({
     startOfMonth(initialMonth ?? selection?.start ?? todayIso()),
   );
   const [monthMotion, setMonthMotion] = useState<MonthDirection | null>(null);
+  const [monthChangeSource, setMonthChangeSource] =
+    useState<MonthChangeSource | null>(null);
   const [interaction, setInteraction] = useState<DatePickerInteraction>(idle());
   const [clickCycle, setClickCycle] = useState<DateClickCycle | null>(null);
   const edgeTimer = useRef<number | null>(null);
@@ -90,14 +97,20 @@ export const useDatePickerController = ({
   const changeMonth = (
     month: IsoDate,
     motion: MonthDirection | null = null,
+    source: MonthChangeSource = 'interaction',
   ): void => {
     setMonthMotion(motion);
+    setMonthChangeSource(source);
     setVisibleMonth(month);
     onVisibleMonthChange?.(month);
   };
 
-  const navigate = (direction: MonthDirection): void => {
+  const navigateFrom = (
+    direction: MonthDirection,
+    source: MonthChangeSource,
+  ): void => {
     setMonthMotion(direction);
+    setMonthChangeSource(source);
     setVisibleMonth((current) => {
       const next = addMonths(current, direction);
       onVisibleMonthChange?.(next);
@@ -105,9 +118,15 @@ export const useDatePickerController = ({
     });
     setClickCycle(null);
   };
+  const navigate = (direction: MonthDirection): void =>
+    navigateFrom(direction, 'navigation');
   const dragSelection =
     interaction.type === 'idle' ? null : interaction.current;
   const renderedSelection = dragSelection ?? selection;
+  const cycleDate = clickCycle?.date ?? null;
+  const cyclePreview = clickCycle
+    ? advanceDateClickCycle(clickCycle).value
+    : null;
 
   const beginDrag = (date: IsoDate): void => {
     stopEdgeNavigation();
@@ -141,7 +160,7 @@ export const useDatePickerController = ({
     }
     if (!isInMonth(date, visibleMonth)) {
       const direction = compareDates(date, visibleMonth) < 0 ? -1 : 1;
-      changeMonth(startOfMonth(date), direction);
+      changeMonth(startOfMonth(date), direction, 'interaction');
     }
   };
 
@@ -149,7 +168,7 @@ export const useDatePickerController = ({
     if (interaction.type === 'idle') return;
     stopEdgeNavigation();
     const step = (): void => {
-      navigate(direction);
+      navigateFrom(direction, 'interaction');
       edgeTimer.current = window.setTimeout(step, autoNavigateRepeatDelay);
     };
     edgeTimer.current = window.setTimeout(step, autoNavigateDelay);
@@ -167,14 +186,17 @@ export const useDatePickerController = ({
     setInteraction(idle());
     setClickCycle(null);
     const direction = compareDates(date, visibleMonth) < 0 ? -1 : 1;
-    changeMonth(startOfMonth(date), direction);
+    changeMonth(startOfMonth(date), direction, 'endpoint');
   };
 
   return {
     selection,
     renderedSelection,
+    cycleDate,
+    cyclePreview,
     visibleMonth,
     monthMotion,
+    monthChangeSource,
     interaction,
     gridDates: calendarGrid(visibleMonth, weekStartsOn),
     weekdays: Array.from({ length: 7 }, (_, index) => (weekStartsOn + index) % 7),

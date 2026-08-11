@@ -22,19 +22,29 @@
   display: grid;
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
+  height: 36px;
   margin-bottom: 14px;
 }
 
 .quno-date-picker__month-header h2 {
+  display: grid;
+  min-width: 0;
+  height: 100%;
   overflow: hidden;
   margin: 0;
+  place-items: center;
   font-size: 17px;
   font-weight: 700;
+  line-height: 1.2;
   text-align: center;
 }
 
 .quno-date-picker__month-header h2 > span {
   display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .quno-date-picker__month-header button {

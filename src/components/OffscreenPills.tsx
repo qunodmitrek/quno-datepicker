@@ -5,6 +5,7 @@ import {
   type IsoDate,
 } from './dateRangeModel';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
+import type { MonthChangeSource } from './useDatePickerController';
 import type { JSX } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
@@ -14,12 +15,17 @@ type PillItem = {
   date: IsoDate;
 };
 type ItemPhase = 'entering' | 'visible' | 'exiting';
-type RenderedPill = PillItem & { phase: ItemPhase };
+type CalendarReveal = 'moving' | 'stationary';
+type RenderedPill = PillItem & {
+  phase: ItemPhase;
+  calendarReveal: CalendarReveal;
+};
 
 type Props = {
   selection: DateRange | null;
   visibleMonth: IsoDate;
   position: Position;
+  monthChangeSource: MonthChangeSource | null;
   config: ResolvedDatePickerConfig;
   onJump: (date: IsoDate) => void;
 };
@@ -28,6 +34,7 @@ export const OffscreenPills = ({
   selection,
   visibleMonth,
   position,
+  monthChangeSource,
   config,
   onJump,
 }: Props): JSX.Element | null => {
@@ -44,11 +51,22 @@ export const OffscreenPills = ({
     [position, selection, visibleMonth],
   );
   const [items, setItems] = useState<RenderedPill[]>(() =>
-    liveItems.map((item) => ({ ...item, phase: 'entering' })),
+    liveItems.map((item) => ({
+      ...item,
+      phase: 'entering',
+      calendarReveal: 'moving',
+    })),
   );
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const previousMonth = useRef(visibleMonth);
 
   useEffect(() => {
+    const calendarReveal: CalendarReveal =
+      previousMonth.current !== visibleMonth &&
+      monthChangeSource === 'navigation'
+        ? 'stationary'
+        : 'moving';
+    previousMonth.current = visibleMonth;
     setItems((current) => {
       const retained = current.map((rendered): RenderedPill => {
         const live = liveItems.find(
@@ -58,6 +76,10 @@ export const OffscreenPills = ({
         return {
           ...live,
           phase: rendered.phase === 'exiting' ? 'entering' : rendered.phase,
+          calendarReveal:
+            rendered.phase === 'exiting'
+              ? calendarReveal
+              : rendered.calendarReveal,
         };
       });
       const additions = liveItems
@@ -65,10 +87,14 @@ export const OffscreenPills = ({
           ({ endpoint }) =>
             !current.some((rendered) => rendered.endpoint === endpoint),
         )
-        .map((item): RenderedPill => ({ ...item, phase: 'entering' }));
+        .map((item): RenderedPill => ({
+          ...item,
+          phase: 'entering',
+          calendarReveal,
+        }));
       return [...retained, ...additions];
     });
-  }, [liveItems]);
+  }, [liveItems, monthChangeSource, visibleMonth]);
 
   const motionKey = items
     .map(({ endpoint, phase }) => `${endpoint}:${phase}`)
@@ -109,6 +135,14 @@ export const OffscreenPills = ({
       data-slot="pills"
       data-position={position}
       data-presence={containerPhase}
+      data-calendar-reveal={
+        items.some(
+          ({ phase, calendarReveal }) =>
+            phase === 'entering' && calendarReveal === 'stationary',
+        )
+          ? 'stationary'
+          : undefined
+      }
       aria-hidden={containerPhase === 'exiting' || undefined}
     >
       <div className="quno-date-picker__pills-track">

@@ -55,16 +55,54 @@ input {
   line-height: 1.65;
 }
 
-.demo__instruction {
-  max-width: 34ch;
-  margin-top: 18px;
-  padding-left: 16px;
-  border-left: 3px solid #0167ff;
+.demo__lede {
+  margin-bottom: 20px;
 }
 
-.demo__instruction strong {
-  display: block;
+.demo__actions {
+  display: grid;
+  gap: 8px;
+  max-width: 440px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo__actions li {
+  display: grid;
+  grid-template-columns: 138px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 12px;
+  border: 1px solid #dce3ee;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 72%);
+  color: #5d6878;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.demo__actions strong {
+  justify-self: start;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e8f1ff;
   color: #174a8f;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.demo__story-link {
+  display: inline-block;
+  margin-top: 22px;
+  color: #0167ff;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.demo__story-link:hover {
+  text-decoration: underline;
 }
 
 .demo__day--weekend:not([data-selected='true']) > span {
@@ -83,5 +121,9 @@ input {
   .demo h1 {
     max-width: none;
     font-size: 44px;
+  }
+
+  .demo__actions li {
+    grid-template-columns: 128px 1fr;
   }
 }

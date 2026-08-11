@@ -69,6 +69,7 @@ export const QunoDatePicker = ({
         selection={controller.selection}
         visibleMonth={controller.visibleMonth}
         position="before"
+        monthChangeSource={controller.monthChangeSource}
         config={config}
         onJump={controller.jumpToEndpoint}
       />
@@ -77,6 +78,7 @@ export const QunoDatePicker = ({
         selection={controller.selection}
         visibleMonth={controller.visibleMonth}
         position="after"
+        monthChangeSource={controller.monthChangeSource}
         config={config}
         onJump={controller.jumpToEndpoint}
       />
