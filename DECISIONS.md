@@ -617,3 +617,67 @@ This file records decisions that should remain stable across implementation sess
 - Context: Mobile Safari can retain `:hover` after a tap. When the month/year heading closes quick navigation, that synthetic hover makes the control look active even though `aria-expanded` has returned to false.
 - Decision: Apply the heading's hover treatment only when the input environment reports hover capability. Keep the same visual treatment for the true expanded state and `:focus-visible` so navigation state and keyboard focus remain explicit.
 - Consequences: Tapping the toggle on iPhone returns it to its resting appearance when quick navigation closes. Mouse hover and keyboard accessibility feedback remain unchanged.
+
+## QDP-078 — Put the year in the first month-grid cell
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes the four-row layout detail in QDP-072
+- Context: A separate year heading above a three-by-four month grid makes the month sequence feel visually offset from the year and harder to scan in natural reading order.
+- Decision: Make each year block a three-column, five-row flow whose first cells are the year label, January, and February. Continue March through November in complete rows and place December in the first cell of the final row. Increase the default measured year-block height from 226 px to 240 px while preserving consumer override and runtime measurement.
+- Consequences: Month order reads continuously from the inline year label, matching the requested visual rhythm. The last row intentionally contains only December, and virtualization continues to mount the same bounded number of year groups.
+
+## QDP-079 — Center and pin the inline year cell
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-078
+- Context: Left-aligning the inline year makes it feel unlike the neighboring month cells, and allowing it to scroll away removes year context while its remaining month rows pass through the viewport.
+- Decision: Center the year label horizontally and vertically within its grid cell and keep it sticky at the top of the year block. Paint the component surface behind the sticky cell so underlying month controls do not show through it.
+- Consequences: The year aligns visually with January and February while remaining available as context during vertical scrolling. Sticky positioning remains bounded by its own year block, so the next year replaces it naturally.
+
+## QDP-080 — Separate sticky years from continuous month grids
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes QDP-078 and QDP-079
+- Context: Treating the year as the first month-grid cell still competes with the month sequence and leaves an incomplete final row. The year needs persistent context without consuming a month position.
+- Decision: Place each sticky year in a narrow left rail beside a separate three-column, four-row month grid. Begin the grid with December of the previous calendar year, then render January through November of the labeled year. Apply a subtle alternating checkerboard surface to month cells and expose scoped tokens for the rail width and checker color.
+- Consequences: Every year block is rectangular, consecutive blocks continue naturally from November into December, and the year remains visible without displacing a month. December is grouped visually with the following year while retaining its true calendar value and formatted accessible label. The shorter 196 px default block height remains runtime-measured for virtual scrolling.
+
+## QDP-081 — Alternate month surfaces by calendar year
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes the checkerboard detail in QDP-080
+- Context: Alternating every month cell creates visual noise and does not communicate the calendar-year boundary introduced by placing the preceding December at the start of each labeled block.
+- Decision: Give months from alternating calendar years a subtle shared surface. Derive the tone from each month's actual year rather than its containing year block, and expose the even-year surface as a scoped customization token.
+- Consequences: December visually remains with its true year even though it appears beside the following year label. Adjacent years are distinguishable as quiet groups instead of a per-cell checkerboard, and selected-month styling continues to override the year tone.
+
+## QDP-082 — Express year alternation through text color
+
+- Date: 2026-08-11
+- Status: Accepted; supersedes the background-surface treatment in QDP-081
+- Context: Even a subtle background groups months as separate controls too strongly. The distinction between adjacent calendar years should remain visible without adding a field of tinted shapes.
+- Decision: Keep month backgrounds transparent and alternate a restrained text tone by actual calendar year. Apply the same tone to the corresponding sticky year label and expose the even-year text color as a scoped customization token.
+- Consequences: Year grouping is communicated through typography rather than surfaces. December continues to match its true year's label and month names, while selected and hovered month states retain their stronger existing colors.
+
+## QDP-083 — Keep year-block separation compact
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-080
+- Context: The 26 px combined bottom and top padding between consecutive four-row month grids creates more separation than the sticky rail and alternating text tones need.
+- Decision: Reduce year-group padding to 4 px above and below, producing an 8 px gutter between blocks. Update the default virtual year height from 196 px to 178 px while retaining runtime measurement and consumer override.
+- Consequences: More years remain visible in the fixed navigator viewport without compressing month hit areas or their internal 6 px grid gaps. Virtual spacers continue to match rendered block height.
+
+## QDP-084 — Give alternate-year text sufficient contrast
+
+- Date: 2026-08-11
+- Status: Accepted; refines QDP-082
+- Context: Blending only 28% of the primary color into the alternate calendar year's text is too close to the neutral text tone on the default theme, making the grouping difficult to perceive on an iPhone display.
+- Decision: Use an equal 50% blend of the component text and primary colors for even-year labels and month names. Keep odd years on the normal text color and preserve the public `--quno-picker-even-year-text` override.
+- Consequences: Adjacent calendar years are visibly distinguishable without adding backgrounds. The alternate tone remains derived from consumer theme colors, and hover and selected states continue to override it.
+
+## QDP-085 — Keep every month inside its labeled year block
+
+- Date: 2026-08-12
+- Status: Accepted; supersedes the cross-year month grouping in QDP-080
+- Context: Placing the previous December at the start of a labeled year block makes that month appear to belong to the wrong year, even when its accessible label and text tone remain correct.
+- Decision: Render January through December of the labeled calendar year in each block. Shift January to the second grid column so January and February lead the first row, retain complete March–November rows, and place December in the first column of a separate final row. Keep the sticky year rail and 8 px inter-block gutter.
+- Consequences: Every visible month belongs unambiguously to its adjacent sticky year. Year blocks grow from 178 px to 222 px to accommodate the fifth month row; runtime measurement and virtualization spacers remain aligned.

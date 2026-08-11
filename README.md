@@ -37,9 +37,15 @@ Update these records in the same change as the code they describe.
 - When the visible month changes, its name and day numbers enter vertically in the travel direction while the calendar frame and selection geometry stay fixed. Motion is disabled when the user prefers reduced motion.
 - Previous/next controls use symmetric SVG chevrons centered within their unchanged circular hit areas.
 - Clicking the month-and-year heading replaces the date body in-place with a
-  scrollable year navigator. Each year shows twelve month buttons in four rows;
-  the initial timeline spans 100 years in either direction, and scrolling adds
-  more years after momentum settles. A virtual window still mounts only the
+  scrollable year navigator. Each sticky year label sits in a narrow left rail;
+  its months occupy a separate three-column grid containing only that calendar
+  year. January and February begin the first row, complete three-month rows run
+  from March through November, and December occupies its own final row. Month
+  names and sticky labels alternate in a distinct, theme-coordinated text color
+  by calendar year.
+  Compact eight-pixel gutters separate consecutive year blocks. The initial
+  timeline spans 100 years in either direction, and scrolling adds more years
+  after momentum settles. A virtual window still mounts only the
   visible years and a small overscan buffer. The wide runway makes loading
   edges uncommon, while settled extension prevents one iPhone flick from
   cascading through decades. The fixed header and month chevrons remain
@@ -167,7 +173,7 @@ The default stylesheet does not write theme values to `:root`. Every default is 
 }
 ```
 
-Additional tokens cover disabled and outside-month text, the selection-summary surface, endpoint-pill colors/spacing/radius/shadow/type, before/after shadow offsets, and track direction/wrapping/alignment/gap, desktop/mobile day sizing, month-header spacing (`--quno-picker-month-header-gap`), the virtualized year-block height (`--quno-picker-year-navigation-year-height`), the cycle-preview outline (`--quno-picker-cycle-preview`), month-scroll duration/distance, and endpoint-pill reveal duration/distance (`--quno-picker-pill-reveal-duration` and `--quno-picker-pill-reveal-distance`). Start and End pills can also be targeted individually through `data-endpoint`. The `/story` theme switcher includes compact and large-day skins to exercise these contracts under tighter constraints. Inspect `QunoDatePicker.css` for the complete token list.
+Additional tokens cover disabled and outside-month text, the selection-summary surface, endpoint-pill colors/spacing/radius/shadow/type, before/after shadow offsets, and track direction/wrapping/alignment/gap, desktop/mobile day sizing, month-header spacing (`--quno-picker-month-header-gap`), the virtualized year-block height and label-rail width (`--quno-picker-year-navigation-year-height` and `--quno-picker-year-navigation-label-width`), alternating year text (`--quno-picker-even-year-text`), the cycle-preview outline (`--quno-picker-cycle-preview`), month-scroll duration/distance, and endpoint-pill reveal duration/distance (`--quno-picker-pill-reveal-duration` and `--quno-picker-pill-reveal-distance`). Start and End pills can also be targeted individually through `data-endpoint`. The `/story` theme switcher includes compact and large-day skins to exercise these contracts under tighter constraints. Inspect `QunoDatePicker.css` for the complete token list.
 
 Every meaningful element also has a stable `data-slot` value, including `root`, `selection-header`, `clear-button`, `pills`, `pill`, `calendar`, `month-header`, `month-heading`, `month-heading-button`, `month-navigation`, `year-group`, `year-heading`, `month-option`, `weekdays`, `weekday`, `overflow-day`, `grid`, `day`, `handle`, and `hint`. The root exposes `data-pill-before` and `data-pill-after` while matching off-screen endpoints are present; pill containers expose `data-presence="entering|visible|exiting"`, and individual controls expose the same lifecycle through `data-item-presence`; the month heading and grid expose `data-month-motion="previous|next"`; the calendar exposes `data-view="dates|month-navigation"`; the active month option exposes `aria-current="date"`; the calendar and grid expose `data-dragging="move"` while a whole range, one-day selection, or endpoint is directly manipulated, and the grid exposes `data-interaction-active` for the complete pointer gesture; the weekday strip exposes `data-drag-active` and `data-drag-overflow`; date cells expose state through `data-selected`, `data-committed`, `data-range-start`, `data-range-end`, `data-outside`, `data-cycle-trigger`, and cycle-preview segment attributes.
 
@@ -200,8 +206,8 @@ Passing an empty `labels.hint` omits the optional hint element, allowing a host 
 - `dist/quno-datepicker.css` — optional default theme.
 - `dist/index.d.ts` and component/model declaration files — public TypeScript contracts.
 
-The current production output is approximately 35.96 kB JavaScript (9.25 kB
-gzip) plus 14.43 kB optional CSS (2.85 kB gzip). Preact is external. Run
+The current production output is approximately 36.10 kB JavaScript (9.29 kB
+gzip) plus 15.02 kB optional CSS (2.96 kB gzip). Preact is external. Run
 `npm run report:size` after a build for current measured values.
 
 The interactive demo remains available through `npm run dev`; it is not part of the published JavaScript entry.

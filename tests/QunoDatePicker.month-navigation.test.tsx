@@ -26,6 +26,20 @@ describe('QunoDatePicker month and year navigation', () => {
       .toHaveAttribute('aria-current', 'date');
     expect(document.querySelectorAll('[data-slot="month-option"]').length)
       .toBeLessThanOrEqual(72);
+    const yearMonths = Array.from(
+      document.querySelectorAll(
+        '[data-slot="year-group"][data-year="2026"] [data-slot="month-option"]',
+      ),
+      (month) => month.getAttribute('data-month'),
+    );
+    expect(yearMonths).toEqual([
+      '2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06',
+      '2026-07', '2026-08', '2026-09', '2026-10', '2026-11', '2026-12',
+    ]);
+    expect(document.querySelector('[data-month="2026-01"]'))
+      .toHaveAttribute('data-year-tone', 'even');
+    expect(document.querySelector('[data-year="2026"] [data-slot="year-heading"]'))
+      .toHaveAttribute('data-year-tone', 'even');
 
     fireEvent.click(
       screen.getByRole('button', { name: /Close month and year navigation/ }),
@@ -59,9 +73,9 @@ describe('QunoDatePicker month and year navigation', () => {
     const navigation = slot<HTMLDivElement>('month-navigation');
     Object.defineProperties(navigation, {
       clientHeight: { configurable: true, value: 326 },
-      scrollHeight: { configurable: true, value: 45426 },
+      scrollHeight: { configurable: true, value: 44622 },
     });
-    navigation.scrollTop = 23504;
+    navigation.scrollTop = 23088;
     fireEvent.scroll(navigation);
     fireEvent.click(screen.getByRole('button', { name: 'February 2030' }));
 

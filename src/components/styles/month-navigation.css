@@ -46,8 +46,13 @@
 }
 
 .quno-date-picker__year-group {
-  height: var(--quno-picker-year-navigation-year-height, 226px);
-  padding: 10px 2px 16px;
+  display: grid;
+  grid-template-columns:
+    var(--quno-picker-year-navigation-label-width, 48px)
+    minmax(0, 1fr);
+  gap: 8px;
+  height: var(--quno-picker-year-navigation-year-height, 222px);
+  padding: 4px 2px;
   contain: layout paint;
 }
 
@@ -59,9 +64,15 @@
 .quno-date-picker__year-group h3 {
   position: sticky;
   z-index: 1;
-  top: -4px;
-  margin: 0 0 8px;
-  padding: 4px 0;
+  top: 0;
+  display: flex;
+  min-width: 0;
+  height: 38px;
+  margin: 0;
+  padding: 0 6px;
+  align-self: start;
+  align-items: center;
+  justify-content: center;
   background: var(--quno-picker-surface, #fff);
   color: var(--quno-picker-muted, #697386);
   font-size: 12px;
@@ -73,6 +84,10 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
+}
+
+.quno-date-picker__month-option:first-child {
+  grid-column: 2;
 }
 
 .quno-date-picker__month-option {
@@ -89,6 +104,22 @@
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.quno-date-picker__year-group h3[data-year-tone='even'],
+.quno-date-picker__month-option[data-year-tone='even'] {
+  color: var(
+    --quno-picker-even-year-text,
+    color-mix(
+      in srgb,
+      var(--quno-picker-text, #15212a) 50%,
+      var(--quno-picker-primary, #0167ff)
+    )
+  );
+}
+
+.quno-date-picker__year-group h3[data-year-tone='odd'] {
+  color: var(--quno-picker-text, #15212a);
 }
 
 .quno-date-picker__month-option:hover,

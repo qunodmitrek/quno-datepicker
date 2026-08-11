@@ -85,12 +85,17 @@ the newly required controls slide from beneath it.
 ### Jump across months and years
 
 Clicking the month-and-year heading opens a quick-jump view inside the same
-calendar frame. Each year presents twelve months in a three-column, four-row
-grid. The internal list adds more years when it reaches either scroll edge, but
-starts with a 100-year runway in either direction. It waits for scrolling to
-settle before extending the timeline so one iPhone flick cannot cascade through
-decades. Virtualization keeps only the visible years and a small overscan buffer
-mounted.
+calendar frame. A sticky year rail sits to the left of a separate three-column
+month grid containing only the labeled calendar year. January and February
+begin its first row, March through November fill complete three-month rows, and
+December occupies a separate final row. Month names and sticky year labels
+alternate in a distinct, theme-coordinated text color by calendar year. The
+internal list starts with a 100-year runway in
+either direction and adds more years when it reaches either scroll edge.
+Consecutive year blocks retain only an eight-pixel gutter between their month
+grids. The list waits for scrolling to settle before extending the timeline so
+one iPhone flick cannot cascade through decades. Virtualization keeps only the
+visible years and a small overscan buffer mounted.
 
 The current month remains in the fixed header with its previous and next
 buttons. Choosing a month, using either header button, or jumping through an
@@ -243,7 +248,9 @@ place stable controls beyond those painted shadow areas.
 
 If month-option content needs a different block height, set
 `--quno-picker-year-navigation-year-height`; the quick-jump virtualizer measures
-the rendered block and keeps its scroll spacers aligned.
+the rendered block and keeps its scroll spacers aligned. Use
+`--quno-picker-year-navigation-label-width` for the sticky year rail and
+`--quno-picker-even-year-text` for the alternating year-and-month text tone.
 
 ## 9. Integrate with forms
 
@@ -301,8 +308,8 @@ comparison of two distant months may still prefer a two-panel picker.
 
 The current V1 production build contains approximately:
 
-- 35.96 kB JavaScript raw, 9.25 kB gzip.
-- 14.43 kB optional CSS raw, 2.85 kB gzip.
+- 36.10 kB JavaScript raw, 9.29 kB gzip.
+- 15.02 kB optional CSS raw, 2.96 kB gzip.
 - 12.02 kB gzip total when the default theme is used.
 - No bundled Preact runtime; Preact remains a peer dependency.
 

@@ -57,6 +57,31 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Changed
 
+- Removed the preceding-year December from each quick-navigation block. Every
+  block now contains January through December of its labeled year, with January
+  and February shifted right and December placed on a separate final row.
+- Increased the alternate calendar-year text tone from a 28% to a 50% primary
+  color blend so neighboring years are visibly distinct while remaining tied to
+  the component theme.
+- Reduced the space between quick-navigation year blocks from 26px to 8px and
+  updated the virtualizer's default measured block height from 196px to 178px.
+- Replaced alternating year-month backgrounds with a subtle alternating text
+  color shared by each sticky year label and the month names that belong to
+  that actual calendar year.
+- Changed quick-navigation month tinting from a per-cell checkerboard to a
+  subtle calendar-year alternation. The leading December now shares the tone of
+  its actual year rather than the labeled block that contains it.
+- Moved sticky quick-navigation years into a narrow rail beside a separate
+  three-column month grid. Each year block now starts with the previous December
+  and continues through November, with alternating checkerboard month surfaces
+  and a shorter measured virtual block.
+- Centered the inline quick-navigation year label like a month cell and made it
+  sticky within its year block, with an opaque component surface while content
+  scrolls beneath it.
+- Shifted quick-navigation months one grid cell to the right so each year block
+  reads `Year · Jan · Feb`, followed by complete three-month rows and December
+  at the start of the final row. Updated the measured virtual year height for
+  the resulting five-row layout.
 - Expanded the month-and-year navigator's initial virtual timeline from four to
   100 years in either direction and its edge-loading chunks from five to 25
   years, making artificial year boundaries uncommon without mounting more

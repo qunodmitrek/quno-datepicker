@@ -13,7 +13,7 @@ type Props = {
 const CHUNK_SIZE = 25;
 const INITIAL_RADIUS = 100;
 const OVERSCAN_YEARS = 2;
-const DEFAULT_YEAR_HEIGHT = 226;
+const DEFAULT_YEAR_HEIGHT = 222;
 const DEFAULT_VIEWPORT_HEIGHT = 326;
 const SCROLL_SETTLE_DELAY = 120;
 const monthIso = (year: number, month: number): IsoDate =>
@@ -154,6 +154,7 @@ export const MonthNavigation = ({
           <h3
             className={classNames?.yearHeading}
             data-slot="year-heading"
+            data-year-tone={year % 2 ? 'odd' : 'even'}
           >
             {formatters.year(monthIso(year, 1), locale)}
           </h3>
@@ -171,6 +172,9 @@ export const MonthNavigation = ({
                   )}
                   data-slot="month-option"
                   data-month={month.slice(0, 7)}
+                  data-year-tone={
+                    Number(month.slice(0, 4)) % 2 ? 'odd' : 'even'
+                  }
                   aria-label={formatters.month(month, locale)}
                   aria-current={current ? 'date' : undefined}
                   onClick={() => onSelect(month)}
