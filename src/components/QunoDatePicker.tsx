@@ -1,5 +1,5 @@
-import clsx from 'clsx';
 import { Calendar } from './Calendar';
+import { classNames as cx } from './classNames';
 import { monthRelation } from './dateRangeModel';
 import { DEFAULT_FORMATTERS, DEFAULT_LABELS } from './datePickerFormatters';
 import { OffscreenPills } from './OffscreenPills';
@@ -55,7 +55,7 @@ export const QunoDatePicker = ({
 
   return (
     <section
-      className={clsx('quno-date-picker', className, classNames?.root)}
+      className={cx('quno-date-picker', className, classNames?.root)}
       data-slot="root"
       data-pill-before={endpointPositions.includes('before') || undefined}
       data-pill-after={endpointPositions.includes('after') || undefined}
@@ -97,7 +97,7 @@ export const QunoDatePicker = ({
       />
       {config.labels.hint && (
         <p
-          className={clsx('quno-date-picker__hint', classNames?.hint)}
+          className={cx('quno-date-picker__hint', classNames?.hint)}
           data-slot="hint"
         >
           {config.labels.hint}

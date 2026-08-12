@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { classNames as cx } from './classNames';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
 import type { IsoDate, MonthDirection } from './dateRangeModel';
 import type { JSX } from 'preact';
@@ -37,7 +37,7 @@ export const CalendarHeader = ({
   const monthLabel = formatters.month(visibleMonth, locale);
   return (
     <div
-      className={clsx(
+      className={cx(
         'quno-date-picker__month-header',
         classNames?.monthHeader,
       )}
@@ -65,7 +65,7 @@ export const CalendarHeader = ({
       >
         <button
           type="button"
-          className={clsx(
+          className={cx(
             'quno-date-picker__month-heading-button',
             classNames?.monthHeadingButton,
           )}

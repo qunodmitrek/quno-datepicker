@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { classNames as cx } from './classNames';
 import {
   monthRelation,
   type DateRange,
@@ -99,6 +99,24 @@ export const OffscreenPills = ({
   const motionKey = items
     .map(({ endpoint, phase }) => `${endpoint}:${phase}`)
     .join('|');
+  const finishMotion = (endpoint?: PillItem['endpoint'], phase?: ItemPhase): void => {
+    setItems((current) =>
+      current.flatMap((item) => {
+        if (
+          endpoint !== undefined &&
+          (item.endpoint !== endpoint || item.phase !== phase)
+        ) {
+          return [item];
+        }
+        const remove = endpoint === undefined
+          ? item.phase === 'exiting'
+          : phase !== 'entering';
+        return remove
+          ? []
+          : [{ ...item, phase: 'visible' }];
+      }),
+    );
+  };
   useEffect(() => {
     const moving = containerRef.current?.querySelector<HTMLElement>(
       '[data-item-presence="entering"], [data-item-presence="exiting"]',
@@ -106,13 +124,7 @@ export const OffscreenPills = ({
     if (!moving) return;
     const animationName = window.getComputedStyle(moving).animationName;
     if (!animationName || animationName === 'none') {
-      setItems((current) =>
-        current.flatMap((item) =>
-          item.phase === 'exiting'
-            ? []
-            : [{ ...item, phase: 'visible' as const }],
-        ),
-      );
+      finishMotion();
     }
   }, [motionKey]);
 
@@ -127,7 +139,7 @@ export const OffscreenPills = ({
   return (
     <div
       ref={containerRef}
-      className={clsx(
+      className={cx(
         'quno-date-picker__pills',
         `quno-date-picker__pills--${position}`,
         classNames?.pills,
@@ -150,7 +162,7 @@ export const OffscreenPills = ({
           <button
             key={endpoint}
             type="button"
-            className={clsx('quno-date-picker__pill', classNames?.pill)}
+            className={cx('quno-date-picker__pill', classNames?.pill)}
             data-slot="pill"
             data-endpoint={endpoint}
             data-position={position}
@@ -158,18 +170,7 @@ export const OffscreenPills = ({
             aria-hidden={phase === 'exiting' || undefined}
             disabled={phase === 'exiting'}
             onClick={() => onJump(date)}
-            onAnimationEnd={() => {
-              setItems((current) =>
-                current.flatMap((item) => {
-                  if (item.endpoint !== endpoint || item.phase !== phase) {
-                    return [item];
-                  }
-                  return phase === 'entering'
-                    ? [{ ...item, phase: 'visible' }]
-                    : [];
-                }),
-              );
-            }}
+            onAnimationEnd={() => finishMotion(endpoint, phase)}
           >
             <span>{endpoint === 'start' ? labels.start : labels.end}</span>
             {formatters.date(date, locale)}

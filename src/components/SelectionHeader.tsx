@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { classNames as cx } from './classNames';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
 import type { DateRange } from './dateRangeModel';
 import type { JSX } from 'preact';
@@ -26,7 +26,7 @@ export const SelectionHeader = ({
 
   return (
     <header
-      className={clsx(
+      className={cx(
         'quno-date-picker__selection-header',
         classNames?.selectionHeader,
       )}
@@ -34,7 +34,7 @@ export const SelectionHeader = ({
     >
       <div>
         <span
-          className={clsx(
+          className={cx(
             'quno-date-picker__eyebrow',
             classNames?.selectionEyebrow,
           )}
@@ -51,7 +51,7 @@ export const SelectionHeader = ({
       </div>
       <button
         type="button"
-        className={clsx('quno-date-picker__clear', classNames?.clearButton)}
+        className={cx('quno-date-picker__clear', classNames?.clearButton)}
         data-slot="clear-button"
         disabled={!selection}
         onClick={onClear}

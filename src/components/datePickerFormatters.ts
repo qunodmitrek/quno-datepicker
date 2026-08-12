@@ -4,47 +4,56 @@ import type {
 } from './datePickerTypes';
 import type { IsoDate } from './dateRangeModel';
 
+const format = (
+  date: Date,
+  locale: string,
+  options: Intl.DateTimeFormatOptions,
+): string => {
+  options.timeZone = 'UTC';
+  return new Intl.DateTimeFormat(locale, options).format(date);
+};
+
+const formatIso = (
+  date: IsoDate,
+  locale: string,
+  options: Intl.DateTimeFormatOptions,
+): string => format(new Date(`${date}T00:00:00Z`), locale, options);
+
 const formatDate = (date: IsoDate, locale: string): string =>
-  new Intl.DateTimeFormat(locale, {
+  formatIso(date, locale, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${date}T00:00:00Z`));
+  });
 
 const formatMonth = (month: IsoDate, locale: string): string =>
-  new Intl.DateTimeFormat(locale, {
+  formatIso(month, locale, {
     month: 'long',
     year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${month}T00:00:00Z`));
+  });
 
 const formatMonthOption = (month: IsoDate, locale: string): string =>
-  new Intl.DateTimeFormat(locale, {
+  formatIso(month, locale, {
     month: 'short',
-    timeZone: 'UTC',
-  }).format(new Date(`${month}T00:00:00Z`));
+  });
 
 const formatYear = (month: IsoDate, locale: string): string =>
-  new Intl.DateTimeFormat(locale, {
+  formatIso(month, locale, {
     year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${month}T00:00:00Z`));
+  });
 
 const formatDayLabel = (date: IsoDate, locale: string): string =>
-  new Intl.DateTimeFormat(locale, {
+  formatIso(date, locale, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${date}T00:00:00Z`));
+  });
 
 const formatWeekday = (dayIndex: number, locale: string): string =>
-  new Intl.DateTimeFormat(locale, {
+  format(new Date(Date.UTC(2026, 7, 2 + dayIndex)), locale, {
     weekday: 'short',
-    timeZone: 'UTC',
-  }).format(new Date(Date.UTC(2026, 7, 2 + dayIndex)));
+  });
 
 export const DEFAULT_LABELS: QunoDatePickerLabels = {
   calendar: 'Date range picker',

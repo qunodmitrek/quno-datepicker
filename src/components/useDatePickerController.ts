@@ -68,6 +68,12 @@ export const useDatePickerController = ({
 
   useEffect(() => stopEdgeNavigation, []);
 
+  const resetInteraction = (): void => {
+    stopEdgeNavigation();
+    setInteraction(idle());
+    setClickCycle(null);
+  };
+
   const commit = (nextValue: DateRange | null): void => {
     if (!controlled) {
       setInternalValue(nextValue);
@@ -101,18 +107,17 @@ export const useDatePickerController = ({
   };
   const navigate = (direction: MonthDirection): void =>
     navigateFrom(direction, 'navigation');
-  const goToMonth = (month: IsoDate): void => {
-    stopEdgeNavigation();
-    setInteraction(idle());
-    setClickCycle(null);
+  const goTo = (month: IsoDate, source: MonthChangeSource): void => {
+    resetInteraction();
     const target = startOfMonth(month);
     if (target === visibleMonth) {
       setMonthMotion(null);
       return;
     }
     const direction = compareDates(target, visibleMonth) < 0 ? -1 : 1;
-    changeMonth(target, direction, 'navigation');
+    changeMonth(target, direction, source);
   };
+  const goToMonth = (month: IsoDate): void => goTo(month, 'navigation');
   const dragSelection =
     interaction.type === 'idle' ? null : interaction.current;
   const renderedSelection = dragSelection ?? selection;
@@ -173,19 +178,11 @@ export const useDatePickerController = ({
   };
 
   const clear = (): void => {
-    stopEdgeNavigation();
-    setInteraction(idle());
-    setClickCycle(null);
+    resetInteraction();
     commit(null);
   };
 
-  const jumpToEndpoint = (date: IsoDate): void => {
-    stopEdgeNavigation();
-    setInteraction(idle());
-    setClickCycle(null);
-    const direction = compareDates(date, visibleMonth) < 0 ? -1 : 1;
-    changeMonth(startOfMonth(date), direction, 'endpoint');
-  };
+  const jumpToEndpoint = (date: IsoDate): void => goTo(date, 'endpoint');
 
   return {
     selection,

@@ -166,18 +166,16 @@ export const calendarGrid = (
   month: IsoDate,
   weekStartsOn: WeekStart = 1,
 ): IsoDate[] => {
-  const first = fromIsoDate(startOfMonth(month));
+  const monthStart = startOfMonth(month);
+  const first = fromIsoDate(monthStart);
   const daysBeforeMonth = (first.getUTCDay() - weekStartsOn + 7) % 7;
-  const gridStart = addDays(toIsoDate(first), -daysBeforeMonth);
-  const last = fromIsoDate(endOfMonth(month));
-  const weekEndsOn = (weekStartsOn + 6) % 7;
-  const daysAfterMonth = (weekEndsOn - last.getUTCDay() + 7) % 7;
-  const monthEnd = toIsoDate(last);
-  const alignedEnd = addDays(monthEnd, daysAfterMonth);
-  const alignedWeeks =
-    (differenceInDays(alignedEnd, gridStart) + 1) / 7;
-  const trailingWeek = alignedEnd === monthEnd ? 1 : 0;
-  const dayCount = Math.max(6, alignedWeeks + trailingWeek) * 7;
+  const gridStart = addDays(monthStart, -daysBeforeMonth);
+  const unalignedDayCount = differenceInDays(endOfMonth(month), gridStart) + 1;
+  const alignedDayCount = Math.ceil(unalignedDayCount / 7) * 7;
+  const dayCount = Math.max(
+    42,
+    alignedDayCount + (alignedDayCount === unalignedDayCount ? 7 : 0),
+  );
 
   return Array.from({ length: dayCount }, (_, index) =>
     addDays(gridStart, index),

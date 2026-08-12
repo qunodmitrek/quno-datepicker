@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { classNames as cx } from './classNames';
 import { useEffect, useState } from 'preact/hooks';
 import {
   addDays,
@@ -63,7 +63,7 @@ export const WeekdayStrip = ({
 
   return (
     <div
-      className={clsx('quno-date-picker__weekdays', classNames?.weekdays)}
+      className={cx('quno-date-picker__weekdays', classNames?.weekdays)}
       data-slot="weekdays"
       data-drag-overflow={mode.type === 'previous-dates' ? 'previous' : undefined}
       data-drag-active={dragActive ? 'true' : undefined}
@@ -125,7 +125,7 @@ export const WeekdayStrip = ({
         return (
           <span
             key={dayIndex}
-            className={clsx(
+            className={cx(
               'quno-date-picker__day',
               'quno-date-picker__day--outside',
               'quno-date-picker__overflow-day',

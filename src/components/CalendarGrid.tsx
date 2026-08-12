@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { classNames as cx } from './classNames';
 import {
   fromIsoDate,
   isInMonth,
@@ -70,7 +70,7 @@ export const CalendarGrid = ({
   });
   return (
     <div
-      className={clsx('quno-date-picker__grid', classNames?.grid)}
+      className={cx('quno-date-picker__grid', classNames?.grid)}
       data-slot="grid"
       data-dragging={movingSelection ? 'move' : undefined}
       data-interaction-active={interactionActive ? 'true' : undefined}
@@ -95,14 +95,14 @@ export const CalendarGrid = ({
           ? isWithinRange(date, cyclePreview)
           : false;
         const previewRowStart =
+          cyclePreview !== null &&
           inCyclePreview &&
           (index % 7 === 0 ||
-            !cyclePreview ||
             !isWithinRange(dates[index - 1], cyclePreview));
         const previewRowEnd =
+          cyclePreview !== null &&
           inCyclePreview &&
           (index % 7 === 6 ||
-            !cyclePreview ||
             !isWithinRange(dates[index + 1], cyclePreview));
         const weekday = fromIsoDate(
           date,
@@ -123,15 +123,13 @@ export const CalendarGrid = ({
             key={date}
             type="button"
             role="gridcell"
-            className={clsx(
+            className={cx(
               'quno-date-picker__day',
-              {
-                'quno-date-picker__day--outside': !inVisibleMonth,
-                'quno-date-picker__day--selected': displayed,
-                'quno-date-picker__day--committed': committed,
-                'quno-date-picker__day--start': isStart,
-                'quno-date-picker__day--end': isEnd,
-              },
+              !inVisibleMonth && 'quno-date-picker__day--outside',
+              displayed && 'quno-date-picker__day--selected',
+              committed && 'quno-date-picker__day--committed',
+              isStart && 'quno-date-picker__day--start',
+              isEnd && 'quno-date-picker__day--end',
               classNames?.day,
               customProps?.className,
             )}
@@ -172,7 +170,7 @@ export const CalendarGrid = ({
             <span>{Number(date.slice(-2))}</span>
             {(isStart || isEnd) && (
               <i
-                className={clsx(
+                className={cx(
                   'quno-date-picker__handle',
                   classNames?.handle,
                 )}

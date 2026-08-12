@@ -42,9 +42,6 @@
     "lint": "eslint --ext .ts,.tsx src tests",
     "report:size": "node scripts/report-size.mjs"
   },
-  "dependencies": {
-    "clsx": "^2.0.0"
-  },
   "peerDependencies": {
     "preact": "^10.18.1"
   },

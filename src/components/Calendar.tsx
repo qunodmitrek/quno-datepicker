@@ -1,6 +1,6 @@
-import clsx from 'clsx';
 import { CalendarGrid } from './CalendarGrid';
 import { CalendarHeader } from './CalendarHeader';
+import { classNames as cx } from './classNames';
 import { MonthNavigation } from './MonthNavigation';
 import { WeekdayStrip } from './WeekdayStrip';
 import type { DatePickerController } from './datePickerControllerTypes';
@@ -24,13 +24,15 @@ export const Calendar = ({
   const [touchOverflowIndex, setTouchOverflowIndex] = useState<number | null>(
     null,
   );
-  const { classNames } = config;
   const movingSelection =
     controller.interaction.type === 'drag-range' ||
     controller.interaction.type === 'drag-endpoint';
   return (
     <div
-      className={clsx('quno-date-picker__calendar-shell', classNames?.calendar)}
+      className={cx(
+        'quno-date-picker__calendar-shell',
+        config.classNames?.calendar,
+      )}
       data-slot="calendar"
       data-view={monthNavigationOpen ? 'month-navigation' : 'dates'}
       data-dragging={movingSelection ? 'move' : undefined}
@@ -44,10 +46,10 @@ export const Calendar = ({
         (['previous', 'next'] as const).map((direction) => (
           <div
             key={direction}
-            className={clsx(
+            className={cx(
               'quno-date-picker__edge',
               `quno-date-picker__edge--${direction}`,
-              classNames?.edge,
+              config.classNames?.edge,
             )}
             data-slot="edge"
             data-direction={direction}

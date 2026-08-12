@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { classNames as cx } from './classNames';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
 import type { IsoDate } from './dateRangeModel';
@@ -124,7 +124,7 @@ export const MonthNavigation = ({
   return (
     <div
       ref={scroller}
-      className={clsx(
+      className={cx(
         'quno-date-picker__month-navigation',
         classNames?.monthNavigation,
       )}
@@ -144,7 +144,7 @@ export const MonthNavigation = ({
       {renderedYears.map((year) => (
         <section
           key={year}
-          className={clsx(
+          className={cx(
             'quno-date-picker__year-group',
             classNames?.yearGroup,
           )}
@@ -166,15 +166,13 @@ export const MonthNavigation = ({
                 <button
                   key={month}
                   type="button"
-                  className={clsx(
+                  className={cx(
                     'quno-date-picker__month-option',
                     classNames?.monthOption,
                   )}
                   data-slot="month-option"
                   data-month={month.slice(0, 7)}
-                  data-year-tone={
-                    Number(month.slice(0, 4)) % 2 ? 'odd' : 'even'
-                  }
+                  data-year-tone={year % 2 ? 'odd' : 'even'}
                   aria-label={formatters.month(month, locale)}
                   aria-current={current ? 'date' : undefined}
                   onClick={() => onSelect(month)}

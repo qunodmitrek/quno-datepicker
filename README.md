@@ -206,7 +206,7 @@ Passing an empty `labels.hint` omits the optional hint element, allowing a host 
 - `dist/quno-datepicker.css` — optional default theme.
 - `dist/index.d.ts` and component/model declaration files — public TypeScript contracts.
 
-The current production output is approximately 36.10 kB JavaScript (9.29 kB
+The current production output is approximately 35.26 kB JavaScript (9.14 kB
 gzip) plus 15.02 kB optional CSS (2.96 kB gzip). Preact is external. Run
 `npm run report:size` after a build for current measured values.
 

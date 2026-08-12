@@ -57,6 +57,11 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Changed
 
+- Simplified internal class composition, date formatting, calendar-grid sizing,
+  controller resets, and endpoint-pill lifecycle handling without changing the
+  public API or interaction behavior. The package no longer needs the `clsx`
+  runtime dependency, reducing the production JavaScript from 36.10 kB raw
+  (9.28 kB gzip) to 35.26 kB raw (9.14 kB gzip).
 - Removed the preceding-year December from each quick-navigation block. Every
   block now contains January through December of its labeled year, with January
   and February shifted right and December placed on a separate final row.
@@ -194,10 +199,12 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Verification
 
-- `npm test`: 68 tests passed.
+- `npm test`: 69 tests passed.
 - `npm run lint`: passed.
 - `npm run check:file-size`: passed.
 - `npm run typecheck`: passed.
 - `npm run build`: passed with Vite 6.4.3.
+- `npm run report:size`: 35.26 kB JavaScript raw (9.14 kB gzip) and
+  15.02 kB CSS raw (2.96 kB gzip).
 - `npm pack --dry-run`: passed with only allowlisted runtime, style, declaration, and documentation files and no bundled dependencies.
 - Built ESM import smoke test: passed for the component and public date-model helpers.
