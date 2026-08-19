@@ -5,8 +5,8 @@ type StoryFeatureProps = {
   number: string;
   kicker: string;
   title: string;
-  copy: string;
-  instruction: string;
+  copy: ComponentChildren;
+  instruction: ComponentChildren;
   howTo?: ComponentChildren;
   reverse?: boolean;
   children: ComponentChildren;

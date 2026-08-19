@@ -681,3 +681,227 @@ This file records decisions that should remain stable across implementation sess
 - Context: Placing the previous December at the start of a labeled year block makes that month appear to belong to the wrong year, even when its accessible label and text tone remain correct.
 - Decision: Render January through December of the labeled calendar year in each block. Shift January to the second grid column so January and February lead the first row, retain complete March–November rows, and place December in the first column of a separate final row. Keep the sticky year rail and 8 px inter-block gutter.
 - Consequences: Every visible month belongs unambiguously to its adjacent sticky year. Year blocks grow from 178 px to 222 px to accommodate the fifth month row; runtime measurement and virtualization spacers remain aligned.
+
+## QDP-086 — Add bounded natural date input alongside the picker
+
+- Date: 2026-08-19
+- Status: Accepted; supersedes only the natural-language parsing deferral in QDP-008
+- Context: Calendar selection is precise, but users also expect to enter a date or short period in familiar numeric, named-month, and limited relative forms. A general natural-language system would add dependencies, unstable interpretations, and constraint semantics outside this package’s scope.
+- Decision: Export a dependency-free `QunoDateInput` and headless parser that emit the existing inclusive `DateRange`. Tokenize numbers, words, date separators, and unambiguous range separators; resolve complete Gregorian alternatives; rank them by expected-window inclusion, locale order, proximity to a reference date, then chronology. Support only English/German absolute dates, absolute ranges, today/yesterday/tomorrow, and completed last-day/month periods. Keep the input and picker independent and connect them through consumer-owned controlled state.
+- Consequences: `expectedRange` is required as a ranking hint, not a validity boundary. The new input can normalize successful commits while invalid and partial drafts remain visible and accessible. Fuzzy parsing, unrestricted NLP, next/this periods, weeks, years, `ago`, presets, and disabled-date validation remain outside scope.
+
+## QDP-087 — Let products choose numeric order and accept day-ago endpoints
+
+- Date: 2026-08-19
+- Status: Accepted; supersedes the ranking-order and `ago` scope details in QDP-086
+- Context: Locale is a sensible default for ambiguous numeric dates, but a product can use a date convention that differs from the display locale. Users also express a precise relative endpoint such as “7 days ago” alongside an absolute start date.
+- Decision: Add `preferredDateOrder` with `locale`, `dmy`, `mdy`, and `ymd` values. Keep expected-window inclusion ahead of that preference. Support English `N days ago` as one calendar date, and allow a one-day relative result as either endpoint of an absolute range.
+- Consequences: A product can parse `3/4/2026` by its own convention while leaving output localization unchanged. `22.07 - 7 days ago` normalizes into one chronological range. Completed last-day/month periods remain standalone expressions; multi-month `ago` and unrestricted relative grammar remain deferred.
+
+## QDP-088 — Treat “past” as a rolling period
+
+- Date: 2026-08-19
+- Status: Accepted; refines the relative-period grammar in QDP-086
+- Context: “Last 90 days” can mean a completed historical interval, while users often mean an inclusive, current interval when they say “past 90 days.” Conflating them would make filters silently exclude today.
+- Decision: Keep `last N days` and `last N months` as completed periods. Add English `past N days` and `past N months` as rolling inclusive periods ending at `referenceDate`; day ranges begin `N - 1` days earlier and month ranges begin on the matching calendar day N months earlier, clamped to month-end where necessary.
+- Consequences: `past 90 days` includes today and has exactly 90 calendar dates. `past 3 months` from 2026-08-19 is 2026-05-19 through 2026-08-19. This remains a bounded English grammar; free-form relative phrases are still out of scope.
+
+## QDP-089 — Allow several bounded parser languages in one field
+
+- Date: 2026-08-19
+- Status: Accepted; refines the single parser-language selection in QDP-086
+- Context: A product can display dates in one locale while serving users who type month and relative words from more than one supported language. Requiring a locale switch merely to enter `12 juni` creates avoidable friction.
+- Decision: Add `parserLanguages`, a deduplicated ordered list of built-in parser languages. When supplied, combine their month and relative vocabularies and prefer it over the existing single `parserLanguage` fallback. Keep `locale` independent as the output-formatting choice.
+- Consequences: One field can accept both `12 juni` and `12 july`, or English and German relative terms, without adding NLP dependencies. Only the package’s explicitly supported grammars are combined; consumers still extend the vocabulary deliberately through `lexicon`.
+
+## QDP-090 — Make recognized duration and date tokens keyboard-adjustable
+
+- Date: 2026-08-19
+- Status: Accepted; expands the bounded relative grammar from QDP-088
+- Context: Keyboard users should be able to tune a recognized duration or date without selecting and retyping the whole value. Bare values such as “90 days” are also a natural compact expression for a current rolling interval.
+- Decision: Treat bare English duration values as rolling periods ending on `referenceDate`. On Arrow Up/Down, when parsing succeeds and the caret is on a recognized token, adjust duration numbers by one with a minimum of one, rotate duration units through day/week/month/year, or shift a single-date day/month/year field by the corresponding calendar unit. Preserve Enter/blur as the only commit points and ignore arrows during IME composition.
+- Consequences: `90 days` means the same rolling interval as `past 90 days`. Keyboard edits remain drafts, so consumers do not receive intermediate `onChange` signals. Weeks and years enter the bounded duration grammar; unrestricted sentence parsing remains out of scope.
+
+## QDP-091 — Edit the range endpoint under the caret
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-090
+- Context: A formatted range contains two independently meaningful date endpoints. Treating an Arrow key as a whole-range edit would make a cursor on “18 August 2026” unexpectedly change Start or move both dates.
+- Decision: Split a recognized range at its range delimiter for caret-based Arrow Up/Down editing. Tokens before the delimiter adjust Start; tokens after it adjust End. Normalize if an edited endpoint crosses the other one. Keep a one-day selection as one day when it is edited.
+- Consequences: `21 May 2026 – 18 August 2026` supports direct field-level tuning of either date. The input remains draft-only until Enter or blur, and the existing chronological `DateRange` representation is preserved.
+
+## QDP-092 — Preserve logical caret position across Arrow edits
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-090 and QDP-091
+- Context: A numeric value can shrink from `100` to `99`, or a month name from `September` to `August`. Using only the visible caret position would lose the user’s intended third-character or eighth-character location when the token grows again.
+- Decision: Track a logical offset within the Arrow-edited token. Clamp the rendered caret to a shorter token’s end, but retain the original offset while consecutive Arrow edits remain on the same semantic field. Reset it for a new input edit, pointer placement, or other keyboard navigation.
+- Consequences: Reversing `100` → `99` restores the third-character position when it returns to `100`; month-name edits behave the same way. Caret behavior remains predictable without preventing ordinary mouse or keyboard repositioning.
+
+## QDP-093 — Demonstrate collapsed type-to-edit integration in the field guide
+
+- Date: 2026-08-19
+- Status: Accepted; refines the shared-state integration guidance in QDP-086
+- Context: Products often need a compact selected-period control before a user asks to edit it. Showing a standalone input beside a permanently visible calendar does not demonstrate how typing can be introduced progressively without creating a second date model.
+- Decision: Add a story example that initially renders a selected-period summary and Clear action. Activating the period reveals the picker; printable input while that opened panel owns focus replaces a muted keyboard hint with `QunoDateInput`. Render that hint/input in the public `calendarFooter` slot, inside the calendar surface after its date weeks. Parse status is represented by a small adjacent dot, and all three surfaces share one controlled `DateRange`.
+- Consequences: Consumers can evaluate a disclosure-style integration without changing the picker’s default presentation. The footer slot is a presentational extension point for compact in-calendar affordances; input remains committed through its existing Enter/blur contract.
+
+## QDP-094 — Preserve a deleting partial-range draft and follow its changed endpoint
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-086 and QDP-093
+- Context: Automatically formatting a recognized first endpoint plus a range delimiter is helpful while entering a range, but reapplying that format to a shorter deletion traps users behind a separator they are trying to remove. A disclosure-style calendar also needs to reveal the endpoint a committed edit actually changed.
+- Decision: Normalize a partial range only while its draft is growing; if an input event shortens the draft, retain it exactly. In the story integration, compare the last committed range with the accepted next value and remount the calendar on the month of the single changed endpoint; when both endpoints change, favor the final endpoint.
+- Consequences: Backspace/Delete can remove a generated delimiter and continue editing the first date. A changed Start or End immediately brings its month into view without changing the datepicker’s independent visible-month contract for normal consumers.
+
+## QDP-095 — Present the disclosure-style editor as a dismissible popover
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-093
+- Context: An inline expanded calendar pushes the surrounding story layout and obscures that the compact period summary is a temporary editing control.
+- Decision: Anchor the story calendar below its summary as a positioned popover. While open, listen for document pointer input and close only when its target lies outside the summary/popover root; keep all inside interactions open.
+- Consequences: The example demonstrates the normal disclosure lifecycle without changing `QunoDatePicker` behavior or requiring a popover dependency. The shared input/calendar state remains intact when it is reopened.
+
+## QDP-096 — Edit the disclosed period label and preview Arrow drafts
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-090 and QDP-095
+- Context: A second input below the calendar disconnects typing from the period the user activated. Arrow edits are meaningful before Enter/blur, but keeping the calendar static while they are recognized removes useful confirmation.
+- Decision: In the story popover, replace the selected-period label with `QunoDateInput` while it is open and return to formatted text on that input’s blur. Keep ordinary typing uncommitted and leave the calendar selection unchanged until commit; parse only successful Arrow drafts into a story-only preview range. Reject three-digit years, which are naturally incomplete while an ordinary four-digit year is being edited.
+- Consequences: The displayed calendar follows recognized Arrow adjustments without intermediate public `onChange` calls, while incomplete or unrecognized typing cannot discard or replace the current calendar. Preview-only month and endpoint-pill movement has zero duration, so controls that did not change do not appear to re-enter. Committing or choosing a calendar date updates the shared value; abandoning the popover discards only its preview.
+
+## QDP-097 — Remove the redundant in-calendar typing prompt
+
+- Date: 2026-08-19
+- Status: Accepted; supersedes the keyboard-hint detail of QDP-093
+- Context: The selected-period label now becomes the focused natural input as soon as the popover opens. A second “Type the date from keyboard” instruction in the calendar repeats an action the interface is already presenting.
+- Decision: Remove that static in-calendar prompt while retaining `calendarFooter` as a general consumer extension point.
+- Consequences: The popover is less repetitive and begins directly with the editable period. Consumers may still add their own calendar footer content when their product needs it.
+
+## QDP-098 — Keep the period control as a button-like natural input
+
+- Date: 2026-08-19
+- Status: Accepted; supersedes the label-replacement detail of QDP-096
+- Context: Replacing a button label with a separate input changes the control’s DOM and creates an unnecessary visual mode switch. The natural input can carry the selected-period presentation itself.
+- Decision: Render `QunoDateInput` continuously in the story’s compact period-control shell and style it as the prior button. Open the calendar when that input gains focus; close it when focus leaves the entire control or a pointer lands outside.
+- Consequences: Keyboard and pointer users enter through one stable control. The formatter still updates its displayed period after a committed value, and moving focus into the calendar retains the popover for selection.
+
+## QDP-099 — Default singular ago units to one
+
+- Date: 2026-08-19
+- Status: Accepted; refines the English ago grammar in QDP-087
+- Context: A user naturally says “day ago” or “month ago” when the intended count is one. Requiring the explicit `1` adds friction without resolving any ambiguity.
+- Decision: Accept English `day ago`, `month ago`, and `year ago` as single dates, using a default count of one. Keep the existing numeric `N days ago` form and do not broaden multi-unit numeric ago grammar in this change.
+- Consequences: Singular ago phrases work as standalone values or range endpoints, with month/year arithmetic retaining normal month-end clamping. The grammar remains bounded and dependency-free.
+
+## QDP-100 — Keep collapsed-input guidance and errors outside its button surface
+
+- Date: 2026-08-19
+- Status: Accepted; refines the presentation detail of QDP-098
+- Context: An empty button-like period input needs an obvious invitation to type, while validation text inside its compact surface competes with the selected-period label and the Clear control.
+- Decision: Give the empty story input a native placeholder whose unfocused state uses the active period-label color. Position its invalid status below the compact control and move the popover down while that status is present.
+- Consequences: The disclosure control remains compact and readable, while validation stays associated with the input and does not cover the calendar.
+
+## QDP-101 — Omit recognition feedback for an empty period input
+
+- Date: 2026-08-19
+- Status: Accepted; refines the draft-feedback detail of QDP-093
+- Context: A recognition indicator has no state to communicate before a user has typed a value. Showing an unrecognized dot beside the empty placeholder makes an intentionally empty input look erroneous.
+- Decision: Render the type-to-edit recognition dot only when its draft contains non-whitespace text.
+- Consequences: An empty control presents just its placeholder. Typed drafts retain the existing recognized/unrecognized feedback and accessible status.
+
+## QDP-102 — Limit recognition feedback to the open disclosure
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-101
+- Context: The dot describes an editing draft, not the already committed compact summary. Retaining it after the popover has closed makes the resting control look like it is still asking for attention.
+- Decision: Show the nonempty-draft recognition dot only while the type-to-edit popover is open. Synchronize the draft from the input when it receives focus so an existing selected period immediately has accurate feedback.
+- Consequences: The collapsed control remains visually quiet. Opening it preserves useful recognition feedback for both its formatted committed period and any newly typed draft.
+
+## QDP-103 — Limit recognition feedback to a focused input
+
+- Date: 2026-08-19
+- Status: Accepted; supersedes the visibility condition in QDP-102
+- Context: The calendar can stay open while focus moves from the input to a date cell. In that state, the small signal is no longer feedback about a token under active text editing.
+- Decision: Require both an open disclosure and focus on the type-to-edit input before rendering the nonempty-draft recognition dot.
+- Consequences: The indicator disappears immediately on blur, including when the calendar remains open for pointer selection, and never remains in the collapsed summary.
+
+## QDP-104 — Demonstrate natural input through the compact period control
+
+- Date: 2026-08-19
+- Status: Accepted; supersedes the separate-story presentation in QDP-093
+- Context: Two adjacent field-guide chapters demonstrated the same natural-input contract in different shells, forcing readers to reconcile duplicate instructions before reaching the preferred compact integration.
+- Decision: Replace both chapters with one natural-input exhibit built from the compact period-control popover. Keep a short explanation, a copyable shared-state recipe, and highlighted example phrases beside the live control.
+- Consequences: The field guide has fourteen focused exhibits. The compact popover remains the primary integration example while the implementation guide continues to document the full grammar and headless API.
+
+## QDP-105 — Interpret this and next as bounded calendar periods
+
+- Date: 2026-08-19
+- Status: Accepted; supersedes the next/this exclusion in QDP-086
+- Context: Common filter language needs a quick way to select the current or immediately following calendar unit without expanding into open-ended natural-language parsing.
+- Decision: Accept English `this` and `next` with day, month, or year. `this day` is the reference date and `next day` is tomorrow; month and year expressions resolve to their complete current or next calendar periods.
+- Consequences: `this month` and `next year` return inclusive multi-date ranges, while the allowed grammar remains deliberately narrow: no next/this weeks, counts, or localized forms are implied by this change.
+
+## QDP-106 — Keep natural-input examples and control geometry compact
+
+- Date: 2026-08-19
+- Status: Accepted; refines the presentation in QDP-104
+- Context: Grid layout made each highlighted grammar example fill a whole row, and the responsive period field could outgrow its one-calendar popover.
+- Decision: Render example phrases as inline chips and cap the compact period-control shell at the same 420 px width as its calendar.
+- Consequences: The grammar scans as a short sentence, while the input and calendar keep a clear, stable visual relationship at every story width.
+
+## QDP-107 — Follow Arrow-edited range endpoints across a crossing
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-091 and QDP-092
+- Context: The public range is chronological, so changing End before Start or Start after End reorders the formatted text. Leaving the caret on its old textual side then makes the next Arrow key alter the stationary date instead of the date the user has been tuning.
+- Decision: On a crossed Arrow date-field edit, normalize the range, swap the rendered endpoint positions, and move the caret—with its logical token offset—to the edited date at its new side.
+- Consequences: Consecutive Arrow edits keep adjusting one semantic endpoint across crossings, matching direct drag behavior while preserving the chronological `DateRange` contract.
+
+## QDP-108 — Publish natural input as an opt-in datepicker family member
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-086
+- Context: Exporting the natural input and its parser from the picker’s primary entry made every picker installation carry the recognition grammar, even when a product used only calendar selection.
+- Decision: Keep `QunoDatePicker` and shared range helpers at `@quno/datepicker`. Publish `QunoDateInput`, its parser, and its optional stylesheet at `@quno/datepicker/date-input` and `@quno/datepicker/date-input/styles.css`. Describe the two entry points as a family connected by the same controlled `DateRange`.
+- Consequences: Picker-only products retain a compact default artifact, while products that need typing opt into the parser explicitly. The natural-input entry remains dependency-free and can be used by itself or beside the picker.
+
+## QDP-109 — Normalize parser vocabulary once per parse
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-086
+- Context: Rebuilding English/German aliases for every relative-word check and sorting temporary candidate arrays repeated work as a user typed.
+- Decision: Build normalized month and relative-word lookup tables once for each parse, reuse them for both range endpoints, and select the best single date or range in one pass.
+- Consequences: The accepted grammar and deterministic ranking remain unchanged, while incremental input avoids repeated array allocation and sorting.
+
+## QDP-110 — Retain equal range endpoints during focused Arrow editing
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-091 and QDP-107
+- Context: An Arrow edit can bring one range endpoint exactly onto the other. Canonically formatting that intermediate draft as a single date drops the range delimiter, causing the next Arrow press to edit a one-day selection instead of continuing to move the endpoint under the caret.
+- Decision: While an Arrow-edited range field remains focused, render an equal intermediate as two identical endpoints. Only Enter or blur converts that successful equal pair to the canonical one-date presentation and commits the inclusive one-day value.
+- Consequences: Keyboard range tuning can pass through an overlap without changing semantic target. Public values remain normalized `DateRange`s, and ordinary typed or externally supplied one-day selections continue to display as one date.
+
+## QDP-111 — Make the compact period shell the focused input surface
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-098 and QDP-100
+- Context: A rectangular text field nested inside a rounded period control looks like two competing inputs, and a permanent Clear action consumes room needed by a long selected range.
+- Decision: Keep the compact shell as the sole visible input boundary and give it the rounded focus border through `:focus-within`. Reserve the text area as a flex item and reveal Clear only while the input is focused; prevent its pointer-down from moving focus before its clear action runs.
+- Consequences: The resting control is quieter, long period text cannot sit beneath Clear, and both pointer and keyboard focus receive one clear rounded editing surface.
+
+## QDP-112 — Support counted next calendar periods
+
+- Date: 2026-08-19
+- Status: Accepted; refines QDP-105
+- Context: `next month` is useful, but filter language also needs the immediately following whole week and multi-unit future windows such as `next 2 weeks` and `next 2 months`.
+- Decision: Accept English `next` with day, week, month, or year and an optional positive count. Next weeks begin on Monday and span whole Monday–Sunday weeks. Counted next months and years start at the following calendar boundary and cover complete units; counted next days begin tomorrow.
+- Consequences: Future periods stay deterministic and calendar-aligned without adding open-ended NLP, localized next grammar, or counted `this` expressions.
+
+## QDP-113 — Signal natural-input recognition through the focused field boundary
+
+- Date: 2026-08-19
+- Status: Accepted; supersedes QDP-101 through QDP-103
+- Context: A separate recognition dot competes with the period text and an error label shifts the compact popover away from its input while the field itself can already communicate its parsing state.
+- Decision: Give a focused natural input a recognized or unrecognized border treatment through `data-recognition="recognized|unrecognized"`. Do not render an error-message element; retain `aria-invalid` after a failed commit for accessibility.
+- Consequences: The compact resting control remains quiet, drafts have immediate visual feedback, and consumers can apply the same state treatment through the public input data attribute.

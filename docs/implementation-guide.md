@@ -264,14 +264,128 @@ it at the form boundary:
 />
 ```
 
-Validate required values and business constraints in the host. V1 does not
-implement disabled-date rules, presets, or natural-language parsing.
+Validate required values and business constraints in the host. The input does
+not implement disabled-date rules or presets.
 
-## 10. Integration checklist
+## 10. Add a natural date or range input
+
+`QunoDateInput` is an opt-in family member of `QunoDatePicker`: it shares the
+same controlled `DateRange`, but has its own import so picker-only products do
+not load its parser. Connect both through the same controlled state when a form
+needs typing and calendar selection to stay synchronized:
+
+```tsx
+import { useState } from 'preact/hooks';
+import { QunoDatePicker, type DateRange } from '@quno/datepicker';
+import { QunoDateInput } from '@quno/datepicker/date-input';
+import '@quno/datepicker/date-input/styles.css';
+
+const [dates, setDates] = useState<DateRange | null>(null);
+const expectedRange = { start: '2025-08-19', end: '2026-08-19' };
+
+<QunoDateInput value={dates} onChange={setDates} expectedRange={expectedRange} />
+<QunoDatePicker value={dates} onChange={setDates} />
+```
+
+For a compact disclosure-style control, keep `QunoDateInput` as the period
+button itself and show the picker in a host-owned popover when the input gains
+focus. This keeps a stable, keyboard-accessible entry point while the two
+components share the same controlled value. Its input exposes
+`data-recognition="recognized|unrecognized"` for a focused border treatment;
+an invalid commit remains accessible through `aria-invalid` without introducing
+an error label inside or below the compact control:
+
+```tsx
+<div className="period-popover">
+  <QunoDateInput
+    value={dates}
+    onChange={setDates}
+    expectedRange={expectedRange}
+    placeholder="Choose a period"
+  />
+  {open && <QunoDatePicker value={dates} onChange={setDates} />}
+</div>
+```
+
+For standalone use, pass `defaultValue` instead of `value`. `expectedRange` is
+a ranking hint, not a constraint: it supplies likely omitted years and makes
+`12/14` resolve to the in-window date. `referenceDate` defaults to the local
+calendar date; pass it explicitly for deterministic tests or server rendering.
+
+Use `preferredDateOrder="dmy"`, `"mdy"`, or `"ymd"` when a product’s
+numeric convention should win over its display locale. Its default is `"locale"`.
+The expected window remains the higher-priority ambiguity hint.
+
+Set `parserLanguages={['en', 'de']}` to recognize both built-in vocabularies in
+one input. That option takes precedence over `parserLanguage`; `locale` remains
+the choice for localized output, so an English-formatted field can still accept
+`12 juni`.
+
+The dependency-free parser accepts numeric dates, English/German full or
+abbreviated month names, absolute ranges (` – `, ` to `, ` bis `, or spaced
+hyphen), and a bounded relative vocabulary: today/heute, yesterday/gestern,
+tomorrow/morgen, English this day/month/year, English next day/week/month/year
+with an optional positive count, last/past N days,
+weeks, months, or years, bare English
+durations such as `90 days` and `3 months`, English `N days ago`, and singular
+`day ago`, `month ago`, or `year ago` (each defaults to one). Relative
+“last” values are completed periods; bare and `past` periods include today and
+extend back by the requested calendar unit. `N days ago` is a single date and
+can be mixed with an absolute endpoint, such as `22.07 - 7 days ago`. It
+interprets `this day` as today and `next day` as tomorrow; `next week` is the
+next Monday–Sunday calendar week, while next month/year values (including
+`next 2 months`) cover complete calendar periods. It deliberately does not guess
+misspellings or support multi-unit `next`/`this`
+periods, multi-month `ago`, presets, or business constraints.
+
+Enter and blur commit a recognized value and rewrite it with the localized long
+formatter. Clearing commits `null`. Invalid and incomplete text stays in the
+field with `aria-invalid`; the last committed value remains untouched. When a
+first date is followed by a range delimiter, the input immediately canonicalizes
+that prefix and keeps the caret at the end, but emits only after the second date
+commits. Deleting that generated delimiter does not recreate it, so the first
+date remains an ordinary editable draft. Parsing is paused while an IME
+composition is active. A numeric year must use two or four digits; a
+three-digit editing intermediate remains unrecognized.
+
+Arrow Up and Arrow Down edit a recognized draft at the caret, without emitting
+until Enter or blur. A duration number changes by one (with a minimum of one),
+a duration unit rotates day → week → month → year, and a recognized single date
+changes its day, month, or year when the caret is on that corresponding field.
+For a range, the corresponding field before the delimiter edits Start and the
+one after it edits End. If that edit crosses the other endpoint, the formatted
+dates exchange places and the caret follows the edited token to its new side.
+If an Arrow edit makes its endpoints equal, the focused draft still renders both
+endpoints; Enter or blur canonicalizes it to the ordinary one-date display.
+If an Arrow edit shortens the active token, the visible caret clamps to its end
+while the input retains its logical in-token offset. A later edit that lengthens
+the same token restores that original position.
+
+The parser is also available without the component:
+
+```ts
+import { parseDateInput } from '@quno/datepicker/date-input';
+
+const result = parseDateInput('letzte 2 monate', {
+  expectedRange,
+  referenceDate: '2026-08-19',
+  parserLanguage: 'de',
+});
+// { status: 'success', value: { start: '2026-06-01', end: '2026-07-31' } }
+```
+
+`parseDateInput` returns `success`, `partial-range`, `empty`, or `invalid`.
+Use `tokenizeDateInput` when an adapter needs the typed number, word,
+date-separator, and range-separator tokens. Override the long output with
+`formatter={{ range }}` and extend the bounded dictionary with `lexicon`.
+
+## 11. Integration checklist
 
 - Import Preact once in the host and the optional stylesheet once.
 - Store `null` or an inclusive `{ start, end }` ISO-date range.
 - Decide whether the host or component owns state.
+- Give natural input an expected date window and share controlled state with the
+  calendar when both are used.
 - Choose `initialMonth`, locale, week start, labels, and formatting.
 - Apply product tokens and day-cell presentation hooks.
 - Verify click cycling, endpoint crossing, whole-range dragging, Clear, and
@@ -306,11 +420,11 @@ comparison of two distant months may still prefer a two-panel picker.
 
 ## Production footprint
 
-The current V1 production build contains approximately:
+The current production build keeps the family members separate:
 
-- 35.26 kB JavaScript raw, 9.14 kB gzip.
-- 15.02 kB optional CSS raw, 2.96 kB gzip.
-- 12.09 kB gzip total when the default theme is used.
+- Picker: 35.60 kB JavaScript raw, 9.20 kB gzip; 15.02 kB optional CSS raw, 2.96 kB gzip.
+- Natural input: 21.71 kB JavaScript raw, 6.50 kB gzip; 0.80 kB optional CSS raw, 0.35 kB gzip.
+- Import the natural-input entry only for fields that need typed recognition.
 - No bundled Preact runtime; Preact remains a peer dependency.
 
 Run `npm run build` and then `npm run report:size` to measure the current
@@ -344,3 +458,7 @@ own live datepicker rather than relying on screenshots:
     also demonstrates a contrasting repeated-click preview outline and themed
     Start/End pills after month navigation; Candy additionally matches its
     summary surface to its selected-day fill.
+14. Use one compact natural period field for numeric, English/German relative,
+    and partial-range values. Focusing it opens a shared-state calendar popover;
+    highlighted examples show the accepted grammar, while Arrow Up/Down previews
+    recognized edits without replacing the committed calendar selection.

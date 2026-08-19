@@ -15,7 +15,7 @@ describe('datepicker field guide', () => {
     const contents = screen.getByRole('navigation', {
       name: 'Explore the field guide',
     });
-    expect(within(contents).getAllByRole('link')).toHaveLength(17);
+    expect(within(contents).getAllByRole('link')).toHaveLength(18);
     expect(
       within(contents).queryByRole('link', { name: /Interactive demo/ }),
     ).not.toBeInTheDocument();
@@ -70,8 +70,10 @@ describe('datepicker field guide', () => {
     expect(
       within(contents).getByRole('link', { name: /Different week starts/ }),
     ).toHaveAttribute('href', '#week-starts');
-    expect(screen.getByText('9.14 kB')).toBeInTheDocument();
-    expect(screen.getByText('2.96 kB')).toBeInTheDocument();
+    const naturalInput = document.querySelector<HTMLElement>('[data-story-topic="natural-input"]');
+    expect(naturalInput?.querySelectorAll('.story__try code')).toHaveLength(6);
+    expect(screen.getByText('9.20 kB')).toBeInTheDocument();
+    expect(screen.getByText('6.85 kB')).toBeInTheDocument();
     expect(screen.getByText(/docs\/implementation-guide\.md/))
       .toBeInTheDocument();
   });
@@ -94,6 +96,24 @@ describe('datepicker field guide', () => {
     );
     expect(within(topic as HTMLElement).getByRole('grid'))
       .toHaveAccessibleName('Date range picker: January 2029');
+  });
+
+  it('shares controlled state between the natural input and calendar', () => {
+    render(<DatePickerStory />);
+    const topic = document.querySelector<HTMLElement>('[data-story-topic="natural-input"]');
+    expect(topic).not.toBeNull();
+    const input = within(topic as HTMLElement).getByRole('textbox') as HTMLInputElement;
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { value: '12 juni' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(input).toHaveValue('12 June 2026');
+    fireEvent.input(input, { target: { value: '12/14' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(input).toHaveValue('14 December 2025');
+    const calendarDate = topic?.querySelector<HTMLElement>('[data-date="2025-12-20"]');
+    fireEvent.pointerDown(calendarDate as HTMLElement);
+    fireEvent.pointerUp(calendarDate as HTMLElement);
+    expect(input).toHaveValue('14 December 2025 – 20 December 2025');
   });
 
   it('switches the live example between different week starts', () => {

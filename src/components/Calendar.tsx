@@ -5,7 +5,7 @@ import { MonthNavigation } from './MonthNavigation';
 import { WeekdayStrip } from './WeekdayStrip';
 import type { DatePickerController } from './datePickerControllerTypes';
 import type { ResolvedDatePickerConfig } from './datePickerTypes';
-import type { JSX } from 'preact';
+import type { ComponentChildren, JSX } from 'preact';
 import { useState } from 'preact/hooks';
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
   config: ResolvedDatePickerConfig;
   monthNavigationOpen: boolean;
   onMonthNavigationOpenChange: (open: boolean) => void;
+  footer?: ComponentChildren;
 };
 
 export const Calendar = ({
@@ -20,6 +21,7 @@ export const Calendar = ({
   config,
   monthNavigationOpen,
   onMonthNavigationOpenChange,
+  footer,
 }: Props): JSX.Element => {
   const [touchOverflowIndex, setTouchOverflowIndex] = useState<number | null>(
     null,
@@ -109,6 +111,14 @@ export const Calendar = ({
             onCancel={controller.cancelDrag}
             onOverflowChange={setTouchOverflowIndex}
           />
+          {footer && (
+            <div
+              className={cx('quno-date-picker__calendar-footer', config.classNames?.calendarFooter)}
+              data-slot="calendar-footer"
+            >
+              {footer}
+            </div>
+          )}
         </>
       )}
     </div>

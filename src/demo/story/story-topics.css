@@ -35,8 +35,6 @@
 }
 
 .story__try {
-  display: grid;
-  gap: 3px;
   margin: 0 0 12px;
   padding: 12px 14px;
   border-left: 3px solid #0167ff;
@@ -47,7 +45,20 @@
 }
 
 .story__try strong {
+  display: block;
+  margin-bottom: 3px;
   color: #174a8f;
+}
+
+.story__try code {
+  display: inline-block;
+  margin: 2px 2px 0;
+  padding: 2px 6px;
+  border: 1px solid #bfd4f2;
+  border-radius: 5px;
+  background: #fff;
+  color: #174a8f;
+  font: 750 0.92em/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .story__fixed-frame {

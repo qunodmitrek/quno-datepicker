@@ -2,8 +2,10 @@ import { readFile } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
 
 const artifacts = [
-  ['JavaScript', 'dist/quno-datepicker.js'],
-  ['CSS', 'dist/quno-datepicker.css'],
+  ['Picker JavaScript', 'dist/quno-datepicker.js'],
+  ['Picker CSS', 'dist/quno-datepicker.css'],
+  ['Date input JavaScript', 'dist/date-input.js'],
+  ['Date input CSS', 'dist/date-input.css'],
 ];
 
 const format = (bytes) => `${(bytes / 1000).toFixed(2)} kB`;

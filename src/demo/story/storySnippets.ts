@@ -86,3 +86,22 @@ export const themingSnippet = `.booking-dates {
 
 /* component.tsx */
 <QunoDatePicker className="booking-dates" />`;
+
+export const naturalInputSnippet = `import { useState } from 'preact/hooks';
+import { QunoDatePicker, type DateRange } from '@quno/datepicker';
+import { QunoDateInput } from '@quno/datepicker/date-input';
+import '@quno/datepicker/date-input/styles.css';
+
+const [dates, setDates] = useState<DateRange | null>(null);
+const [open, setOpen] = useState(false);
+const expectedRange = { start: '2025-08-19', end: '2026-08-19' };
+
+<QunoDateInput
+  value={dates}
+  onChange={setDates}
+  onFocus={() => setOpen(true)}
+  expectedRange={expectedRange}
+  preferredDateOrder="dmy"
+  parserLanguages={['en', 'de']}
+/>
+{open && <QunoDatePicker value={dates} onChange={setDates} />};`;

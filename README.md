@@ -14,10 +14,10 @@ Update these records in the same change as the code they describe.
 
 - [Implementation guide](./docs/implementation-guide.md) — copyable setup,
   state, localization, styling, and form-integration recipes.
-- Interactive field guide — run `npm run dev` and open `/story` for thirteen live
+- Interactive field guide — run `npm run dev` and open `/story` for fourteen live
   chapters covering painting, dragging, the stable six-week view, hidden-week
   navigation, year jumps, click correction, endpoint shortcuts, motion, day handlers,
-  internationalization, week-start layouts, and theming, with implementation
+  internationalization, week-start layouts, theming, and natural input, with implementation
   recipes placed beside their live outcomes.
 
 ## V1 behavior
@@ -59,6 +59,7 @@ Update these records in the same change as the code they describe.
 - Clear returns to `null` and intentionally preserves the visible month.
 - `value`/`onChange` supports controlled use; `defaultValue` supports uncontrolled use.
 - `getDayCellProps` lets consumers add a class, inline style, or title from typed date and selection context without replacing the datepicker's interaction handlers.
+- `QunoDateInput` accepts bounded natural English/German dates and completed relative periods, then emits the same range value as the calendar. It is independent from the picker; use shared controlled state when both are present.
 
 ## Install
 
@@ -68,14 +69,23 @@ The package expects Preact from the consuming application.
 npm install @quno/datepicker preact
 ```
 
-Import the component and the optional default stylesheet:
+The picker and natural input are a family that share the same inclusive
+`DateRange` value, but the input is an opt-in entry so picker-only consumers do
+not ship its parser. Import each family member and its optional stylesheet:
 
 ```tsx
 import { QunoDatePicker } from '@quno/datepicker';
+import { QunoDateInput } from '@quno/datepicker/date-input';
 import '@quno/datepicker/styles.css';
+import '@quno/datepicker/date-input/styles.css';
 
 <QunoDatePicker
   value={{ start: '2026-08-10', end: '2026-08-18' }}
+  onChange={(range) => console.log(range)}
+/>
+
+<QunoDateInput
+  expectedRange={{ start: '2025-08-19', end: '2026-08-19' }}
   onChange={(range) => console.log(range)}
 />
 ```
@@ -136,11 +146,16 @@ import { QunoDatePicker } from '@quno/datepicker';
 
 Calendar dates stay as `YYYY-MM-DD` strings and all calendar arithmetic uses UTC fields, avoiding DST or timezone shifts.
 
-The public entry exports:
+The picker entry (`@quno/datepicker`) exports:
 
-- `QunoDatePicker` and its props, label, formatter, class-name, day-cell customization, slot, date-action, and interaction types.
+- `QunoDatePicker` and its props, label, formatter, calendar-footer, class-name, day-cell customization, slot, date-action, and interaction types.
 - `DateRange`, `IsoDate`, `Endpoint`, `MonthDirection`, and `WeekStart` types.
 - Pure date and selection helpers such as `calendarGrid`, `selectDate`, `dateActionContext`, `applyDateAction`, `editEndpoint`, and `moveRange` for custom adapters or headless integrations.
+
+The natural-input entry (`@quno/datepicker/date-input`) exports `QunoDateInput`,
+its props, labels, formatter, lexicon, class-name, and slot types, plus the
+headless `tokenizeDateInput(text)` and `parseDateInput(text, options)` functions
+with typed tokens and `success`, `partial-range`, `empty`, and `invalid` results.
 
 ## Styling
 
@@ -177,6 +192,14 @@ Additional tokens cover disabled and outside-month text, the selection-summary s
 
 Every meaningful element also has a stable `data-slot` value, including `root`, `selection-header`, `clear-button`, `pills`, `pill`, `calendar`, `month-header`, `month-heading`, `month-heading-button`, `month-navigation`, `year-group`, `year-heading`, `month-option`, `weekdays`, `weekday`, `overflow-day`, `grid`, `day`, `handle`, and `hint`. The root exposes `data-pill-before` and `data-pill-after` while matching off-screen endpoints are present; pill containers expose `data-presence="entering|visible|exiting"`, and individual controls expose the same lifecycle through `data-item-presence`; the month heading and grid expose `data-month-motion="previous|next"`; the calendar exposes `data-view="dates|month-navigation"`; the active month option exposes `aria-current="date"`; the calendar and grid expose `data-dragging="move"` while a whole range, one-day selection, or endpoint is directly manipulated, and the grid exposes `data-interaction-active` for the complete pointer gesture; the weekday strip exposes `data-drag-active` and `data-drag-overflow`; date cells expose state through `data-selected`, `data-committed`, `data-range-start`, `data-range-end`, `data-outside`, `data-cycle-trigger`, and cycle-preview segment attributes.
 
+`QunoDateInput` uses its own optional scoped stylesheet
+(`@quno/datepicker/date-input/styles.css`) and exposes `root` and `input`
+slots. It shares the picker’s custom-property family, maps its ordinary
+`className` to the text input, and offers `classNames` for both slots.
+Its input exposes `data-recognition="recognized|unrecognized"` while a nonempty
+draft is being evaluated; successful commits remain normalized with
+`aria-invalid` marking a failed commit without adding an error-message element.
+
 For utility-class systems or CSS modules, pass project classes without replacing the built-in behavior classes:
 
 ```tsx
@@ -194,24 +217,85 @@ For utility-class systems or CSS modules, pass project classes without replacing
 
 Passing an empty `labels.hint` omits the optional hint element, allowing a host layout to place interaction guidance elsewhere.
 
+Use `calendarFooter` to place consumer content inside the bordered calendar
+surface, after the date weeks—for example, a compact keyboard-entry affordance.
+
 ## Localization and formatting
 
 `locale` controls the built-in `Intl.DateTimeFormat` output. All visible and accessible copy can be replaced with `labels`, and individual date, title, month-option, year, day-label, and weekday renderings can be replaced with `formatters`. `weekStartsOn` accepts weekday indices `0` through `6`, where `0` is Sunday.
 
+## Natural date input
+
+Import `QunoDateInput` and the headless parser from
+`@quno/datepicker/date-input`. It has a required `expectedRange`, which ranks ambiguous and
+yearless input but never rejects a valid date outside that window. It defaults
+to `en-GB`, infers `parserLanguage` from the locale (`en` or `de`), and uses the
+current local date unless `referenceDate` is supplied. Use a stable
+`referenceDate` in server rendering and tests.
+
+Use `parserLanguages={['en', 'de']}` to accept both built-in grammars in one
+input—for example, `12 juni` and `12 july`. It takes precedence over the
+single-language `parserLanguage`; `locale` still controls only formatted output.
+
+Set `preferredDateOrder` to `dmy`, `mdy`, or `ymd` when business convention
+must resolve numeric conflicts independently of the locale; its default,
+`locale`, preserves locale ordering. The expected window still ranks before a
+date-order preference, so it remains the stronger likely-date hint.
+
+The bounded grammar accepts numeric dates (`22 / 07 / 80`, `12/14`), English or
+German month names (`12 jul`, `12 märz`), absolute ranges joined by ` – `,
+` to `, ` bis `, or a spaced hyphen, and `today/heute`,
+`yesterday/gestern`, `tomorrow/morgen`, English `this` day, month, or year,
+and English `next` day/week/month/year with an optional positive count, `last N days/months/weeks/years` in both languages, English `past N
+days/months/weeks/years`, bare English duration
+forms such as `90 days` or `3 months`, and the single-date form `N days ago`.
+The count defaults to one for `day ago`, `month ago`, and `year ago`.
+Bare and `past` periods include today; `last` periods are completed.
+`this day` is today and `next day` is tomorrow. `next week` uses the next
+Monday–Sunday calendar week; `next 2 weeks` spans the next two complete weeks.
+`this` month/year and `next` month/year (including `next 2 months`) resolve to
+complete calendar periods.
+Relative dates
+can be mixed with absolute endpoints, so `22.07 - 7 days ago` is valid. Last-day
+periods end yesterday; last-month periods cover whole
+completed months. Enter or blur commits and localizes a valid result. Invalid
+and incomplete drafts remain visible and accessible; a recognized first date
+followed by a range delimiter is formatted immediately but does not emit.
+Deleting that generated delimiter leaves the draft alone, so it can be edited
+or removed normally. Numeric years use two or four digits; three-digit years
+remain unrecognized so partially deleting a four-digit year cannot jump the
+calendar to an unintended historical date.
+
+With a recognized value and no IME composition, Arrow Up/Down edits the token
+under the caret without emitting until the normal Enter/blur commit. Duration
+numbers increment or decrement (minimum 1), duration units rotate days → weeks
+→ months → years, and single-date day/month/year fields shift by their matching
+calendar unit. In a range, the token before the delimiter edits Start and the
+token after it edits End. When an Arrow edit crosses the other endpoint, the
+dates exchange places and the caret follows the edited token to its new side.
+While an Arrow edit makes both endpoints equal, the focused draft retains both
+rendered endpoints so a following Arrow can continue across them; Enter or blur
+then canonicalizes that equal pair to the normal one-date display.
+When a token becomes shorter, its visible caret position clamps to the end; the
+input remembers the original in-token offset and restores it if a later Arrow
+edit makes that token longer again.
+
 ## Package output
 
-`npm run build` creates:
+`npm run build` creates separate family artifacts:
 
 - `dist/quno-datepicker.js` — ESM library bundle without a bundled Preact runtime.
 - `dist/quno-datepicker.css` — optional default theme.
-- `dist/index.d.ts` and component/model declaration files — public TypeScript contracts.
+- `dist/date-input.js` and `dist/date-input.css` — opt-in natural input and its optional style.
+- `dist/index.d.ts`, `dist/date-input.d.ts`, and component/model declaration files — public TypeScript contracts.
 
-The current production output is approximately 35.26 kB JavaScript (9.14 kB
-gzip) plus 15.02 kB optional CSS (2.96 kB gzip). Preact is external. Run
-`npm run report:size` after a build for current measured values.
+The picker is approximately 35.60 kB JavaScript (9.20 kB gzip) plus 15.02 kB
+optional CSS (2.96 kB gzip). Add natural input only when needed: 21.71 kB
+JavaScript (6.50 kB gzip) plus 0.80 kB optional CSS (0.35 kB gzip). Preact is
+external. Run `npm run report:size` after a build for current measured values.
 
 The interactive demo remains available through `npm run dev`; it is not part of the published JavaScript entry.
 
 ## Deferred beyond V1
 
-Natural-language parsing, presets, disabled-date constraints, long-press touch gestures, and pill editing/dragging are intentionally not included yet. Direct touch painting and dragging work on the date grid, and native button focus and activation work, but full arrow-key grid navigation and advanced touch handling remain follow-up work.
+Presets, disabled-date constraints, fuzzy spelling, unrestricted natural-language NLP, counted or week-based `next`/`this` periods, multi-unit `ago`, long-press touch gestures, and pill editing/dragging remain deferred. Direct touch painting and dragging work on the date grid, and native button focus and activation work, but full arrow-key grid navigation and advanced touch handling remain follow-up work.

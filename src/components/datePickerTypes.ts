@@ -5,7 +5,7 @@ import type {
   IsoDate,
   WeekStart,
 } from './dateRangeModel';
-import type { JSX } from 'preact';
+import type { ComponentChildren, JSX } from 'preact';
 
 export type IdleInteraction = {
   type: 'idle';
@@ -120,6 +120,7 @@ export type QunoDatePickerSlot =
   | 'grid'
   | 'day'
   | 'handle'
+  | 'calendarFooter'
   | 'hint';
 
 export type QunoDatePickerClassNames = Partial<
@@ -137,6 +138,7 @@ export type QunoDatePickerProps = {
   className?: string;
   classNames?: QunoDatePickerClassNames;
   getDayCellProps?: QunoDatePickerDayCellCustomizer;
+  calendarFooter?: ComponentChildren;
   autoNavigateDelay?: number;
   autoNavigateRepeatDelay?: number;
   onChange?: (value: DateRange | null) => void;

@@ -6,6 +6,94 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Added
 
+- Added English `next week` and counted `next N` day/week/month/year periods;
+  weeks use complete Monday–Sunday calendar weeks and months/years use complete
+  future calendar periods.
+- Added the opt-in `@quno/datepicker/date-input` family entry and its optional
+  `@quno/datepicker/date-input/styles.css` stylesheet for `QunoDateInput` and
+  the headless parser.
+- Added dependency-free `QunoDateInput`, a headless typed tokenizer/parser, and
+  localized long formatting for natural date and range entry. The bounded
+  English/German grammar supports numeric and named absolute dates, absolute
+  ranges, today/yesterday/tomorrow, and completed last-day/month periods.
+- Added expected-window ambiguity ranking, controlled/uncontrolled input state,
+  IME-safe commits, accessible invalid drafts, partial-range prefix formatting,
+  input styles, parser/component coverage, and a shared-state input/calendar
+  field-guide chapter.
+- Added `preferredDateOrder` (`locale`, `dmy`, `mdy`, or `ymd`) for product
+  numeric-date conventions, plus English `N days ago` and mixed absolute/
+  relative range endpoints.
+- Added English rolling `past N days` and `past N months` ranges, which include
+  the reference date and remain distinct from completed `last` periods.
+- Added `parserLanguages` for accepting the English and German built-in
+  vocabularies together; the natural-input story now demonstrates `12 juni`.
+- Added bare rolling English durations (`90 days`, `3 months`) and Arrow Up/Down
+  token editing for duration values, units, and recognized single-date fields.
+- Added singular English `day ago`, `month ago`, and `year ago` forms, each
+  defaulting to one unit.
+- Added English `this` and `next` day, month, and year periods. Day expressions
+  resolve to one calendar date; month and year expressions resolve to their
+  complete calendar periods.
+- Extended Arrow Up/Down date-field editing to the Start or End endpoint under
+  the caret in a recognized range.
+- Arrow edits now retain a logical in-token caret offset across shorter values,
+  restoring it when a later edit lengthens that same token.
+- Added a collapsed type-to-edit field-guide example: it opens the calendar from
+  a selected-period summary, promotes its keyboard hint into `QunoDateInput` on
+  typing, and shows immediate recognizable-draft feedback with a small dot.
+- Added the `calendarFooter` picker prop and slot, placing consumer content
+  inside the calendar surface directly after its date weeks.
+
+### Fixed
+
+- The compact type-to-edit control now uses its rounded period shell as the
+  focused input surface, reserves text space for Clear, and shows Clear only
+  while that input is focused.
+- Arrow-editing a range now retains its two endpoint fields when they become
+  equal, so the next Arrow key continues past the overlap; Enter or blur still
+  canonicalizes the committed equal pair to one date.
+- Arrow-key range edits now keep following the edited date when it crosses the
+  other endpoint, swapping the rendered endpoints and caret together.
+- The collapsed type-to-edit example now keeps invalid-input feedback below its
+  button-like period control and reserves room above the popover. Its empty
+  state shows a focused placeholder and a more active unfocused label color,
+  without an unnecessary recognition dot; the dot is also hidden whenever the
+  input loses focus or the popover closes.
+- Kept deletion of an automatically normalized partial-range delimiter editable
+  instead of immediately inserting the delimiter again.
+- The collapsed type-to-edit story now centers its keyboard hint and recognition
+  dot, and moves the calendar to the endpoint changed by accepted input.
+- The type-to-edit story calendar now opens as a dismissible popover; pointer
+  input outside its summary, input, or calendar closes it.
+- The type-to-edit story now styles its natural input as the selected-period
+  control and opens the calendar from input focus; understood Arrow Up/Down
+  date edits preview in its calendar before normal commit.
+- Incomplete or unrecognizable type-to-edit drafts no longer replace the
+  calendar selection; three-digit years are rejected instead of producing an
+  unintended ancient-date preview.
+- Transient Arrow-key calendar previews now suppress month and endpoint-pill
+  animations, so unchanged controls do not appear to re-enter while tuning a
+  year.
+- Removed the redundant type-to-edit keyboard prompt now that opening the
+  popover immediately presents the selected-period label as the natural input.
+
+### Changed
+
+- Replaced the compact natural-input recognition dot and rendered error label
+  with focused recognized/unrecognized border states. `QunoDateInput` now
+  exposes `data-recognition` on its input and retains `aria-invalid` for failed
+  commits without rendering a status element.
+- Kept the picker entry focused by moving natural input and parser exports to
+  the dedicated family entry. Picker output is now 35.60 kB JavaScript
+  (9.20 kB gzip) and 15.02 kB CSS (2.96 kB gzip); the opt-in input adds
+  21.71 kB JavaScript (6.50 kB gzip) and 0.80 kB CSS (0.35 kB gzip).
+- Parsed vocabulary is now normalized once per parse and ranking avoids
+  allocating/sorting candidate arrays, reducing repeated tokenizer/parser work.
+- Combined the field guide's separate natural-input and collapsed-input
+  chapters into one compact popover example, with clearer copy and highlighted
+  grammar examples.
+- Kept the natural-input example chips inline and aligned its period control to
+  the calendar popover width.
 - Added an in-calendar month-and-year quick jump: the title toggles a fixed-size
   navigator with four rows of months per year, progressively loaded years in
   both scroll directions, persistent header arrows, and selection-preserving

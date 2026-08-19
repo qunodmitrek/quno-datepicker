@@ -23,6 +23,7 @@ export const QunoDatePicker = ({
   className,
   classNames,
   getDayCellProps,
+  calendarFooter,
   autoNavigateDelay = 400,
   autoNavigateRepeatDelay = 650,
   onChange,
@@ -83,6 +84,7 @@ export const QunoDatePicker = ({
         config={config}
         monthNavigationOpen={monthNavigationOpen}
         onMonthNavigationOpenChange={setMonthNavigationOpen}
+        footer={calendarFooter}
       />
       <OffscreenPills
         selection={controller.selection}

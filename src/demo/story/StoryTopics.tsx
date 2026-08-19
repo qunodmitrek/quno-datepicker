@@ -5,6 +5,7 @@ import {
   SegmentMoveExample,
   WrongGuessExample,
 } from './InteractionExamples';
+import { TypeToEditExample } from './TypeToEditExample';
 import {
   HiddenRowExample,
   MotionExample,
@@ -25,6 +26,7 @@ import {
   customDaysSnippet,
   localizationSnippet,
   themingSnippet,
+  naturalInputSnippet,
   weekStartSnippet,
 } from './storySnippets';
 
@@ -122,6 +124,19 @@ export const StoryTopics = (): JSX.Element => (
         copy="Set scoped custom properties on the component class; no global theme selector is required."
         code={themingSnippet} />} reverse>
       <ThemeExample />
+    </StoryFeature>
+    <StoryFeature id="natural-input" number="14" kicker="Natural input"
+      title="Type a period naturally."
+      copy="One compact period field understands a predictable set of English and German dates, ranges, and relative periods. Focus it to open the calendar; typing and picking always update the same value."
+      instruction={<>
+        Focus the period and try <code>90 days</code>, <code>12 juni</code>,
+        <code>next month</code>, <code>next 2 weeks</code>, <code>22.07 – 7 days ago</code>, or <code>letzte 2 monate</code>.
+        Press Enter to accept; use ↑/↓ on a recognized field to tune it.
+      </>}
+      howTo={<StoryHowTo title="Natural input" language="TSX"
+        copy="Use one shared DateRange value. The expected window ranks ambiguous dates, while your preferred numeric order stays a product decision."
+        code={naturalInputSnippet} />} reverse>
+      <TypeToEditExample />
     </StoryFeature>
   </>
 );

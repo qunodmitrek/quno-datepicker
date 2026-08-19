@@ -10,6 +10,7 @@ import './story-details.css';
 import './story-howto.css';
 import './story-topics.css';
 import './story-themes.css';
+import './type-to-edit.css';
 
 const contents = [
   ['#difference', 'Overview', 'Range editing explained'],
@@ -26,6 +27,7 @@ const contents = [
   ['#localization', '11', 'Internationalization'],
   ['#week-starts', '12', 'Different week starts'],
   ['#theming', '13', 'Theme and size tokens'],
+  ['#natural-input', '14', 'Natural date input'],
   ['#idea', 'Model', 'Interaction architecture'],
   ['#footprint', 'Build', 'Production footprint'],
   ['#reference', 'Docs', 'Complete API reference'],

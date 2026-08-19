@@ -104,24 +104,24 @@ export const FootprintStory = (): JSX.Element => (
   <section className="story__wide story__footprint" id="footprint">
     <div className="story__section-heading">
       <span>Production footprint</span>
-      <h2>About 12.1 kB gzip with the default theme</h2>
+      <h2>About 12.16 kB gzip for the picker’s default theme</h2>
       <p>
-        V1 ships as typed ESM. Preact remains a peer dependency, so the package
-        does not bundle another framework runtime. The stylesheet is optional.
+        The picker and natural input are opt-in ESM family members. Preact remains
+        a peer dependency, and each optional stylesheet travels with its component.
       </p>
     </div>
     <div className="story__metrics">
       <div>
-        <strong>9.14 kB</strong><span>JavaScript gzip</span>
-        <small>35.26 kB raw</small>
+        <strong>9.20 kB</strong><span>Picker JavaScript gzip</span>
+        <small>35.60 kB raw</small>
       </div>
       <div>
-        <strong>2.96 kB</strong><span>CSS gzip</span>
+        <strong>2.96 kB</strong><span>Picker CSS gzip</span>
         <small>15.02 kB raw</small>
       </div>
       <div>
-        <strong>0 kB</strong><span>Bundled Preact</span>
-        <small>external peer</small>
+        <strong>6.85 kB</strong><span>Natural input gzip</span>
+        <small>21.71 kB JS + 0.80 kB CSS raw</small>
       </div>
     </div>
     <p className="story__measurement">

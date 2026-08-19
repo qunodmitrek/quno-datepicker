@@ -11,6 +11,7 @@
   },
   "include": [
     "src/index.ts",
+    "src/date-input.ts",
     "src/components/**/*.ts",
     "src/components/**/*.tsx"
   ],

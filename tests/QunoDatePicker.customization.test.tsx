@@ -61,4 +61,11 @@ describe('QunoDatePicker customization', () => {
     expect(day('2026-08-10')).toHaveStyle({ color: 'rgb(255, 0, 0)' });
     expect(day('2026-08-10')).toHaveAttribute('title', '1:true');
   });
+
+  it('renders a supplied footer inside the calendar shell', () => {
+    render(<QunoDatePicker calendarFooter={<p>Keyboard date entry</p>} />);
+    const footer = screen.getByText('Keyboard date entry');
+    expect(document.querySelector('[data-slot="calendar"]')).toContainElement(footer);
+    expect(document.querySelector('[data-slot="calendar-footer"]')).toContainElement(footer);
+  });
 });
