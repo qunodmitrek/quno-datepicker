@@ -6,6 +6,10 @@ All notable changes to Quno Datepicker are recorded here. Entries are maintained
 
 ### Added
 
+- Added numeric-date support for hyphens, en dashes, and em dashes alongside
+  spaces and slashes. A two-digit number above 31 can now be inferred as the
+  year in any numeric position, so day-first `22 80 07` resolves to 22 July
+  1980 and remains ranked against the expected window.
 - Added English `next week` and counted `next N` day/week/month/year periods;
   weeks use complete Monday–Sunday calendar weeks and months/years use complete
   future calendar periods.

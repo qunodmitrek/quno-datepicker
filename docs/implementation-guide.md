@@ -321,7 +321,8 @@ one input. That option takes precedence over `parserLanguage`; `locale` remains
 the choice for localized output, so an English-formatted field can still accept
 `12 juni`.
 
-The dependency-free parser accepts numeric dates, English/German full or
+The dependency-free parser accepts numeric dates with spaces, slashes, hyphens,
+en dashes, or em dashes (for example, `22 / 07 / 80`, `22–07—80`), English/German full or
 abbreviated month names, absolute ranges (` – `, ` to `, ` bis `, or spaced
 hyphen), and a bounded relative vocabulary: today/heute, yesterday/gestern,
 tomorrow/morgen, English this day/month/year, English next day/week/month/year
@@ -336,7 +337,10 @@ interprets `this day` as today and `next day` as tomorrow; `next week` is the
 next Monday–Sunday calendar week, while next month/year values (including
 `next 2 months`) cover complete calendar periods. It deliberately does not guess
 misspellings or support multi-unit `next`/`this`
-periods, multi-month `ago`, presets, or business constraints.
+periods, multi-month `ago`, presets, or business constraints. A two-digit
+number above 31 is treated as a likely year in any numeric position, then
+ranked against `expectedRange`; under day-first ordering, `22 80 07` is 22 July
+1980.
 
 Enter and blur commit a recognized value and rewrite it with the localized long
 formatter. Clearing commits `null`. Invalid and incomplete text stays in the

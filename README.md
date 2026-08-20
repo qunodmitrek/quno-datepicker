@@ -242,7 +242,8 @@ must resolve numeric conflicts independently of the locale; its default,
 `locale`, preserves locale ordering. The expected window still ranks before a
 date-order preference, so it remains the stronger likely-date hint.
 
-The bounded grammar accepts numeric dates (`22 / 07 / 80`, `12/14`), English or
+The bounded grammar accepts numeric dates with spaces, slashes, hyphens, en dashes,
+or em dashes (`22 / 07 / 80`, `22–07—80`, `12/14`), English or
 German month names (`12 jul`, `12 märz`), absolute ranges joined by ` – `,
 ` to `, ` bis `, or a spaced hyphen, and `today/heute`,
 `yesterday/gestern`, `tomorrow/morgen`, English `this` day, month, or year,
@@ -264,7 +265,9 @@ followed by a range delimiter is formatted immediately but does not emit.
 Deleting that generated delimiter leaves the draft alone, so it can be edited
 or removed normally. Numeric years use two or four digits; three-digit years
 remain unrecognized so partially deleting a four-digit year cannot jump the
-calendar to an unintended historical date.
+calendar to an unintended historical date. A two-digit number above 31 is also
+considered a likely year in any numeric position, so `22 80 07` resolves to
+22 July 1980 under day-first ordering.
 
 With a recognized value and no IME composition, Arrow Up/Down edits the token
 under the caret without emitting until the normal Enter/blur commit. Duration

@@ -9,7 +9,7 @@ type Part = { value: number; digits: number };
 
 const isUsLocale = (locale: string): boolean => /^en-us\b/i.test(locale);
 
-const separator = (value: string): boolean => /^[\s/.,-]+$/u.test(value);
+const separator = (value: string): boolean => /^[\s/.,\-–—]+$/u.test(value);
 
 const dateOrder = (options: DateInputResolveOptions): 'dmy' | 'mdy' | 'ymd' =>
   options.preferredDateOrder === 'locale'
@@ -88,7 +88,12 @@ const resolveNumeric = (parts: Part[], options: DateInputResolveOptions, result:
   const third = parts[2];
   const yearIndex = parts.findIndex((part) => part.digits === 4 || part.value > 31);
   if (yearIndex === 0) append(result, second.value, third.value, first, 0, options);
-  else if (yearIndex === 1) append(result, first.value, third.value, second, 2, options);
+  else if (yearIndex === 1) {
+    const primary = dateOrder(options) === 'mdy' ? [first, third] : [third, first];
+    const fallback = dateOrder(options) === 'mdy' ? [third, first] : [first, third];
+    append(result, primary[0].value, primary[1].value, second, 0, options);
+    append(result, fallback[0].value, fallback[1].value, second, 1, options);
+  }
   else if (dateOrder(options) === 'ymd') append(result, second.value, third.value, first, 0, options);
   else {
     const primary = dateOrder(options) === 'mdy' ? [first, second] : [second, first];

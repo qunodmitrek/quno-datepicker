@@ -5,6 +5,7 @@ const isLetter = (value: string): boolean =>
   /\p{L}|\p{M}/u.test(value);
 const isUnicodeWhitespace = (value: string): boolean =>
   /\p{Zs}|\s/u.test(value);
+const isDash = (value: string): boolean => value === '-' || value === '–' || value === '—';
 
 const isRangeSeparatorWord = (value: string): boolean =>
   value === 'to' || value === 'bis';
@@ -71,19 +72,13 @@ export const tokenizeDateInput = (text: string): DateInputToken[] => {
       continue;
     }
 
-    if (char === '–') {
-      tokens.push(rangeSeparator(char, cursor, next));
-      cursor = next;
-      continue;
-    }
-
-    if (char === '-') {
+    if (isDash(char)) {
       const before = cursor > 0 ? text[cursor - 1] : '';
       const after = cursor + 1 < text.length ? text[cursor + 1] : '';
       if (isUnicodeWhitespace(before) && (!after || isUnicodeWhitespace(after))) {
-        tokens.push(rangeSeparator('-', cursor, next));
+        tokens.push(rangeSeparator(char, cursor, next));
       } else {
-        tokens.push(dateSeparator('-', cursor, next));
+        tokens.push(dateSeparator(char, cursor, next));
       }
       cursor = next;
       continue;

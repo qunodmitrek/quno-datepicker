@@ -15,6 +15,9 @@ describe('natural date parser', () => {
     expect(tokenizeDateInput('2026-08-19')).not.toEqual(expect.arrayContaining([
       expect.objectContaining({ type: 'range-separator' }),
     ]));
+    expect(tokenizeDateInput('22–07—80')).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: 'range-separator' }),
+    ]));
   });
 
   it('uses the expected window to infer a missing year', () => {
@@ -38,6 +41,18 @@ describe('natural date parser', () => {
 
   it('resolves two-digit years, month words, locale order, and leap days', () => {
     expect(parseDateInput('22 / 07 / 80', options)).toEqual({
+      status: 'success', value: { start: '1980-07-22', end: '1980-07-22' },
+    });
+    expect(parseDateInput('22 80 07', options)).toEqual({
+      status: 'success', value: { start: '1980-07-22', end: '1980-07-22' },
+    });
+    expect(parseDateInput('22-07-80', options)).toEqual({
+      status: 'success', value: { start: '1980-07-22', end: '1980-07-22' },
+    });
+    expect(parseDateInput('22–07–80', options)).toEqual({
+      status: 'success', value: { start: '1980-07-22', end: '1980-07-22' },
+    });
+    expect(parseDateInput('22—07—80', options)).toEqual({
       status: 'success', value: { start: '1980-07-22', end: '1980-07-22' },
     });
     expect(parseDateInput('12 jul', options)).toEqual({
@@ -124,6 +139,9 @@ describe('natural date parser', () => {
 
   it('normalizes absolute ranges and protects incomplete or invalid drafts', () => {
     expect(parseDateInput('18/12 – 14/12', options)).toEqual({
+      status: 'success', value: { start: '2025-12-14', end: '2025-12-18' },
+    });
+    expect(parseDateInput('18/12 — 14/12', options)).toEqual({
       status: 'success', value: { start: '2025-12-14', end: '2025-12-18' },
     });
     expect(parseDateInput('22.07 - 7 days ago', options)).toEqual({
